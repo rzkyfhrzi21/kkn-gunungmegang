@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /includes/
+Disallow: /functions/
+Disallow: /db/
+Disallow: /Zzz/
+
+Sitemap: http://localhost/kkn-gunungmegang/sitemap.xml

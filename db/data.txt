@@ -1,0 +1,13 @@
+Cpanel Username: b12_40868578
+Cpanel Password: sidesanatar
+Your URL: http://sidesa-natar.byethost12.com or http://www.sidesa-natar.byethost12.com
+FTP Server : ftpupload.net
+FTP Login : b12_40868578
+FTP Password : sidesanatar
+MySQL Database Name: b12_40868578_sidesanatar
+MySQL Username : b12_40868578
+MySQL Password : sidesanatar
+MySQL Server: sql105.byethost12.com
+
+
+Cpanel URL: http://cpanel.byethost12.com/

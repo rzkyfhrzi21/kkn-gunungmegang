@@ -1,0 +1,232 @@
+/* =====================================================================
+ * admin-app.css — UI kit panel admin
+ * Toast stackable, preview modal, skeleton, tabel AJAX, hamburger sidebar
+ * ===================================================================== */
+
+/* ---------- TOAST ---------- */
+.app-toasts {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: min(92vw, 380px);
+    pointer-events: none;
+}
+.app-toast {
+    pointer-events: auto;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #fff;
+    color: #212529;
+    border-radius: 12px;
+    padding: 14px 14px 14px 14px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .18);
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid #0ea5a4;
+    animation: appToastIn .3s ease;
+    overflow: hidden;
+    transition: opacity .3s ease, transform .3s ease;
+}
+.app-toast.hide {
+    opacity: 0;
+    transform: translateX(20px);
+}
+.app-toast.error { border-left-color: #dc3545; }
+.app-toast.success { border-left-color: #198754; }
+.app-toast-icon {
+    font-size: 1.35rem;
+    line-height: 1.4;
+    flex-shrink: 0;
+}
+.app-toast.success .app-toast-icon { color: #198754; }
+.app-toast.error .app-toast-icon { color: #dc3545; }
+.app-toast-body { flex: 1; min-width: 0; }
+.app-toast-title { font-weight: 700; font-size: .9rem; margin-bottom: 2px; }
+.app-toast-msg { font-size: .83rem; color: #64748b; word-break: break-word; }
+.app-toast-close {
+    background: none;
+    border: 0;
+    color: #94a3b8;
+    font-size: .9rem;
+    padding: 2px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.app-toast-close:hover { color: #dc3545; }
+.app-toast-progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    background: #198754;
+    animation: appToastProgress 4s linear forwards;
+}
+@keyframes appToastIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes appToastProgress {
+    from { width: 100%; }
+    to { width: 0; }
+}
+
+/* ---------- PREVIEW MODAL ---------- */
+.app-preview-dialog { max-width: min(94vw, 900px); }
+.app-preview-content { border-radius: 14px; overflow: hidden; }
+.app-preview-header { border-bottom: 1px solid #e2e8f0; }
+.app-preview-body {
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    max-height: 78vh;
+}
+.app-preview-media {
+    max-width: 100%;
+    max-height: 78vh;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    border-radius: 6px;
+}
+.app-preview-loading { color: #fff; padding: 40px; }
+
+/* ---------- SKELETON ---------- */
+.skeleton {
+    display: inline-block;
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: appSkeleton 1.4s ease infinite;
+    border-radius: 6px;
+}
+@keyframes appSkeleton {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ---------- TABEL AJAX ---------- */
+.app-table-wrap { position: relative; }
+.app-table-loading {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, .72);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+.dark-mode .app-table-loading { background: rgba(15, 23, 42, .72); }
+.app-table-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+.app-table-toolbar .form-control,
+.app-table-toolbar .form-select { min-width: 140px; }
+
+.row-actions { white-space: nowrap; }
+.row-actions .row-act {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+    border-radius: 50%;
+}
+.row-actions [data-act="detail"] { color: #0d6efd; }
+.row-actions [data-act="edit"] { color: #6f42c1; }
+.row-actions [data-act="delete"] { color: #dc3545; }
+
+.app-cell-img { width: 64px; }
+.app-thumb {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #e2e8f0;
+}
+.app-thumb-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.app-thumb .skeleton { width: 100%; height: 100%; display: block; }
+.app-thumb .app-zoom {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, .45);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .2s ease;
+}
+.app-thumb:hover .app-zoom { opacity: 1; }
+
+.app-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 14px;
+}
+.app-pagination-info { font-size: .85rem; color: #64748b; }
+
+/* ---------- HAMBURGER SIDEBAR ---------- */
+#btn-hamburger {
+    border: 0;
+    background: none;
+    font-size: 1.4rem;
+    color: #0b3b4a;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+#sidebar {
+    transition: transform .25s ease;
+}
+#main { transition: margin-left .25s ease; }
+
+@media (min-width: 1200px) {
+    #app.sidebar-collapsed #sidebar {
+        transform: translateX(-100%);
+    }
+    #app.sidebar-collapsed #main {
+        margin-left: 0;
+    }
+}
+@media (max-width: 1199.98px) {
+    #app.sidebar-collapsed #sidebar {
+        transform: translateX(-100%);
+    }
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 767.98px) {
+    .page-heading h3 { font-size: 1.2rem; }
+    .page-heading .page-title-sub { font-size: .85rem; }
+    .card { border-radius: 12px; }
+    .app-pagination { flex-direction: column; align-items: stretch; text-align: center; }
+    .app-toasts { max-width: calc(100vw - 24px); }
+}
+
+/* ---------- FOTO UPLOAD ---------- */
+.app-foto-preview {
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+}
+.app-upload-hint { font-size: .8rem; color: #64748b; margin-top: 6px; }
