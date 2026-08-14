@@ -7,3 +7,14 @@ Zzz/
 CLAUDE.md
 GEMINI.md
 .codebase-memory/
+graphify-out/
+.vscode/
+
+# Data runtime (JSON DB) - JANGAN DI-PUSH
+db/data.txt
+db/json/security_log.json
+
+# File generated & upload user
+dashboard/assets/generated/
+dashboard/assets/img/foto_profil/
+dashboard/assets/img/destinasi_wisata/

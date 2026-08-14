@@ -86,6 +86,17 @@ $fotoExist = $foto !== '' && file_exists(dirname(__DIR__, 2) . '/' . $foto);
                     <label class="form-label">Link Google Maps</label>
                     <input type="url" class="form-control" name="kontak_maps_link" value="<?= htmlspecialchars($kontak['maps_link']) ?>">
                 </div>
+                <div class="col-12">
+                    <label class="form-label">Embed Peta (Kode iframe Google Maps)</label>
+                    <textarea class="form-control" name="kontak_maps_embed" id="kontak_maps_embed" rows="2" placeholder="Tempel kode iframe (mis. &lt;iframe src=&quot;https://www.google.com/maps/embed?...&quot;...) atau langsung URL embednya"><?= htmlspecialchars($kontak['maps_embed'] ?? '') ?></textarea>
+                    <div class="app-upload-hint">Buka Google Maps &rarr; Bagikan &rarr; Sematkan peta &rarr; salin kode iframe, lalu tempel di sini. Format URL atau kode iframe keduanya diterima.</div>
+                </div>
+                <div class="col-12" id="maps-preview-wrap" style="display:none;">
+                    <label class="form-label">Pratinjau Peta</label>
+                    <div class="border rounded overflow-hidden">
+                        <iframe id="maps-preview" src="" style="width:100%;height:320px;border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                    </div>
+                </div>
 
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary" id="btn-save-pekon">
@@ -104,6 +115,26 @@ document.addEventListener('DOMContentLoaded', function () {
     var hFoto = form.querySelector('[name="kp_foto"]');
     var imgPrev = document.getElementById('foto-preview');
     var inputFoto = document.getElementById('foto-kepala');
+    var mapsEmbed = document.getElementById('kontak_maps_embed');
+    var mapsPreviewWrap = document.getElementById('maps-preview-wrap');
+    var mapsPreview = document.getElementById('maps-preview');
+
+    function getEmbedUrl(val) {
+        var m = /src\s*=\s*["']([^"']+)["']/i.exec(val || '');
+        return m ? m[1] : (val || '').trim();
+    }
+    function updateMapPreview() {
+        var url = getEmbedUrl(mapsEmbed.value);
+        if (/^https?:\/\//i.test(url)) {
+            mapsPreview.src = url;
+            mapsPreviewWrap.style.display = '';
+        } else {
+            mapsPreview.removeAttribute('src');
+            mapsPreviewWrap.style.display = 'none';
+        }
+    }
+    mapsEmbed.addEventListener('input', updateMapPreview);
+    updateMapPreview();
 
     inputFoto.addEventListener('change', function () {
         App.uploadFile(this, function (res) {
@@ -138,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
             kabupaten: form.kabupaten.value, provinsi: form.provinsi.value,
             tahun: form.tahun.value,
             kepala_pekon: { nama: form.kp_nama.value, foto: hFoto.value, jabatan: form.kp_jabatan.value },
-            kontak: { telepon: form.kontak_telepon.value, maps_code: form.kontak_maps_code.value, maps_link: form.kontak_maps_link.value }
+            kontak: { telepon: form.kontak_telepon.value, maps_code: form.kontak_maps_code.value, maps_link: form.kontak_maps_link.value, maps_embed: getEmbedUrl(mapsEmbed.value) }
         };
         App.postJSON('../admin/api.php', { action: 'save', module: 'pekon', data: payload })
             .then(function (res) {

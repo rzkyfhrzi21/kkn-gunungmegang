@@ -80,6 +80,15 @@ function json_api_int($v) {
     return (int) ($v === '' ? 0 : $v);
 }
 
+/** Ambil URL embed dari nilai: terima URL mentah atau potongan iframe (<iframe src="...">). */
+function json_api_embed_url($v) {
+    $v = is_string($v) ? trim($v) : '';
+    if (preg_match('/src\s*=\s*["\']([^"\']+)["\']/i', $v, $m)) {
+        $v = html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5);
+    }
+    return sanitize_url($v, 1000);
+}
+
 function json_api_float($v) {
     $v = str_replace(['.', ','], ['.', '.'], (string)$v);
     return (float) $v;
@@ -105,6 +114,7 @@ function norm_pekon($raw) {
             'telepon'   => json_api_str($c['telepon'] ?? '', 30),
             'maps_code' => json_api_str($c['maps_code'] ?? '', 255),
             'maps_link' => sanitize_url($c['maps_link'] ?? '', 500),
+            'maps_embed' => json_api_embed_url($c['maps_embed'] ?? ''),
         ],
     ];
 }

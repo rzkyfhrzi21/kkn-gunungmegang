@@ -109,7 +109,11 @@
 </a>
 </div>
 <div class="w-full flex-grow min-h-[400px] rounded-2xl overflow-hidden border border-border-neutral relative group">
+<?php if (!empty($pekon['kontak']['maps_embed'])): ?>
+<iframe class="w-full h-full absolute inset-0 border-0" src="<?= htmlspecialchars($pekon['kontak']['maps_embed']) ?>" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="Peta Lokasi Kantor Pekon Gunung Megang"></iframe>
+<?php else: ?>
 <div class="w-full h-full bg-cover bg-center absolute inset-0 transition-transform duration-700 group-hover:scale-105" style="background-image: linear-gradient(135deg, #0b3b4a 0%, #0ea5a4 60%, #0b3b4a 100%)"></div>
+<?php endif; ?>
 <div class="absolute bottom-6 left-6 right-6 bg-surface-container-lowest/95 p-4 rounded-xl shadow-lg border border-border-neutral flex items-center gap-4 z-10">
 <div class="w-12 h-12 rounded-full bg-emerald-surface flex items-center justify-center flex-shrink-0">
 <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">assured_workload</span>

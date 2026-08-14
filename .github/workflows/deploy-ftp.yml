@@ -1,0 +1,48 @@
+name: Deploy to Production (FTP)
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  production-deploy:
+    name: 🚀 Deploy via FTP ke cPanel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          security: loose
+          local-dir: ./
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**/*
+            **/.github/**
+            **/.rtk/**
+            **/.codebase-memory/**
+            **/@agents/**
+            **/.claude/**
+            **/.grok/**
+            **/.opencode/**
+            **/.vscode/**
+            **/graphify-out/**
+            **/rules/**
+            **/Zzz/**
+            **/docs/**
+            **/AGENTS.md
+            **/CLAUDE.md
+            **/GEMINI.md
+            **/README.md
+            **/.gitignore
+            **/.opencodeignore
+            **/db/data.txt
