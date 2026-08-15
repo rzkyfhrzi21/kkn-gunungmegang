@@ -9,7 +9,7 @@ $pekon = array_merge(
     [
         'demografi'    => require __DIR__ . '/demografi.php',
         'potensi'      => require __DIR__ . '/potensi.php',
-        'apbpekon_2026'=> require __DIR__ . '/apbpekon.php',
+        'apbpekon'     => require __DIR__ . '/apbpekon.php',
         'perangkat'    => require __DIR__ . '/perangkat.php',
     ]
 );

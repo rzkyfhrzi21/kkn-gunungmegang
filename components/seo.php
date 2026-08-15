@@ -32,9 +32,14 @@ $seoMap = [
         'desc'     => 'Potensi ekonomi dan sumber daya alam Pekon Gunung Megang: pertanian, komoditas unggulan, mata pencaharian masyarakat, dan indeks pembangunan desa.',
         'keywords' => 'potensi desa gunung megang, ekonomi desa, pertanian, komoditas, mata pencaharian, idm',
     ],
+    'apbpekon' => [
+        'title'    => 'Transparansi APB Pekon | Pekon Gunung Megang',
+        'desc'     => 'Anggaran Pendapatan dan Belanja Pekon (APBPekon) Gunung Megang: rincian pendapatan, belanja, dan pembiayaan setiap tahun anggaran secara terbuka dan transparan.',
+        'keywords' => 'apb pekon gunung megang, apbdes, anggaran desa, transparansi, dana desa, add',
+    ],
     'apbpekon-2026' => [
-        'title'    => 'Transparansi APB Pekon 2026 | Pekon Gunung Megang',
-        'desc'     => 'Anggaran Pendapatan dan Belanja Pekon (APBPekon) Gunung Megang tahun 2026: rincian pendapatan, belanja, dan pembiayaan secara terbuka dan transparan.',
+        'title'    => 'Transparansi APB Pekon | Pekon Gunung Megang',
+        'desc'     => 'Anggaran Pendapatan dan Belanja Pekon (APBPekon) Gunung Megang: rincian pendapatan, belanja, dan pembiayaan secara terbuka dan transparan.',
         'keywords' => 'apb pekon gunung megang, apbdes 2026, anggaran desa, transparansi, dana desa, add',
     ],
     'kontak' => [

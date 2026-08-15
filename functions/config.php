@@ -27,8 +27,29 @@ define("DB_PATH", dirname(__DIR__) . "/db/json/");
  * @param string $table Nama tabel (tanpa .json)
  * @return array
  */
+/**
+ * Validasi nama tabel JSON (anti path traversal / injection nama file).
+ * Hanya karakter [a-z0-9_] yang diizinkan.
+ * @param string $table Nama tabel
+ * @return string Nama tabel aman, atau '' jika tidak valid
+ */
+function db_table_name(string $table): string
+{
+    $table = trim($table);
+    return preg_match('/^[a-z0-9_]+$/i', $table) ? strtolower($table) : '';
+}
+
+/**
+ * Baca seluruh data tabel JSON.
+ * @param string $table Nama tabel
+ * @return array
+ */
 function db_read(string $table): array
 {
+    $table = db_table_name($table);
+    if ($table === '') {
+        return [];
+    }
     $file = DB_PATH . $table . ".json";
     if (!file_exists($file)) {
         return [];
@@ -46,6 +67,10 @@ function db_read(string $table): array
  */
 function db_write(string $table, array $data): bool
 {
+    $table = db_table_name($table);
+    if ($table === '') {
+        return false;
+    }
     $file = DB_PATH . $table . ".json";
     $json = json_encode(array_values($data), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     return file_put_contents($file, $json, LOCK_EX) !== false;

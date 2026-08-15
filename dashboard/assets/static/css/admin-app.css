@@ -38,6 +38,7 @@
 }
 .app-toast.error { border-left-color: #dc3545; }
 .app-toast.success { border-left-color: #198754; }
+.app-toast.warning { border-left-color: #f59e0b; }
 .app-toast-icon {
     font-size: 1.35rem;
     line-height: 1.4;
@@ -45,6 +46,7 @@
 }
 .app-toast.success .app-toast-icon { color: #198754; }
 .app-toast.error .app-toast-icon { color: #dc3545; }
+.app-toast.warning .app-toast-icon { color: #f59e0b; }
 .app-toast-body { flex: 1; min-width: 0; }
 .app-toast-title { font-weight: 700; font-size: .9rem; margin-bottom: 2px; }
 .app-toast-msg { font-size: .83rem; color: #64748b; word-break: break-word; }
@@ -66,6 +68,7 @@
     background: #198754;
     animation: appToastProgress 4s linear forwards;
 }
+.app-toast.warning .app-toast-progress { background: #f59e0b; }
 @keyframes appToastIn {
     from { opacity: 0; transform: translateX(30px); }
     to { opacity: 1; transform: translateX(0); }
@@ -76,26 +79,25 @@
 }
 
 /* ---------- PREVIEW MODAL ---------- */
-.app-preview-dialog { max-width: min(94vw, 900px); }
-.app-preview-content { border-radius: 14px; overflow: hidden; }
-.app-preview-header { border-bottom: 1px solid #e2e8f0; }
+.modal .app-preview-dialog { max-width: min(96vw, 1200px) !important; margin: 0 auto; }
+.app-preview-content { border-radius: 12px; overflow: hidden; }
 .app-preview-body {
-    background: #0f172a;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 200px;
-    max-height: 78vh;
+    padding: 0;
+    min-height: 120px;
+    max-height: 92vh;
 }
 .app-preview-media {
     max-width: 100%;
-    max-height: 78vh;
+    max-height: 92vh;
     object-fit: contain;
     display: block;
     margin: 0 auto;
-    border-radius: 6px;
 }
-.app-preview-loading { color: #fff; padding: 40px; }
+.app-preview-loading { padding: 40px; }
 
 /* ---------- SKELETON ---------- */
 .skeleton {
@@ -210,6 +212,27 @@
         transform: translateX(-100%);
     }
 }
+
+/* ---------- FOOTER CARD ---------- */
+.app-footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
+    background: var(--bs-card-bg, #fff);
+    border: 1px solid var(--bs-border-color, #e2e8f0);
+    border-radius: 12px;
+    padding: .9rem 1.25rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .06);
+    color: var(--bs-secondary-color, #6c757d);
+    font-size: .9rem;
+}
+.app-footer p { margin: 0; }
+
+/* ---------- SIDEBAR LOGO (sejajar awal teks menu halaman aktif) ---------- */
+.sidebar-header .logo { padding-left: 48px; }
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 767.98px) {

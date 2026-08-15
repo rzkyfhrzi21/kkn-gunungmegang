@@ -29,7 +29,6 @@ $menuPages = [
     'Potensi'      => 'Potensi',
     'APB Pekon'    => 'APB Pekon',
     'Aparat Desa'  => 'Aparat Desa',
-    'Data User'    => 'Data User',
     'Profil'       => 'Profil Saya',
 ];
 
@@ -145,13 +144,6 @@ $pageTitle = isset($menuPages[$page]) ? $menuPages[$page] : 'Dashboard';
 
                         <li class="sidebar-title">Sistem</li>
 
-                        <li class="sidebar-item <?= $page === 'Data User' ? 'active' : '' ?>">
-                            <a href="?page=Data User" class="sidebar-link">
-                                <i class="bi bi-people"></i>
-                                <span>Manajemen User</span>
-                            </a>
-                        </li>
-
                         <li class="sidebar-item <?= $page === 'Profil' ? 'active' : '' ?>">
                             <a href="?page=Profil" class="sidebar-link">
                                 <i class="bi bi-person-circle"></i>
@@ -176,7 +168,6 @@ $pageTitle = isset($menuPages[$page]) ? $menuPages[$page] : 'Dashboard';
                 <button type="button" id="btn-hamburger" class="d-inline-flex" aria-label="Tampilkan/sembunyikan menu">
                     <i class="bi bi-list"></i>
                 </button>
-                <h5 class="mb-0 fw-bold"><?= $pageTitle; ?></h5>
                 <a class="btn btn-sm btn-outline-secondary ms-auto" href="../index" target="_blank" title="Buka halaman depan">
                     <i class="bi bi-box-arrow-up-right"></i> <span class="d-none d-sm-inline">Lihat Situs</span>
                 </a>
@@ -199,9 +190,6 @@ $pageTitle = isset($menuPages[$page]) ? $menuPages[$page] : 'Dashboard';
                 case 'Aparat Desa':
                     include 'admin-pages/aparat_desa.php';
                     break;
-                case 'Data User':
-                    include 'admin-pages/data_user.php';
-                    break;
                 case 'Profil':
                     include 'admin-pages/profil.php';
                     break;
@@ -212,24 +200,18 @@ $pageTitle = isset($menuPages[$page]) ? $menuPages[$page] : 'Dashboard';
             }
             ?>
 
-            <footer>
-                <div class="footer clearfix mb-0 text-muted">
-                    <div class="float-start">
-                        <p>
-                            <script>
-                                document.write(new Date().getFullYear())
-                            </script>
-                            &copy; <?php echo NAMA_WEB; ?>
-                        </p>
-                    </div>
-                    <div class="float-end">
-                        <p>
-                            Dikembangkan oleh <?php echo NAMA_LENGKAP; ?> –
-                            <?php echo NAMA_KAMPUS; ?> •
-                            <a href="<?php echo URL_IG; ?>" target="_blank" rel="noopener">@<?php echo IG; ?></a>
-                        </p>
-                    </div>
-                </div>
+            <footer class="app-footer">
+                <p>
+                    <script>
+                        document.write(new Date().getFullYear())
+                    </script>
+                    &copy; <?php echo NAMA_WEB; ?>
+                </p>
+                <p class="text-end">
+                    Dikembangkan oleh <?php echo NAMA_LENGKAP; ?> –
+                    <?php echo NAMA_KAMPUS; ?> •
+                    <a href="<?php echo URL_IG; ?>" target="_blank" rel="noopener">@<?php echo IG; ?></a>
+                </p>
             </footer>
         </div>
     </div>

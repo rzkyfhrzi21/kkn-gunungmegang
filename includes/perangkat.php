@@ -4,52 +4,56 @@
 return     array (
       0 => 
       array (
-        'jabatan' => 'Kepala Pekon',
-        'nama' => 'HARSON, BBA',
+        'jabatan' => 'Juru Tulis (Sekretaris Pekon)',
+        'nama' => 'YUNI LESTARI',
+        'foto' => '',
       ),
       1 => 
       array (
-        'jabatan' => 'Juru Tulis (Sekretaris Pekon)',
-        'nama' => 'YUNI LESTARI',
+        'jabatan' => 'Kasih Pemerintahan',
+        'nama' => 'PRADITA DWI A.',
+        'foto' => '',
       ),
       2 => 
       array (
-        'jabatan' => 'Kasih Pemerintahan',
-        'nama' => 'PRADITA DWI A.',
+        'jabatan' => 'Kasih Pelayanan',
+        'nama' => 'RIBUANSYAH',
+        'foto' => '',
       ),
       3 => 
       array (
-        'jabatan' => 'Kasih Pelayanan',
-        'nama' => 'RIBUANSYAH',
+        'jabatan' => 'Kasih Kesejahteraan',
+        'nama' => 'AGUS RIANSYAH',
+        'foto' => '',
       ),
       4 => 
       array (
-        'jabatan' => 'Kasih Kesejahteraan',
-        'nama' => 'AGUS RIANSYAH',
+        'jabatan' => 'Kaur Tata Usaha & Umum',
+        'nama' => 'YOPI REIDO A.',
+        'foto' => '',
       ),
       5 => 
       array (
-        'jabatan' => 'Kaur Tata Usaha & Umum',
-        'nama' => 'YOPI REIDO A.',
+        'jabatan' => 'Kaur Keuangan',
+        'nama' => 'PATRA DIGO A.',
+        'foto' => '',
       ),
       6 => 
       array (
-        'jabatan' => 'Kaur Keuangan',
-        'nama' => 'PATRA DIGO A.',
+        'jabatan' => 'Kaur Perencanaan',
+        'nama' => 'BAYU PRATAMA',
+        'foto' => '',
       ),
       7 => 
       array (
-        'jabatan' => 'Kaur Perencanaan',
-        'nama' => 'BAYU PRATAMA',
+        'jabatan' => 'Ketua BHP',
+        'nama' => 'ASHADI',
+        'foto' => '',
       ),
       8 => 
       array (
-        'jabatan' => 'Ketua BHP',
-        'nama' => 'ASHADI',
-      ),
-      9 => 
-      array (
         'jabatan' => 'Ketua LPM',
         'nama' => 'TOMI',
+        'foto' => '',
       ),
     );

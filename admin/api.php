@@ -155,7 +155,7 @@ function norm_potensi($raw) {
     ];
 }
 
-function norm_apbpekon($raw) {
+function norm_apb_tahun($raw) {
     $p = $raw['pendapatan'] ?? [];
     $b = $raw['belanja'] ?? [];
     $f = $raw['pembiayaan'] ?? [];
@@ -187,11 +187,32 @@ function norm_apbpekon($raw) {
     ];
 
     return [
-        'tahun'       => json_api_int($raw['tahun'] ?? 0),
         'pendapatan'  => $pendapatan,
         'belanja'     => $belanja,
         'pembiayaan'  => $pembiayaan,
     ];
+}
+
+/** Baca seluruh tahun APB; migrasi otomatis format lama (tahun tunggal). */
+function apb_read_all() {
+    $all = json_api_read_module('apbpekon');
+    if (isset($all['tahun']) && isset($all['pendapatan'])) {
+        $y = (int)$all['tahun'];
+        unset($all['tahun']);
+        $all = [$y => $all];
+    }
+    $out = [];
+    foreach ((array)$all as $y => $d) {
+        $y = is_numeric($y) ? (int)$y : 0;
+        if ($y > 0 && is_array($d)) $out[$y] = $d;
+    }
+    return $out;
+}
+
+function apb_write_all($all) {
+    global $INCLUDES;
+    ksort($all);
+    return json_api_write_php($INCLUDES . '/apbpekon.php', $all, 'includes/apbpekon.php - APB Pekon per tahun anggaran (kunci = tahun)');
 }
 
 function norm_perangkat($raw) {
@@ -200,8 +221,9 @@ function norm_perangkat($raw) {
         if (!is_array($row)) continue;
         $nama    = json_api_str($row['nama'] ?? '', 150);
         $jabatan = json_api_str($row['jabatan'] ?? '', 150);
+        $foto    = json_api_str($row['foto'] ?? '', 500);
         if ($nama !== '' && $jabatan !== '') {
-            $list[] = ['jabatan' => $jabatan, 'nama' => $nama];
+            $list[] = ['jabatan' => $jabatan, 'nama' => $nama, 'foto' => $foto];
         }
     }
     return $list;
@@ -242,14 +264,15 @@ function api_list($module, $page, $perPage, $search, $filters) {
 
     $search = trim(strtolower($search ?? ''));
 
-    if ($module === 'user') {
-        $rows = db_read('user');
-        $rawRows = $rows;
-    } elseif ($module === 'perangkat') {
+    if ($module === 'perangkat') {
         $rows = json_api_read_module('perangkat');
         $tmp = [];
         foreach ($rows as $i => $r) {
             $r['idx'] = $i;
+            $foto = $r['foto'] ?? '';
+            if ($foto !== '' && !file_exists(dirname(__DIR__) . '/' . $foto)) {
+                $r['foto'] = '';
+            }
             $tmp[] = $r;
         }
         $rows = $tmp;
@@ -263,11 +286,29 @@ function api_list($module, $page, $perPage, $search, $filters) {
         }
         $rawRows = $rows;
     } elseif (in_array($module, ['pendapatan', 'belanja', 'pembiayaan'], true)) {
-        $data = json_api_read_module('apbpekon');
-        $sub  = $data[$module] ?? [];
+        $all = apb_read_all();
+        $tahun = (int)($filters['tahun'] ?? 0);
+        if (!isset($all[$tahun])) $tahun = (int)max(array_keys($all), [0]);
+        unset($filters['tahun']);
+        $sub  = $all[$tahun][$module] ?? [];
         $rows = [];
         foreach (json_api_sublist($module) as $key => $label) {
             $rows[] = ['key' => $key, 'label' => $label, 'nominal' => $sub[$key] ?? 0];
+        }
+        $rawRows = $rows;
+    } elseif ($module === 'apb_tahun') {
+        $all = apb_read_all();
+        krsort($all);
+        $rows = [];
+        $no = 1;
+        foreach ($all as $t => $d) {
+            $rows[] = [
+                'no'         => $no++,
+                'tahun'      => (int)$t,
+                'pendapatan' => (float)($d['pendapatan']['total'] ?? 0),
+                'belanja'    => (float)($d['belanja']['total'] ?? 0),
+                'pembiayaan' => (float)($d['pembiayaan']['pembiayaan_netto'] ?? 0),
+            ];
         }
         $rawRows = $rows;
     } else {
@@ -284,10 +325,6 @@ function api_list($module, $page, $perPage, $search, $filters) {
             $jenis[strpos(strtoupper($r['jabatan']), 'BHP') !== false || strpos(strtoupper($r['jabatan']), 'LPM') !== false ? 'Lembaga' : 'Perangkat'] = true;
         }
         $filterOptions = ['jabatan' => array_keys($jabatans), 'jenis' => array_keys($jenis)];
-    } elseif ($module === 'user') {
-        $roles = [];
-        foreach ($rows as $r) $roles[$r['role']] = true;
-        $filterOptions = ['role' => array_keys($roles)];
     }
 
     /* filter */
@@ -330,6 +367,84 @@ function api_list($module, $page, $perPage, $search, $filters) {
     ]);
 }
 
+/* ================= RESOLVE LINK GOOGLE MAPS ================= */
+
+function maps_http_get($url, $timeout = 8) {
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_MAXREDIRS      => 5,
+        CURLOPT_CONNECTTIMEOUT => $timeout,
+        CURLOPT_TIMEOUT        => $timeout,
+        CURLOPT_USERAGENT      => 'PekonGunungMegang-Admin/1.0 (https://gunungmegang.id)',
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_HTTPHEADER     => ['Accept: text/html,application/json;q=0.9,*/*;q=0.8'],
+    ]);
+    $body = curl_exec($ch);
+    $info = curl_getinfo($ch);
+    curl_close($ch);
+    return [
+        'body' => is_string($body) ? $body : '',
+        'url'  => (string)($info['url'] ?? ''),
+        'code' => (int)($info['http_code'] ?? 0),
+    ];
+}
+
+/** Ekstrak [lat, lng] dari URL final Google Maps (pola @lat,lng, q=, ll=, daddr=). */
+function maps_extract_coords($url) {
+    $url = preg_replace('/#.*$/', '', $url);
+    if (preg_match('/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/', $url, $m)) {
+        return [(float)$m[1], (float)$m[2]];
+    }
+    if (preg_match('/[?&](?:q|ll)=([^&]+)/i', $url, $m)) {
+        $q = rawurldecode($m[1]);
+        if (preg_match('/(?:@|^)(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/', $q, $m2)) {
+            return [(float)$m2[1], (float)$m2[2]];
+        }
+    }
+    if (preg_match('/[?&]daddr=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i', $url, $m)) {
+        return [(float)$m[1], (float)$m[2]];
+    }
+    return null;
+}
+
+/** Reverse geocode lat,lng via OSM Nominatim -> teks alamat ringkas (id). */
+function maps_reverse_geocode($lat, $lng) {
+    $res = maps_http_get(
+        'https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&addressdetails=1&accept-language=id&lat=' . $lat . '&lon=' . $lng,
+        8
+    );
+    if ($res['code'] !== 200 || $res['body'] === '') return '';
+    $j = json_decode($res['body'], true);
+    if (!is_array($j) || empty($j['address'])) return '';
+    $parts = [];
+    foreach (['road', 'hamlet', 'village', 'suburb', 'city_district', 'town', 'city', 'county', 'state', 'country'] as $k) {
+        if (!empty($j['address'][$k])) $parts[] = $j['address'][$k];
+    }
+    return implode(', ', array_unique($parts));
+}
+
+function api_resolve_maps($data) {
+    $link = json_api_str($data['link'] ?? '', 1000);
+    if ($link === '' || !preg_match('#^https?://#i', $link)) {
+        json_api_fail('Link Google Maps tidak valid.', $link);
+    }
+    $res = maps_http_get($link, 10);
+    if ($res['code'] === 0 || $res['code'] >= 400) {
+        json_api_fail('Tidak dapat membuka link Google Maps.', 'HTTP ' . $res['code']);
+    }
+    $finalUrl = $res['url'] !== '' ? $res['url'] : $link;
+    $coords = maps_extract_coords($finalUrl);
+    if (!$coords) {
+        json_api_fail('Koordinat tidak ditemukan di link tersebut.', 'Pastikan link dari menu "Bagikan" di Google Maps (maps.app.goo.gl/... atau google.com/maps/place/...).');
+    }
+    list($lat, $lng) = $coords;
+    $embed   = 'https://www.google.com/maps?q=' . $lat . ',' . $lng . '&z=16&output=embed';
+    $address = maps_reverse_geocode($lat, $lng);
+    json_api_ok(['lat' => $lat, 'lng' => $lng, 'embed' => $embed, 'address' => $address]);
+}
+
 /* ================= HANDLER SAVE ================= */
 
 function api_save_module($module, $data) {
@@ -348,6 +463,26 @@ function api_save_module($module, $data) {
             json_api_write_php($INCLUDES . '/pekon.php', $new, 'includes/pekon.php - Identitas & informasi umum Pekon Gunung Megang');
             break;
 
+        case 'kepala_pekon':
+            $old = json_api_read_module('pekon');
+            $k = $data['kepala_pekon'] ?? $data;
+            $nama    = json_api_str($k['nama'] ?? '', 150);
+            $jabatan = json_api_str($k['jabatan'] ?? '', 150);
+            $foto    = json_api_str($k['foto'] ?? '', 500);
+            if ($nama === '' || $jabatan === '') json_api_fail('Nama dan jabatan kepala pekon wajib diisi.');
+            if ($foto !== '') {
+                if (strpos($foto, 'assets/uploads/') !== 0) json_api_fail('Foto harus file upload, bukan URL.', $foto);
+                if (!file_exists(dirname($INCLUDES) . '/' . $foto)) json_api_fail('File foto tidak ditemukan di penyimpanan.', $foto);
+            }
+            $oldFoto = $old['kepala_pekon']['foto'] ?? '';
+            if ($oldFoto !== $foto && strpos($oldFoto, 'assets/uploads/') === 0) {
+                @unlink(dirname($INCLUDES) . '/' . $oldFoto);
+            }
+            $old['kepala_pekon'] = ['nama' => $nama, 'foto' => $foto, 'jabatan' => $jabatan];
+            json_api_write_php($INCLUDES . '/pekon.php', $old, 'includes/pekon.php - Identitas & informasi umum Pekon Gunung Megang');
+            $new = $old['kepala_pekon'];
+            break;
+
         case 'demografi':
             $new = norm_demografi($data);
             json_api_write_php($INCLUDES . '/demografi.php', $new, 'includes/demografi.php - Data kependudukan, wilayah, dan batas pekon');
@@ -358,9 +493,14 @@ function api_save_module($module, $data) {
             json_api_write_php($INCLUDES . '/potensi.php', $new, 'includes/potensi.php - Potensi ekonomi dan sumber daya alam pekon');
             break;
 
-        case 'apbpekon':
-            $new = norm_apbpekon($data);
-            json_api_write_php($INCLUDES . '/apbpekon.php', $new, 'includes/apbpekon.php - Anggaran Pendapatan dan Belanja Pekon (APBPekon)');
+        case 'apb_tahun':
+            $all = apb_read_all();
+            $tahun = json_api_int($data['tahun'] ?? 0);
+            if ($tahun < 2000 || $tahun > 2100) json_api_fail('Tahun anggaran tidak valid.', (string)$tahun);
+            if (isset($all[$tahun])) json_api_fail('Tahun anggaran sudah ada.', (string)$tahun);
+            $all[$tahun] = norm_apb_tahun([]);
+            apb_write_all($all);
+            $new = ['tahun' => $tahun];
             break;
 
         default:
@@ -379,15 +519,20 @@ function api_save_row($module, $data) {
         $rows = json_api_read_module('perangkat');
         $nama    = json_api_str($data['nama'] ?? '', 150);
         $jabatan = json_api_str($data['jabatan'] ?? '', 150);
+        $foto    = json_api_str($data['foto'] ?? '', 500);
         if ($nama === '' || $jabatan === '') json_api_fail('Nama dan jabatan wajib diisi.');
+        if ($foto !== '') {
+            if (strpos($foto, 'assets/uploads/') !== 0) json_api_fail('Foto harus file upload, bukan URL.', $foto);
+            if (!file_exists(dirname(__DIR__) . '/' . $foto)) json_api_fail('File foto tidak ditemukan di penyimpanan.', $foto);
+        }
         $idx = isset($data['index']) && $data['index'] !== '' ? (int)$data['index'] : null;
         if ($idx !== null && isset($rows[$idx])) {
-            $rows[$idx] = ['jabatan' => $jabatan, 'nama' => $nama];
+            $rows[$idx] = ['jabatan' => $jabatan, 'nama' => $nama, 'foto' => $foto];
         } else {
-            $rows[] = ['jabatan' => $jabatan, 'nama' => $nama];
+            $rows[] = ['jabatan' => $jabatan, 'nama' => $nama, 'foto' => $foto];
         }
         json_api_write_php($INCLUDES . '/perangkat.php', norm_perangkat($rows), 'includes/perangkat.php - Daftar perangkat pekon beserta jabatan');
-        json_api_ok(['module' => $module, 'saved' => ['jabatan' => $jabatan, 'nama' => $nama]]);
+        json_api_ok(['module' => $module, 'saved' => ['jabatan' => $jabatan, 'nama' => $nama, 'foto' => $foto]]);
     }
 
     if ($module === 'mata_pencaharian') {
@@ -410,54 +555,13 @@ function api_save_row($module, $data) {
         $key = $data['key'] ?? '';
         $labels = json_api_sublist($module);
         if (!isset($labels[$key])) json_api_fail('Pos tidak dikenal.', $key);
-        $dataMod = json_api_read_module('apbpekon');
-        $dataMod[$module][$key] = json_api_float($data['nominal'] ?? 0);
-        json_api_write_php($INCLUDES . '/apbpekon.php', norm_apbpekon($dataMod), 'includes/apbpekon.php - Anggaran Pendapatan dan Belanja Pekon (APBPekon)');
-        json_api_ok(['module' => $module, 'saved' => ['key' => $key, 'nominal' => $dataMod[$module][$key]]]);
-    }
-
-    if ($module === 'user') {
-        $users = db_read('user');
-        $id = isset($data['id_user']) && $data['id_user'] !== '' ? (int)$data['id_user'] : null;
-        $username = json_api_str($data['username'] ?? '', 100);
-        $nama     = json_api_str($data['nama_lengkap'] ?? '', 150);
-        $role     = json_api_str($data['role'] ?? '', 20);
-        if ($username === '' || $nama === '' || $role === '') json_api_fail('Username, nama, dan role wajib diisi.');
-
-        foreach ($users as $u) {
-            if (strtolower($u['username']) === strtolower($username) && (int)$u['id_user'] !== $id) {
-                json_api_fail('Username sudah digunakan.', $username);
-            }
-        }
-
-        $password = json_api_str($data['password'] ?? '', 255);
-
-        if ($id !== null) {
-            $found = false;
-            foreach ($users as $i => $u) {
-                if ((int)$u['id_user'] === $id) {
-                    $u['username']    = $username;
-                    $u['nama_lengkap'] = $nama;
-                    $u['role']        = $role;
-                    if ($password !== '') $u['password'] = password_hash($password, PASSWORD_DEFAULT);
-                    $users[$i] = $u;
-                    $found = true;
-                    break;
-                }
-            }
-            if (!$found) json_api_fail('User tidak ditemukan.');
-        } else {
-            if ($password === '') json_api_fail('Password wajib diisi untuk user baru.');
-            $users[] = [
-                'id_user'     => db_next_id('user', 'id_user'),
-                'username'    => $username,
-                'password'    => password_hash($password, PASSWORD_DEFAULT),
-                'role'        => $role,
-                'nama_lengkap'=> $nama,
-            ];
-        }
-        db_write('user', $users);
-        json_api_ok(['module' => $module]);
+        $all = apb_read_all();
+        $tahun = (int)($data['tahun'] ?? 0);
+        if (!isset($all[$tahun])) json_api_fail('Tahun anggaran tidak ditemukan.', (string)$tahun);
+        $all[$tahun][$module][$key] = json_api_float($data['nominal'] ?? 0);
+        $all[$tahun] = norm_apb_tahun($all[$tahun]);
+        apb_write_all($all);
+        json_api_ok(['module' => $module, 'saved' => ['key' => $key, 'nominal' => $all[$tahun][$module][$key]]]);
     }
 
     json_api_fail('Aksi tidak dikenal.', $module);
@@ -486,21 +590,13 @@ function api_delete($module, $data) {
         json_api_ok(['module' => $module]);
     }
 
-    if ($module === 'user') {
-        $id = (int)($data['id_user'] ?? 0);
-        $sesi_id = (int) ($_SESSION['sesi_id'] ?? 0);
-        if ($id === $sesi_id) json_api_fail('Tidak dapat menghapus akun sendiri.');
-        $users = db_read('user');
-        $found = false;
-        foreach ($users as $i => $u) {
-            if ((int)$u['id_user'] === $id) {
-                array_splice($users, $i, 1);
-                $found = true;
-                break;
-            }
-        }
-        if (!$found) json_api_fail('User tidak ditemukan.');
-        db_write('user', $users);
+    if ($module === 'apb_tahun') {
+        $all = apb_read_all();
+        $tahun = (int)($data['tahun'] ?? 0);
+        if (!isset($all[$tahun])) json_api_fail('Tahun anggaran tidak ditemukan.');
+        if (count($all) <= 1) json_api_fail('Tidak dapat menghapus tahun anggaran terakhir.');
+        unset($all[$tahun]);
+        apb_write_all($all);
         json_api_ok(['module' => $module]);
     }
 
@@ -535,6 +631,10 @@ function api_profile($data) {
     $pass = json_api_str($data['password'] ?? '', 255);
     $confirm = json_api_str($data['password_confirm'] ?? '', 255);
     if ($pass !== '') {
+        $passLama = json_api_str($data['password_lama'] ?? '', 255);
+        if ($passLama === '' || !password_check($passLama, $users[$idx]['password'] ?? '')) {
+            json_api_fail('Password lama salah.', 'Masukkan password lama yang benar.');
+        }
         if ($pass !== $confirm) json_api_fail('Konfirmasi password tidak cocok.');
         $users[$idx]['password'] = md5($pass);
     }
@@ -593,6 +693,9 @@ function api_run() {
                 break;
             case 'profile':
                 api_profile($data);
+                break;
+            case 'resolve_maps':
+                api_resolve_maps($body);
                 break;
             default:
                 json_api_fail('Aksi tidak dikenal.', $action);

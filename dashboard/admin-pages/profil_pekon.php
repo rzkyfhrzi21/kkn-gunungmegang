@@ -2,14 +2,11 @@
 if (!isset($_SESSION['sesi_role']) || $_SESSION['sesi_role'] !== 'admin') return;
 
 $pekonData = include dirname(__DIR__, 2) . '/includes/pekon.php';
-$kepala    = $pekonData['kepala_pekon'];
 $kontak    = $pekonData['kontak'];
-$foto      = $kepala['foto'] ?? '';
-$fotoExist = $foto !== '' && file_exists(dirname(__DIR__, 2) . '/' . $foto);
 ?>
 <div class="page-heading">
     <h3>Profil Pekon</h3>
-    <p class="text-subtitle text-muted">Identitas umum, kepala pekon, dan kontak — disimpan ke <code>includes/pekon.php</code></p>
+    <p class="text-subtitle text-muted">Identitas umum, kontak, dan peta lokasi pekon</p>
 </div>
 
 <section class="section">
@@ -42,36 +39,6 @@ $fotoExist = $foto !== '' && file_exists(dirname(__DIR__, 2) . '/' . $foto);
                 </div>
 
                 <div class="col-12 border-top pt-3">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-person-badge me-1"></i>Kepala Pekon</h6>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Nama Kepala Pekon</label>
-                    <input type="text" class="form-control" name="kp_nama" value="<?= htmlspecialchars($kepala['nama']) ?>" required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Jabatan</label>
-                    <input type="text" class="form-control" name="kp_jabatan" value="<?= htmlspecialchars($kepala['jabatan']) ?>" required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Foto Kepala Pekon</label>
-                    <input type="file" id="foto-kepala" class="form-control"
-                        accept=".png,.jpg,.jpeg,.gif,.webp,.bmp,.ico,.heic,.heif,.jfif,image/*">
-                    <div class="app-upload-hint">Maksimal 2 MB (PNG, JPG, GIF, WEBP, ICO, HEIC/HEIF, dll).</div>
-                    <input type="hidden" name="kp_foto" value="<?= htmlspecialchars($foto) ?>">
-                </div>
-                <div class="col-md-6 d-flex align-items-center">
-                    <?php if ($fotoExist): ?>
-                    <img src="<?= htmlspecialchars($foto) ?>" alt="Foto Kepala Pekon" class="app-foto-preview"
-                        data-preview="<?= htmlspecialchars($foto) ?>" id="foto-preview">
-                    <?php else: ?>
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-muted app-foto-preview" id="foto-preview">
-                        <i class="bi bi-person fs-3"></i>
-                    </div>
-                    <?php endif; ?>
-                    <span class="ms-2 text-muted small">Klik foto untuk preview</span>
-                </div>
-
-                <div class="col-12 border-top pt-3">
                     <h6 class="fw-bold mb-3"><i class="bi bi-telephone me-1"></i>Kontak &amp; Lokasi</h6>
                 </div>
                 <div class="col-md-4">
@@ -79,18 +46,21 @@ $fotoExist = $foto !== '' && file_exists(dirname(__DIR__, 2) . '/' . $foto);
                     <input type="text" class="form-control" name="kontak_telepon" value="<?= htmlspecialchars($kontak['telepon']) ?>" required>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Kode Lokasi (Plus Code / Alamat)</label>
-                    <input type="text" class="form-control" name="kontak_maps_code" value="<?= htmlspecialchars($kontak['maps_code']) ?>" required>
+                    <label class="form-label">Alamat</label>
+                    <input type="text" class="form-control" name="kontak_maps_code" value="<?= htmlspecialchars($kontak['maps_code']) ?>" readonly required>
+                    <div class="app-upload-hint">Terisi otomatis dari link Google Maps.</div>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Link Google Maps</label>
-                    <input type="url" class="form-control" name="kontak_maps_link" value="<?= htmlspecialchars($kontak['maps_link']) ?>">
+                    <div class="input-group">
+                        <input type="url" class="form-control" name="kontak_maps_link" id="kontak_maps_link" value="<?= htmlspecialchars($kontak['maps_link']) ?>">
+                        <button type="button" class="btn btn-outline-primary" id="btn-resolve-maps" title="Isi alamat & peta otomatis dari link">
+                            <i class="bi bi-magic"></i> Isi Otomatis
+                        </button>
+                    </div>
+                    <div class="app-upload-hint">Tempel link dari menu "Bagikan" Google Maps (mis. <code>https://maps.app.goo.gl/...</code>), lalu klik <b>Isi Otomatis</b> — alamat &amp; peta terisi sendiri.</div>
                 </div>
-                <div class="col-12">
-                    <label class="form-label">Embed Peta (Kode iframe Google Maps)</label>
-                    <textarea class="form-control" name="kontak_maps_embed" id="kontak_maps_embed" rows="2" placeholder="Tempel kode iframe (mis. &lt;iframe src=&quot;https://www.google.com/maps/embed?...&quot;...) atau langsung URL embednya"><?= htmlspecialchars($kontak['maps_embed'] ?? '') ?></textarea>
-                    <div class="app-upload-hint">Buka Google Maps &rarr; Bagikan &rarr; Sematkan peta &rarr; salin kode iframe, lalu tempel di sini. Format URL atau kode iframe keduanya diterima.</div>
-                </div>
+                <input type="hidden" name="kontak_maps_embed" id="kontak_maps_embed" value="<?= htmlspecialchars($kontak['maps_embed'] ?? '') ?>">
                 <div class="col-12" id="maps-preview-wrap" style="display:none;">
                     <label class="form-label">Pratinjau Peta</label>
                     <div class="border rounded overflow-hidden">
@@ -112,19 +82,15 @@ $fotoExist = $foto !== '' && file_exists(dirname(__DIR__, 2) . '/' . $foto);
 document.addEventListener('DOMContentLoaded', function () {
     var form = document.getElementById('form-pekon');
     var btn = document.getElementById('btn-save-pekon');
-    var hFoto = form.querySelector('[name="kp_foto"]');
-    var imgPrev = document.getElementById('foto-preview');
-    var inputFoto = document.getElementById('foto-kepala');
+    var mapsLink = document.getElementById('kontak_maps_link');
     var mapsEmbed = document.getElementById('kontak_maps_embed');
+    var mapsCode = form.querySelector('[name="kontak_maps_code"]');
     var mapsPreviewWrap = document.getElementById('maps-preview-wrap');
     var mapsPreview = document.getElementById('maps-preview');
+    var btnResolve = document.getElementById('btn-resolve-maps');
 
-    function getEmbedUrl(val) {
-        var m = /src\s*=\s*["']([^"']+)["']/i.exec(val || '');
-        return m ? m[1] : (val || '').trim();
-    }
     function updateMapPreview() {
-        var url = getEmbedUrl(mapsEmbed.value);
+        var url = mapsEmbed.value.trim();
         if (/^https?:\/\//i.test(url)) {
             mapsPreview.src = url;
             mapsPreviewWrap.style.display = '';
@@ -136,28 +102,37 @@ document.addEventListener('DOMContentLoaded', function () {
     mapsEmbed.addEventListener('input', updateMapPreview);
     updateMapPreview();
 
-    inputFoto.addEventListener('change', function () {
-        App.uploadFile(this, function (res) {
-            if (res) {
-                hFoto.value = res.path;
-                if (imgPrev) {
-                    if (imgPrev.tagName === 'DIV') {
-                        var img = document.createElement('img');
-                        img.className = 'app-foto-preview';
-                        img.id = 'foto-preview';
-                        img.setAttribute('data-preview', res.path);
-                        img.src = res.path;
-                        imgPrev.replaceWith(img);
-                        imgPrev = img;
-                    } else {
-                        imgPrev.src = res.path;
-                        imgPrev.setAttribute('data-preview', res.path);
-                    }
+    function doResolve() {
+        var link = mapsLink.value.trim();
+        if (!/^https?:\/\//i.test(link)) {
+            App.toast('Tempel link Google Maps dulu (menu Bagikan).', 'error', 'Gagal');
+            return;
+        }
+        btnResolve.disabled = true;
+        var ic = btnResolve.querySelector('i');
+        if (ic) ic.className = 'bi bi-arrow-repeat';
+        App.postJSON('../admin/api.php', { action: 'resolve_maps', link: link })
+            .then(function (res) {
+                if (res.ok) {
+                    if (res.address) mapsCode.value = res.address;
+                    mapsEmbed.value = res.embed;
+                    updateMapPreview();
+                    App.toast('Peta & alamat terisi otomatis dari link.', 'success', 'Berhasil');
+                } else {
+                    App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal memproses link.', 'error', 'Gagal');
                 }
-            } else {
-                inputFoto.value = '';
-            }
-        });
+            })
+            .catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); })
+            .then(function () {
+                btnResolve.disabled = false;
+                if (ic) ic.className = 'bi bi-magic';
+            });
+    }
+    btnResolve.addEventListener('click', doResolve);
+    var mapsTimer = null;
+    mapsLink.addEventListener('input', function () {
+        clearTimeout(mapsTimer);
+        mapsTimer = setTimeout(doResolve, 900);
     });
 
     form.addEventListener('submit', function (e) {
@@ -168,8 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
             nama: form.nama.value, kecamatan: form.kecamatan.value,
             kabupaten: form.kabupaten.value, provinsi: form.provinsi.value,
             tahun: form.tahun.value,
-            kepala_pekon: { nama: form.kp_nama.value, foto: hFoto.value, jabatan: form.kp_jabatan.value },
-            kontak: { telepon: form.kontak_telepon.value, maps_code: form.kontak_maps_code.value, maps_link: form.kontak_maps_link.value, maps_embed: getEmbedUrl(mapsEmbed.value) }
+            kontak: { telepon: form.kontak_telepon.value, maps_code: mapsCode.value, maps_link: mapsLink.value, maps_embed: mapsEmbed.value.trim() }
         };
         App.postJSON('../admin/api.php', { action: 'save', module: 'pekon', data: payload })
             .then(function (res) {

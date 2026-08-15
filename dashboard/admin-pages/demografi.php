@@ -6,7 +6,7 @@ $batas    = $demoData['batas_wilayah'];
 ?>
 <div class="page-heading">
     <h3>Demografi &amp; Wilayah</h3>
-    <p class="text-subtitle text-muted">Kependudukan, luas wilayah, dan batas pekon — disimpan ke <code>includes/demografi.php</code></p>
+    <p class="text-subtitle text-muted">Kependudukan, luas wilayah, dan batas pekon</p>
 </div>
 
 <section class="section">

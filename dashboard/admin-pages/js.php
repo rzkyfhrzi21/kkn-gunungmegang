@@ -5,4 +5,4 @@
 <script src="assets/compiled/js/app.js"></script>
 
 <!-- Admin UI Kit: toast, preview, JsonTable, upload, hamburger -->
-<script src="assets/static/js/admin-app.js"></script>
+<script src="assets/static/js/admin-app.js?v=20260815f"></script>

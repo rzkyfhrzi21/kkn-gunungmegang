@@ -121,3 +121,19 @@ Jika AI mendeteksi bahwa ini adalah proyek atau *workspace* baru, AI **wajib** s
 - Standar di atas **bukan** undangan untuk rename/refactor file yang sudah ada.
 - Kalau file lama belum ikut standar (nama beda, logic di page, modal legacy, dll.) — **biarkan**. Hanya file/fitur **baru** yang wajib ikut.
 - Jangan sentuh kode existing kecuali user **minta eksplisit**.
+
+---
+
+# FUNDAMENTAL PROYEK (WAJIB DIPATUHI)
+
+Ringkasan cepat - detail lengkap di `docs/catatan-fundamental.md`:
+
+- **Upload gambar**: otomatis dikompres WebP (kualitas 80) oleh `admin/upload.php`; gunakan `App.uploadFile(input, cb)` + input hidden + preview.
+- **Cache-buster**: setiap ubah `admin-app.js`/`admin-app.css` WAJIB bump `?v=YYYYMMDDx` di `dashboard/admin-pages/js.php` DAN `css.php`.
+- **Toast**: `App.toast(msg, type, title)` - `success`/`warning` auto-hide 4 dtk, `error` manual close. Setiap `App.postJSON` wajib 3 cabang (ok / else error `(res.detail ? res.error+": "+res.detail : res.error) || 'Gagal ...'` / catch jaringan).
+- **JsonTable**: state `{page, search, filters}`; `filters: [{key:'tahun', fixed: TAHUN}]` untuk filter tetap (wajib `unset($filters[$key])` di `api_list` agar tidak kena generic row-filter); `this.total` tersimpan untuk guard logika; footer `Hal X dari Y — N data`.
+- **APB Pekon multi-tahun**: `includes/apbpekon.php` = `[tahun => [pendapatan, belanja, pembiayaan]]`; wajib minimal 1 tahun (API + UI guard); dashboard & front pakai tahun terbaru.
+- **Preview modal**: dialog `max-width: min(96vw,1200px)` WAJIB `!important` (template Bootstrap menimpanya); thumb foto pakai `data-preview`, avatar jangan.
+- **Maps**: tempel link Google Maps -> resolve ke `?q=LAT,LNG&z=16&output=embed` + alamat.
+- **Data**: `db_read`/`db_write` di `includes/data.php` -> `db/json/*.json`; password user = md5.
+- **Tes**: `php -l` wajib; pola `Zzz/test_apb_api.php` (ADMIN_API_TEST); puppeteer-core di `Temp\opencode\apextest`.

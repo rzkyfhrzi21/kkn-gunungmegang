@@ -3,6 +3,7 @@
  * admin/upload.php
  * Endpoint AJAX (POST multipart) upload foto/video.
  * Foto maksimal 2 MB, video maksimal 15 MB.
+ * Foto otomatis dikompres menjadi WebP (kualitas 80) jika memungkinkan.
  * Hasil: JSON {ok, path, type}
  */
 require_once __DIR__ . '/../functions/config.php';
@@ -91,10 +92,27 @@ if (!move_uploaded_file($file['tmp_name'], $dest)) {
     exit;
 }
 
+/* Kompres foto menjadi WebP (kualitas 80). Jika GD tidak bisa membaca format
+   (mis. HEIC/HEIF/ICO) atau gagal, file asli tetap disimpan. */
+$finalName = $name;
+if ($type === 'image' && function_exists('imagewebp') && function_exists('imagecreatefromstring')) {
+    $src = @imagecreatefromstring((string)file_get_contents($dest));
+    if ($src !== false) {
+        imagealphablending($src, true);
+        imagesavealpha($src, true);
+        $webpName = pathinfo($name, PATHINFO_FILENAME) . '.webp';
+        if (imagewebp($src, $uploadDir . '/' . $webpName, 80)) {
+            @unlink($dest);
+            $finalName = $webpName;
+        }
+        imagedestroy($src);
+    }
+}
+
 echo json_encode([
     'ok' => true,
-    'path' => 'assets/uploads/' . $name,
+    'path' => 'assets/uploads/' . $finalName,
     'type' => $type,
-    'size' => $file['size'],
+    'size' => filesize($uploadDir . '/' . $finalName),
     'name' => $file['name'],
 ]);

@@ -79,7 +79,7 @@
 
     /**
      * App.toast(msg, type, title)
-     * type: 'success' (auto-hide + slider) | 'error' (manual close, no auto-hide)
+     * type: 'success' (auto-hide + slider) | 'warning' | 'error' (manual close, tidak auto-hide)
      * Bisa menumpuk (stackable).
      */
     function toast(msg, type, title) {
@@ -87,11 +87,11 @@
         var container = ensureToastContainer();
         var el = document.createElement('div');
         el.className = 'app-toast ' + type;
-        var icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+        var icon = type === 'success' ? 'bi-check-circle-fill' : type === 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-x-circle-fill';
         el.innerHTML =
             '<div class="app-toast-icon"><i class="bi ' + icon + '"></i></div>' +
             '<div class="app-toast-body">' +
-            '  <div class="app-toast-title">' + esc(title || (type === 'success' ? 'Berhasil' : 'Gagal')) + '</div>' +
+            '  <div class="app-toast-title">' + esc(title || (type === 'success' ? 'Berhasil' : type === 'warning' ? 'Perhatian' : 'Gagal')) + '</div>' +
             '  <div class="app-toast-msg">' + esc(msg) + '</div>' +
             '</div>' +
             '<button type="button" class="app-toast-close" aria-label="Tutup"><i class="bi bi-x-lg"></i></button>' +
@@ -123,15 +123,10 @@
             m.innerHTML =
                 '<div class="modal-dialog modal-dialog-centered app-preview-dialog">' +
                 '<div class="modal-content app-preview-content">' +
-                '<div class="modal-header app-preview-header">' +
-                '<h5 class="modal-title">Preview</h5>' +
-                '<button type="button" class="btn-close" data-app-close aria-label="Tutup"></button>' +
-                '</div>' +
-                '<div class="modal-body app-preview-body text-center p-2"><div class="app-preview-loading">' +
+                '<div class="modal-body app-preview-body"><div class="app-preview-loading">' +
                 '<div class="spinner-border text-primary"></div></div></div>' +
                 '</div></div>';
             document.body.appendChild(m);
-            $('[data-app-close]', m).addEventListener('click', function () { hideModal(m); });
             m.addEventListener('click', function (e) { if (e.target === m) hideModal(m); });
         }
         return m;
@@ -252,6 +247,10 @@
     function JsonTable(opts) {
         this.opts = opts;
         this.state = { page: 1, search: '', filters: {} };
+        var self = this;
+        (opts.filters || []).forEach(function (f) {
+            if (f.fixed !== undefined && f.fixed !== null) self.state.filters[f.key] = f.fixed;
+        });
         this.table = $(opts.selector);
         if (!this.table) return;
         this.wrap = this.table.closest('.app-table-wrap');
@@ -358,6 +357,7 @@
         var o = this.opts;
         var tbody = $('tbody', this.table);
         if (!tbody) return;
+        this.total = res.total || 0;
 
         /* filter options */
         (o.filters || []).forEach(function (f) {
@@ -412,9 +412,19 @@
         /* bind actions */
         $$('tbody tr', this.table).forEach(function (tr, i) {
             var row = res.rows[i];
-            $('[data-act="detail"]', tr).addEventListener('click', function (e) { e.preventDefault(); if (o.onDetail) o.onDetail(serializeRow(row), this); });
-            $('[data-act="edit"]', tr).addEventListener('click', function (e) { e.preventDefault(); if (o.onEdit) o.onEdit(serializeRow(row), this); });
-            $('[data-act="delete"]', tr).addEventListener('click', function (e) { e.preventDefault(); if (o.onDelete) o.onDelete(serializeRow(row), this); });
+            if (o.rowClick && o.onDetail) {
+                tr.style.cursor = 'pointer';
+                tr.addEventListener('click', function (e) {
+                    if (e.target.closest('[data-act]') || e.target.closest('[data-preview]')) return;
+                    o.onDetail(serializeRow(row), this);
+                });
+            }
+            var bD = $('[data-act="detail"]', tr);
+            if (bD) bD.addEventListener('click', function (e) { e.preventDefault(); if (o.onDetail) o.onDetail(serializeRow(row), this); });
+            var bE = $('[data-act="edit"]', tr);
+            if (bE) bE.addEventListener('click', function (e) { e.preventDefault(); if (o.onEdit) o.onEdit(serializeRow(row), this); });
+            var bX = $('[data-act="delete"]', tr);
+            if (bX) bX.addEventListener('click', function (e) { e.preventDefault(); if (o.onDelete) o.onDelete(serializeRow(row), this); });
         });
     };
 

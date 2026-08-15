@@ -27,6 +27,11 @@ $me = db_find_one('user', 'id_user', (string)($_SESSION['sesi_id'] ?? 0));
                         value="<?= htmlspecialchars($me['username'] ?? '') ?>" required>
                 </div>
                 <div class="col-md-6">
+                    <label class="form-label">Password Lama</label>
+                    <input type="password" class="form-control" name="password_lama" autocomplete="current-password">
+                    <div class="app-upload-hint">Wajib diisi jika ingin mengganti password.</div>
+                </div>
+                <div class="col-md-6">
                     <label class="form-label">Password Baru</label>
                     <input type="password" class="form-control" name="password" autocomplete="new-password">
                     <div class="app-upload-hint">Kosongkan jika tidak ingin mengganti password.</div>
@@ -57,6 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (!form.checkValidity()) { form.reportValidity(); return; }
+        if (form.password.value && !form.password_lama.value) {
+            App.toast('Password lama wajib diisi untuk mengganti password.', 'error', 'Gagal');
+            return;
+        }
         if (form.password.value !== form.password_confirm.value) {
             App.toast('Konfirmasi password tidak cocok.', 'error', 'Gagal');
             return;
@@ -67,12 +76,14 @@ document.addEventListener('DOMContentLoaded', function () {
             data: {
                 nama_lengkap: form.nama_lengkap.value,
                 username: form.username.value,
+                password_lama: form.password_lama.value,
                 password: form.password.value,
                 password_confirm: form.password_confirm.value
             }
         }).then(function (res) {
             btn.disabled = false;
             if (res.ok) {
+                form.password_lama.value = '';
                 form.password.value = '';
                 form.password_confirm.value = '';
                 App.toast('Profil berhasil disimpan.', 'success', 'Berhasil');

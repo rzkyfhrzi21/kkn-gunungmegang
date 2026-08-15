@@ -16,7 +16,7 @@
       <a href="profil-desa">Profil Desa</a>
       <a href="pemerintahan">Pemerintahan</a>
       <a href="potensi-ekonomi">Potensi &amp; Ekonomi</a>
-      <a href="apbpekon-2026">Transparansi APB Pekon</a>
+      <a href="apbpekon">Transparansi APB Pekon</a>
     </div>
     <div class="footer-col">
       <h4>Hubungi Kami</h4>

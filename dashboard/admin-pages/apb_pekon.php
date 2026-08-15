@@ -1,29 +1,223 @@
 <?php
 if (!isset($_SESSION['sesi_role']) || $_SESSION['sesi_role'] !== 'admin') return;
 
-$apbData = include dirname(__DIR__, 2) . '/includes/apbpekon.php';
+$allApb = include dirname(__DIR__, 2) . '/includes/apbpekon.php';
+$tahun  = (int)($_GET['tahun'] ?? 0);
+$isDetail = isset($allApb[$tahun]);
+
+$jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+if ($isDetail):
+    $apbData = $allApb[$tahun];
+    $pendapatanKeys = ['alokasi_dana_pekon', 'dana_desa', 'bagi_hasil_pajak', 'bantuan_provinsi', 'pendapatan_lain'];
+    $belanjaKeys    = ['penyelenggaraan_pemerintahan', 'pembangunan_pekon', 'pembinaan_kemasyarakatan', 'pemberdayaan_masyarakat', 'penanggulangan_bencana'];
+    $apbLabels      = [
+        'pendapatan' => ['Alokasi Dana Pekon', 'Dana Desa', 'Bagi Hasil Pajak', 'Bantuan Provinsi', 'Pendapatan Lain'],
+        'belanja'    => ['Penyelenggaraan Pem.', 'Pembangunan Pekon', 'Pembinaan Masyarakat', 'Pemberdayaan Masyarakat', 'Penanggulangan Bencana'],
+    ];
+    $apbPendapatan = $apbData['pendapatan'] ?? [];
+    $apbBelanja    = $apbData['belanja'] ?? [];
+    $belanjaLabels = [];
+    $belanjaValues = [];
+    foreach ($belanjaKeys as $i => $k) {
+        $belanjaLabels[] = $apbLabels['belanja'][$i];
+        $belanjaValues[] = round((float)($apbBelanja[$k] ?? 0));
+    }
+    $penerimaanSeries = [];
+    $belanjaSeries    = [];
+    foreach ($pendapatanKeys as $i => $k) {
+        $penerimaanSeries[] = round((float)($apbPendapatan[$k] ?? 0));
+        $belanjaSeries[]    = round((float)($apbBelanja[$belanjaKeys[$i]] ?? 0));
+    }
+    $chartApb = [
+        'labels'        => $apbLabels['pendapatan'],
+        'penerimaan'    => $penerimaanSeries,
+        'belanja'       => $belanjaSeries,
+        'belanjaLabels' => $belanjaLabels,
+        'belanjaValues' => $belanjaValues,
+    ];
+endif;
 ?>
 <div class="page-heading">
-    <h3>APB Pekon</h3>
-    <p class="text-subtitle text-muted">Anggaran Pendapatan dan Belanja Pekon — disimpan ke <code>includes/apbpekon.php</code></p>
+    <h3>APB Pekon<?= $isDetail ? ' Tahun ' . $tahun : '' ?></h3>
+    <p class="text-subtitle text-muted"><?= $isDetail ? 'Rincian pendapatan, belanja, dan pembiayaan tahun anggaran ' . $tahun : 'Kelola anggaran pendapatan dan belanja pekon per tahun anggaran' ?></p>
 </div>
 
+<?php if (!$isDetail): ?>
 <section class="section">
     <div class="card">
-        <div class="card-header d-flex align-items-center gap-2">
-            <i class="bi bi-wallet2 text-success"></i>
-            <h6 class="mb-0">Tahun Anggaran</h6>
+        <div class="card-header d-flex align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-wallet2 text-success"></i>
+                <h6 class="mb-0">Daftar Tahun Anggaran</h6>
+            </div>
+            <button type="button" class="btn btn-sm btn-primary" id="btn-add-tahun"><i class="bi bi-plus-lg"></i> Tambah Tahun</button>
         </div>
         <div class="card-body">
-            <form id="form-apb-tahun" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label">Tahun Anggaran</label>
-                    <input type="number" min="2000" max="2100" class="form-control" name="tahun" value="<?= (int)$apbData['tahun'] ?>" required>
+            <div class="app-table-wrap">
+                <table class="table table-hover" id="tbl-tahun">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width:60px">No</th>
+                            <th>Tahun Anggaran</th>
+                            <th class="text-right">Pendapatan</th>
+                            <th class="text-right">Belanja</th>
+                            <th class="text-right">Pembiayaan</th>
+                            <th class="text-end" style="width:120px">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="app-pagination">
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-prev" disabled>
+                            <i class="bi bi-chevron-left"></i> Prev
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-next">
+                            Next <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="app-pagination-info"></div>
                 </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Simpan Tahun</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal tambah tahun anggaran -->
+<div class="modal fade" id="modal-tahun" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="form-tahun">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Tahun Anggaran</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Tahun Anggaran</label>
+                    <input type="number" min="2000" max="2100" class="form-control" name="tahun" required>
+                    <div class="app-upload-hint">Tahun anggaran baru dibuat dengan nominal kosong, lalu isi rinciannya pada halaman detail.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal konfirmasi hapus tahun -->
+<div class="modal fade" id="modal-delete-tahun" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Hapus</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modal-delete-tahun-text">Apakah Anda yakin ingin menghapus tahun anggaran ini?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" id="btn-confirm-delete-tahun">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var modalTahun = document.getElementById('modal-tahun');
+    var formTahun = document.getElementById('form-tahun');
+    var modalDelete = document.getElementById('modal-delete-tahun');
+    var pendingDelete = null;
+
+    document.getElementById('btn-add-tahun').addEventListener('click', function () {
+        formTahun.reset();
+        App.showModal(modalTahun);
+    });
+
+    formTahun.addEventListener('submit', function (e) {
+        e.preventDefault();
+        App.postJSON('../admin/api.php', {
+            action: 'save', module: 'apb_tahun', data: { tahun: formTahun.tahun.value }
+        }).then(function (res) {
+            if (res.ok) {
+                App.hideModal(modalTahun);
+                App.toast('Tahun anggaran ' + formTahun.tahun.value + ' berhasil dibuat.', 'success', 'Berhasil');
+                window.location.href = '?page=APB Pekon&tahun=' + res.saved.tahun;
+            } else {
+                App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+            }
+        }).catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
+    });
+
+    var tableTahun = new App.JsonTable({
+        selector: '#tbl-tahun',
+        module: 'apb_tahun',
+        perPage: 10,
+        columns: [
+            { key: 'no', label: 'No', align: 'text-center' },
+            { key: 'tahun', label: 'Tahun Anggaran' },
+            { key: 'pendapatan', label: 'Pendapatan', type: 'currency', align: 'text-right' },
+            { key: 'belanja', label: 'Belanja', type: 'currency', align: 'text-right' },
+            { key: 'pembiayaan', label: 'Pembiayaan', type: 'currency', align: 'text-right' }
+        ],
+        actions: ['edit', 'delete'],
+        onEdit: function (row) {
+            window.location.href = '?page=APB Pekon&tahun=' + row.tahun;
+        },
+        onDelete: function (row) {
+            if (tableTahun.total <= 1) {
+                App.toast('Minimal harus ada 1 tahun anggaran karena wajib ditampilkan di website.', 'warning', 'Tidak Dapat Dihapus');
+                return;
+            }
+            pendingDelete = row.tahun;
+            document.getElementById('modal-delete-tahun-text').textContent =
+                'Apakah Anda yakin ingin menghapus tahun anggaran ' + row.tahun + ' beserta seluruh rinciannya?';
+            App.showModal(modalDelete);
+        }
+    });
+
+    document.getElementById('btn-confirm-delete-tahun').addEventListener('click', function () {
+        if (pendingDelete === null) return;
+        var tahun = pendingDelete;
+        App.postJSON('../admin/api.php', {
+            action: 'delete', module: 'apb_tahun', data: { tahun: tahun }
+        }).then(function (res) {
+            if (res.ok) {
+                App.hideModal(modalDelete);
+                App.toast('Tahun anggaran ' + tahun + ' berhasil dihapus.', 'success', 'Berhasil');
+                tableTahun.reload();
+            } else {
+                App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menghapus.', 'error', 'Gagal');
+            }
+        }).catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
+    });
+});
+</script>
+
+<?php else: ?>
+
+<section class="section">
+    <a href="?page=APB Pekon" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-arrow-left"></i> Kembali ke Daftar Tahun</a>
+
+    <div class="row gy-3">
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i class="bi bi-pie-chart text-primary"></i>
+                    <h6 class="mb-0">Komposisi Belanja APB <?= $tahun ?></h6>
+                </div>
+                <div class="card-body"><div id="apb-chart-belanja" style="height:320px"></div></div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card h-100">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i class="bi bi-bar-chart text-success"></i>
+                    <h6 class="mb-0">Pendapatan vs Belanja per Pos — APB <?= $tahun ?></h6>
+                </div>
+                <div class="card-body"><div id="apb-chart-apb" style="height:320px"></div></div>
+            </div>
         </div>
     </div>
 
@@ -38,7 +232,7 @@ $apbData = include dirname(__DIR__, 2) . '/includes/apbpekon.php';
     <div class="card">
         <div class="card-header d-flex align-items-center gap-2">
             <i class="bi <?= $t['ikon'] ?>"></i>
-            <h6 class="mb-0"><?= $t['judul'] ?></h6>
+            <h6 class="mb-0"><?= $t['judul'] ?> — <?= $tahun ?></h6>
         </div>
         <div class="card-body">
             <div class="app-table-wrap">
@@ -94,18 +288,76 @@ $apbData = include dirname(__DIR__, 2) . '/includes/apbpekon.php';
     </div>
 </div>
 
+<script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var formTahun = document.getElementById('form-apb-tahun');
-    formTahun.addEventListener('submit', function (e) {
-        e.preventDefault();
-        App.postJSON('../admin/api.php', {
-            action: 'save', module: 'apbpekon', data: { tahun: formTahun.tahun.value }
-        }).then(function (res) {
-            if (res.ok) App.toast('Tahun anggaran berhasil disimpan.', 'success', 'Berhasil');
-            else App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
-        }).catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
-    });
+    var TAHUN = <?= (int)$tahun ?>;
+
+    if (window.ApexCharts) {
+        var PALETTE = ['#0ea5a4', '#3b82f6', '#f59e0b', '#ef4444', '#10b981'];
+        function rp(v) { return 'Rp ' + Math.round(v).toLocaleString('id-ID'); }
+        function rpCompact(v) {
+            v = Number(v) || 0;
+            if (v >= 1e9) return 'Rp ' + (v / 1e9).toFixed(1).replace('.', ',') + ' M';
+            if (v >= 1e6) return 'Rp ' + (v / 1e6).toFixed(1).replace('.', ',') + ' jt';
+            if (v >= 1e3) return 'Rp ' + (v / 1e3).toFixed(0) + ' rb';
+            return 'Rp ' + Math.round(v);
+        }
+        function noData(el) {
+            el.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i>Belum ada data</div>';
+        }
+
+        var chartApb = <?= json_encode($chartApb, $jsonFlags) ?>;
+
+        var elBelanja = document.getElementById('apb-chart-belanja');
+        var hasBelanja = (chartApb.belanjaValues || []).some(function (v) { return v > 0; });
+        if (elBelanja && !hasBelanja) { noData(elBelanja); }
+        else if (elBelanja) {
+            new ApexCharts(elBelanja, {
+                chart: { type: 'donut' },
+                series: chartApb.belanjaValues,
+                labels: chartApb.belanjaLabels,
+                colors: PALETTE,
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'Total Belanja',
+                                    formatter: function (w) {
+                                        return rpCompact(w.globals.seriesTotals.reduce(function (a, b) { return a + b; }, 0));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                dataLabels: { formatter: function (v) { return Number(v).toFixed(1) + '%'; } },
+                legend: { position: 'bottom' },
+                tooltip: { y: { formatter: function (v) { return rp(v); } } }
+            }).render();
+        }
+
+        var elApb = document.getElementById('apb-chart-apb');
+        if (elApb) {
+            new ApexCharts(elApb, {
+                chart: { type: 'bar', toolbar: { show: false } },
+                series: [
+                    { name: 'Pendapatan', data: chartApb.penerimaan },
+                    { name: 'Belanja', data: chartApb.belanja }
+                ],
+                colors: ['#10b981', '#ef4444'],
+                plotOptions: { bar: { columnWidth: '55%', borderRadius: 3 } },
+                xaxis: { categories: chartApb.labels },
+                legend: { position: 'top' },
+                dataLabels: { enabled: false },
+                yaxis: { labels: { formatter: function (v) { return rpCompact(v); } } },
+                tooltip: { y: { formatter: function (v) { return rp(v); } } }
+            }).render();
+        }
+    }
 
     var modalApb = document.getElementById('modal-apb');
     var formApb = document.getElementById('form-apb');
@@ -116,6 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selector: '#tbl-' + mod,
             module: mod,
             perPage: 10,
+            filters: [{ key: 'tahun', fixed: TAHUN }],
             columns: [
                 { key: 'label', label: 'Pos' },
                 { key: 'nominal', label: 'Nominal', type: 'currency', align: 'text-right' }
@@ -135,12 +388,13 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         App.postJSON('../admin/api.php', {
             action: 'save_row', module: formApb.module.value,
-            data: { key: formApb.key.value, nominal: formApb.nominal.value }
+            data: { key: formApb.key.value, nominal: formApb.nominal.value, tahun: TAHUN }
         }).then(function (res) {
             if (res.ok) {
                 App.hideModal(modalApb);
                 App.toast('Nominal berhasil disimpan.', 'success', 'Berhasil');
                 apbTables.forEach(function (t) { t.reload(); });
+                window.location.reload();
             } else {
                 App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
             }
@@ -148,3 +402,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+<?php endif; ?>

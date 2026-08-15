@@ -13,7 +13,7 @@
 <span>Eksplor Profil Pekon</span>
 <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
 </a>
-<a class="px-8 py-4 bg-surface text-on-surface font-label-sm text-label-sm uppercase tracking-wide rounded-full hover:bg-surface-variant transition-colors shadow-md border border-outline-variant flex items-center gap-2" href="apbpekon-2026">
+<a class="px-8 py-4 bg-surface text-on-surface font-label-sm text-label-sm uppercase tracking-wide rounded-full hover:bg-surface-variant transition-colors shadow-md border border-outline-variant flex items-center gap-2" href="apbpekon">
 <span class="material-symbols-outlined text-[20px]">account_balance</span>
 <span>Transparansi APB Pekon</span>
 </a>
@@ -53,7 +53,7 @@
 <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center mb-4 text-primary-container">
 <span class="material-symbols-outlined text-[24px]">verified</span>
 </div>
-<p class="text-label-sm text-slate-text-muted uppercase tracking-wider mb-2">Status IDM 2026</p>
+<p class="text-label-sm text-slate-text-muted uppercase tracking-wider mb-2">Status Indeks Desa Membangun (IDM) 2026</p>
 </div>
 <div class="bg-emerald-50 px-4 py-3 rounded-lg border border-primary-fixed-dim">
 <h3 class="font-headline-md text-headline-md text-primary-container text-center"><?= $pekon['potensi']['idm_status'] ?></h3>

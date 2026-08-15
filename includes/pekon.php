@@ -10,7 +10,7 @@ return     array (
       'kepala_pekon' => 
       array (
         'nama' => 'HARSON, BBA',
-        'foto' => 'assets/images/harson-kepala-pekon.png',
+        'foto' => 'assets/uploads/kepala-pekon.jpg',
         'jabatan' => 'Kepala Pekon Gunung Megang',
       ),
       'kontak' => 

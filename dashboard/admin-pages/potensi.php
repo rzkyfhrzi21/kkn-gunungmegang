@@ -6,7 +6,7 @@ $idmOptions = ['Sangat Tertinggal', 'Tertinggal', 'Berkembang', 'Maju', 'Mandiri
 ?>
 <div class="page-heading">
     <h3>Potensi &amp; IDM</h3>
-    <p class="text-subtitle text-muted">Potensi lahan, status IDM, dan mata pencaharian — disimpan ke <code>includes/potensi.php</code></p>
+    <p class="text-subtitle text-muted">Potensi lahan, status IDM, dan mata pencaharian</p>
 </div>
 
 <section class="section">

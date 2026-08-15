@@ -81,7 +81,7 @@ Jelajahi Potensi
 </div>
 </div>
 </section>
-<!-- Mata Pencaharian & IDM -->
+<!-- Mata Pencaharian & Indeks Desa Membangun (IDM) -->
 <section class="w-full px-gutter py-section-padding bg-surface-container">
 <div class="max-w-container-max mx-auto">
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-card-gap">
