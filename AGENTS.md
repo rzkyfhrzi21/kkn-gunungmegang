@@ -135,5 +135,11 @@ Ringkasan cepat - detail lengkap di `docs/catatan-fundamental.md`:
 - **APB Pekon multi-tahun**: `includes/apbpekon.php` = `[tahun => [pendapatan, belanja, pembiayaan]]`; wajib minimal 1 tahun (API + UI guard); dashboard & front pakai tahun terbaru.
 - **Preview modal**: dialog `max-width: min(96vw,1200px)` WAJIB `!important` (template Bootstrap menimpanya); thumb foto pakai `data-preview`, avatar jangan.
 - **Maps**: tempel link Google Maps -> resolve ke `?q=LAT,LNG&z=16&output=embed` + alamat.
-- **Data**: `db_read`/`db_write` di `includes/data.php` -> `db/json/*.json`; password user = md5.
-- **Tes**: `php -l` wajib; pola `Zzz/test_apb_api.php` (ADMIN_API_TEST); puppeteer-core di `Temp\opencode\apextest`.
+- **Maps & CSP**: iframe Maps membutuhkan CSP `frame-src 'self' https://www.google.com` di `.htaccess`; field alamat admin berupa textarea 3 baris read-only.
+- **Data**: `db_read`/`db_write` di `includes/data.php` -> `db/json/*.json`; profil menyimpan password md5, lalu login sukses otomatis meng-upgrade hash lama ke `password_hash`.
+- **Endpoint publik**: `.htaccess` memblokir folder `functions/`, kecuali `functions/function_auth.php` dan `functions/function_aspirasi.php`; jangan membuka seluruh folder.
+- **Aspirasi**: logika reusable ada di `aspirasi_process()`; validasi + sanitasi + rate limit 5 laporan/jam/IP; HTTP wrapper hanya berjalan saat bukan CLI.
+- **Unit/API test**: semua tes permanen berada di `functions/tests/`, bukan `Zzz/`; jalankan per modul dengan `php functions/tests/test_<modul>.php` atau seluruhnya dengan `php functions/tests/run_all.php`.
+- **Keamanan data tes**: test yang menulis data WAJIB memakai `functions/tests/bootstrap.php` (snapshot + auto-restore); verifikasi `run_all.php` 2x berturut-turut dan pastikan data tidak berubah di `git status`.
+- **Verifikasi**: `php -l` wajib untuk setiap PHP yang diubah; perubahan UI/alur publik perlu dites di browser, termasuk produksi bila masalah hanya muncul karena `.htaccess`/CSP.
+- **Deploy**: `.github/workflows/deploy-ftp.yml` mengecualikan `**/*.json` dan `**/functions/tests/**`; jangan hapus exclude ini agar data produksi tidak tertimpa dan kode tes tidak terunggah.
