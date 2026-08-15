@@ -167,12 +167,12 @@ document.addEventListener('DOMContentLoaded', function () {
         actions: ['edit', 'delete'],
         onEdit: function (row, btn) {
             document.getElementById('modal-mp-title').textContent = 'Edit Mata Pencaharian';
-            formMp.index.value = row.key;
+            formMp.index.value = row.index;
             formMp.nama.value = row.nama;
             App.showModal(modalMp);
         },
         onDelete: function (row, btn) {
-            pendingDelete = row.key;
+            pendingDelete = row.index;
             document.getElementById('modal-delete-mp-text').textContent =
                 'Apakah Anda yakin ingin menghapus "' + row.nama + '" dari daftar mata pencaharian?';
             App.showModal(document.getElementById('modal-delete-mp'));

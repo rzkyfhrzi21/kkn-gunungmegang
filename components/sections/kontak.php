@@ -73,15 +73,15 @@
 <form class="space-y-6" id="aspirasiForm">
 <div class="space-y-2">
 <label class="font-label-sm text-on-surface-variant block uppercase tracking-wider" for="nama">Nama Lengkap</label>
-<input class="w-full bg-surface border border-border-neutral rounded-lg px-4 py-3 font-body-md text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="nama" placeholder="Masukkan nama Anda" type="text"/>
+<input class="w-full bg-surface border border-border-neutral rounded-lg px-4 py-3 font-body-md text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="nama" name="nama" placeholder="Masukkan nama Anda" type="text"/>
 </div>
 <div class="space-y-2">
 <label class="font-label-sm text-on-surface-variant block uppercase tracking-wider" for="telepon">Nomor WhatsApp</label>
-<input class="w-full bg-surface border border-border-neutral rounded-lg px-4 py-3 font-body-md text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="telepon" placeholder="08xxxxxxxxxx" type="tel"/>
+<input class="w-full bg-surface border border-border-neutral rounded-lg px-4 py-3 font-body-md text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" id="telepon" name="telepon" placeholder="08xxxxxxxxxx" type="tel"/>
 </div>
 <div class="space-y-2">
 <label class="font-label-sm text-on-surface-variant block uppercase tracking-wider" for="subjek">Kategori</label>
-<select class="w-full bg-surface border border-border-neutral rounded-lg px-4 py-3 font-body-md text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all appearance-none" id="subjek">
+<select class="w-full bg-surface border border-border-neutral rounded-lg px-4 py-3 font-body-md text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all appearance-none" id="subjek" name="subjek">
 <option disabled="" selected="" value="">Pilih kategori laporan...</option>
 <option value="infrastruktur">Infrastruktur &amp; Pembangunan</option>
 <option value="pelayanan">Pelayanan Administrasi</option>
@@ -91,12 +91,13 @@
 </div>
 <div class="space-y-2">
 <label class="font-label-sm text-on-surface-variant block uppercase tracking-wider" for="pesan">Pesan / Laporan</label>
-<textarea class="w-full bg-surface border border-border-neutral rounded-lg px-4 py-3 font-body-md text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none" id="pesan" placeholder="Tuliskan detail laporan Anda di sini..." rows="4"></textarea>
+<textarea class="w-full bg-surface border border-border-neutral rounded-lg px-4 py-3 font-body-md text-on-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none" id="pesan" name="pesan" placeholder="Tuliskan detail laporan Anda di sini..." rows="4"></textarea>
 </div>
 <button class="w-full bg-primary text-on-primary py-4 rounded-xl font-label-sm uppercase tracking-wider hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-md" type="submit">
 <span>Kirim Laporan</span>
 <span class="material-symbols-outlined text-[20px]">send</span>
 </button>
+<div id="aspirasiMsg" class="hidden font-body-md text-sm rounded-lg px-4 py-3" role="alert"></div>
 </form>
 </div>
 <!-- Map -->
@@ -133,24 +134,55 @@
     document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('aspirasiForm');
         if (form) {
-            form.addEventListener('submit', (e) => {
+            const msg = document.getElementById('aspirasiMsg');
+            const showMsg = (text, ok) => {
+                msg.textContent = text;
+                msg.className = 'font-body-md text-sm rounded-lg px-4 py-3 ' + (ok ? 'bg-emerald-surface text-primary' : 'bg-error-container text-on-error-container');
+            };
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = form.querySelector('button[type="submit"]');
                 const originalHTML = btn.innerHTML;
-                btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[20px]">sync</span><span>Mengirim...</span>`;
+                const nama = form.nama.value.trim();
+                const telepon = form.telepon.value.trim();
+                const subjek = form.subjek.value;
+                const pesan = form.pesan.value.trim();
+                if (!nama || !telepon || !subjek || !pesan) {
+                    showMsg('Mohon lengkapi semua kolom sebelum mengirim.', false);
+                    return;
+                }
+                btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">sync</span><span>Mengirim...</span>';
                 btn.classList.add('opacity-80', 'cursor-not-allowed');
-                setTimeout(() => {
-                    btn.innerHTML = `<span class="material-symbols-outlined text-[20px]">check_circle</span><span>Terkirim!</span>`;
-                    btn.classList.replace('bg-primary', 'bg-secondary-container');
-                    btn.classList.replace('text-on-primary', 'text-on-secondary-container');
-                    setTimeout(() => {
-                        btn.innerHTML = originalHTML;
-                        btn.classList.replace('bg-secondary-container', 'bg-primary');
-                        btn.classList.replace('text-on-secondary-container', 'text-on-primary');
-                        btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                try {
+                    const res = await fetch('functions/function_aspirasi.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nama, telepon, subjek, pesan })
+                    });
+                    const j = await res.json().catch(() => null);
+                    if (j && j.ok) {
+                        showMsg(j.message || 'Laporan berhasil dikirim. Terima kasih!', true);
+                        btn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span><span>Terkirim!</span>';
+                        btn.classList.replace('bg-primary', 'bg-secondary-container');
+                        btn.classList.replace('text-on-primary', 'text-on-secondary-container');
                         form.reset();
-                    }, 3000);
-                }, 1500);
+                        setTimeout(() => {
+                            btn.innerHTML = originalHTML;
+                            btn.classList.replace('bg-secondary-container', 'bg-primary');
+                            btn.classList.replace('text-on-secondary-container', 'text-on-primary');
+                            btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                            setTimeout(() => { msg.classList.add('hidden'); }, 5000);
+                        }, 2500);
+                    } else {
+                        showMsg((j && j.error) || 'Gagal mengirim laporan. Silakan coba lagi.', false);
+                        btn.innerHTML = originalHTML;
+                        btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                    }
+                } catch (err) {
+                    showMsg('Gagal mengirim laporan. Periksa koneksi internet Anda.', false);
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                }
             });
         }
     });

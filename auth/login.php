@@ -319,7 +319,7 @@ $usernameLogin = isset($_GET['username']) ? $_GET['username'] : '';
     <script src="../dashboard/assets/extensions/sweetalert2/sweetalert2.min.js"></script>
 
     <!-- script sweetalert kamu biarin seperti semula -->
-    <script src="sweatalert2_auth.js"></script>
+    <script src="sweetalert2_auth.js"></script>
 <script src="../assets/js/security-warning.js" defer></script>
 </body>
 

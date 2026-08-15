@@ -3,7 +3,6 @@
 define("NAMA_WEB", "Profil Pekon Gunung Megang");
 define("NAMA_LENGKAP", "Rafif Rhamdo Buay Bulan");
 define("IG", "ubirayap");
-define("EMAIL", "lailanurmasv@gmail.com");
 define("NO_WA", "085162642703");
 define("MATKUL", "Pemrograman Lanjut");
 define("URL_IG", "https://www.instagram.com/ubirayap");

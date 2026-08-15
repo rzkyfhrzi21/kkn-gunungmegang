@@ -38,6 +38,7 @@ jobs:
             **/graphify-out/**
             **/rules/**
             **/Zzz/**
+            **/functions/tests/**
             **/docs/**
             **/AGENTS.md
             **/CLAUDE.md

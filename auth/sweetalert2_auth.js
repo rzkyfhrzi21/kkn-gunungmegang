@@ -30,4 +30,20 @@ if (status === "success") {
       showConfirmButton: false,
     });
   }
+} else if (status === "locked") {
+  Swal.fire({
+    icon: "warning",
+    title: "Terkunci!",
+    text: "Terlalu banyak percobaan login. Coba lagi nanti 😴",
+    timer: 4000,
+    showConfirmButton: false,
+  });
+} else if (status === "csrf") {
+  Swal.fire({
+    icon: "error",
+    title: "Sesi Kedaluwarsa!",
+    text: "Token keamanan tidak valid. Muat ulang halaman dan coba lagi 🔄",
+    timer: 4000,
+    showConfirmButton: false,
+  });
 }

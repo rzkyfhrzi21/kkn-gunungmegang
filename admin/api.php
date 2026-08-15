@@ -453,6 +453,10 @@ function api_save_module($module, $data) {
     switch ($module) {
         case 'pekon':
             $old = json_api_read_module('pekon');
+            // Form identitas pekon tidak mengirim kepala_pekon -> pertahankan data lama (anti-hapus)
+            if (!isset($data['kepala_pekon'])) {
+                $data['kepala_pekon'] = $old['kepala_pekon'] ?? ['nama' => '', 'foto' => '', 'jabatan' => ''];
+            }
             $new = norm_pekon($data);
             /* bersihkan foto lama yang di-upload bila diganti */
             $oldFoto = $old['kepala_pekon']['foto'] ?? '';
@@ -489,6 +493,11 @@ function api_save_module($module, $data) {
             break;
 
         case 'potensi':
+            $old = json_api_read_module('potensi');
+            // Form utama tidak mengirim mata_pencaharian (dikelola lewat tabel) -> pertahankan data lama
+            if (!isset($data['mata_pencaharian'])) {
+                $data['mata_pencaharian'] = $old['mata_pencaharian'] ?? [];
+            }
             $new = norm_potensi($data);
             json_api_write_php($INCLUDES . '/potensi.php', $new, 'includes/potensi.php - Potensi ekonomi dan sumber daya alam pekon');
             break;
