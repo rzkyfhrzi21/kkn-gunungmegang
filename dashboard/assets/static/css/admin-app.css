@@ -253,3 +253,9 @@
     cursor: pointer;
 }
 .app-upload-hint { font-size: .8rem; color: #64748b; margin-top: 6px; }
+
+/* ---------- TAB KONTEN (card) ---------- */
+.card .card-header-tabs { margin-bottom: 0; }
+.card .card-body > .tab-content > .tab-pane { padding-top: 1.25rem; }
+.card .card-body > .tab-content > .tab-pane > form,
+.card .card-body > .tab-content > .tab-pane > .row { margin-top: 0; }
