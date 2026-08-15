@@ -42,8 +42,26 @@ endif;
     <p class="text-subtitle text-muted"><?= $isDetail ? 'Rincian pendapatan, belanja, dan pembiayaan tahun anggaran ' . $tahun : 'Kelola anggaran pendapatan dan belanja pekon per tahun anggaran' ?></p>
 </div>
 
-<?php if (!$isDetail): ?>
+<?php if (!$isDetail):
+    $listYears = array_keys($allApb);
+    $listYearsAsc = array_reverse($listYears);
+    $chartKompilasi = ['tahun' => [], 'pendapatan' => [], 'belanja' => [], 'pembiayaan' => []];
+    foreach ($listYearsAsc as $yr) {
+        $chartKompilasi['tahun'][] = (int)$yr;
+        $chartKompilasi['pendapatan'][] = round((float)($allApb[$yr]['pendapatan']['total'] ?? 0));
+        $chartKompilasi['belanja'][] = round((float)($allApb[$yr]['belanja']['total'] ?? 0));
+        $chartKompilasi['pembiayaan'][] = round((float)($allApb[$yr]['pembiayaan']['pembiayaan_netto'] ?? 0));
+    }
+?>
 <section class="section">
+    <div class="card mb-3">
+        <div class="card-header d-flex align-items-center gap-2">
+            <i class="bi bi-bar-chart text-primary"></i>
+            <h6 class="mb-0">Perbandingan APB per Tahun Anggaran</h6>
+        </div>
+        <div class="card-body"><div id="apb-chart-kompilasi" style="height:300px"></div></div>
+    </div>
+
     <div class="card">
         <div class="card-header d-flex align-items-center justify-content-between gap-2">
             <div class="d-flex align-items-center gap-2">
@@ -192,6 +210,48 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }).catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
     });
+});
+</script>
+
+<script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (!window.ApexCharts) return;
+
+    function rpCompact(v) {
+        v = Number(v) || 0;
+        if (v >= 1e9) return 'Rp ' + (v / 1e9).toFixed(1).replace('.', ',') + ' M';
+        if (v >= 1e6) return 'Rp ' + (v / 1e6).toFixed(1).replace('.', ',') + ' jt';
+        if (v >= 1e3) return 'Rp ' + (v / 1e3).toFixed(0) + ' rb';
+        return 'Rp ' + Math.round(v);
+    }
+    function rp(v) { return 'Rp ' + Math.round(v).toLocaleString('id-ID'); }
+    function noData(el) {
+        el.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i>Belum ada data</div>';
+    }
+
+    var chartKompilasi = <?= json_encode($chartKompilasi, $jsonFlags) ?>;
+    var elKompilasi = document.getElementById('apb-chart-kompilasi');
+    var hasData = (chartKompilasi.tahun || []).length > 0 &&
+        chartKompilasi.pendapatan.some(function (v) { return v > 0; });
+    if (elKompilasi && !hasData) { noData(elKompilasi); }
+    else if (elKompilasi) {
+        new ApexCharts(elKompilasi, {
+            chart: { type: 'bar', toolbar: { show: false }, stacked: false },
+            series: [
+                { name: 'Pendapatan', data: chartKompilasi.pendapatan },
+                { name: 'Belanja', data: chartKompilasi.belanja },
+                { name: 'Pembiayaan', data: chartKompilasi.pembiayaan }
+            ],
+            colors: ['#10b981', '#ef4444', '#3b82f6'],
+            plotOptions: { bar: { columnWidth: '55%', borderRadius: 3 } },
+            xaxis: { categories: chartKompilasi.tahun },
+            legend: { position: 'top' },
+            dataLabels: { enabled: false },
+            yaxis: { labels: { formatter: function (v) { return rpCompact(v); } } },
+            tooltip: { y: { formatter: function (v) { return rp(v); } } }
+        }).render();
+    }
 });
 </script>
 

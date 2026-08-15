@@ -61,14 +61,11 @@ $chartApb = [
     'belanjaLabels' => $belanjaLabels,
     'belanjaValues' => $belanjaValues,
 ];
-$chartLahan = [
-    'labels' => ['Tumpang Sari', 'Sawah', 'Jagung'],
-    'values' => [
-        round((float)($potensiData['tumpang_sari'] ?? 0), 2),
-        round((float)($potensiData['sawah'] ?? 0), 2),
-        round((float)($potensiData['jagung'] ?? 0), 2),
-    ],
-];
+$chartLahan = ['labels' => [], 'values' => []];
+foreach (($potensiData['komoditas'] ?? []) as $kom) {
+    $chartLahan['labels'][] = $kom['nama'] ?? '';
+    $chartLahan['values'][] = round((float)($kom['nilai'] ?? 0), 2);
+}
 $chartPenduduk = [
     'labels' => ['Laki-laki', 'Perempuan'],
     'values' => [(int)($demoData['laki_laki'] ?? 0), (int)($demoData['perempuan'] ?? 0)],
