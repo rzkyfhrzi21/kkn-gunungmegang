@@ -47,3 +47,4 @@ jobs:
             **/.gitignore
             **/.opencodeignore
             **/db/data.txt
+            **/*.json

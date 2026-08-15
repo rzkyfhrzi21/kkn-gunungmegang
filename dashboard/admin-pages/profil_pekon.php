@@ -47,7 +47,7 @@ $kontak    = $pekonData['kontak'];
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Alamat</label>
-                    <input type="text" class="form-control" name="kontak_maps_code" value="<?= htmlspecialchars($kontak['maps_code']) ?>" readonly required>
+                    <textarea class="form-control" name="kontak_maps_code" rows="3" readonly required><?= htmlspecialchars($kontak['maps_code']) ?></textarea>
                     <div class="app-upload-hint">Terisi otomatis dari link Google Maps.</div>
                 </div>
                 <div class="col-md-4">
