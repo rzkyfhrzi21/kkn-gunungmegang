@@ -29,7 +29,7 @@ if ($kepalaFoto === '' || !file_exists($kepalaFoto)) $kepalaFoto = '';
 <div class="w-full h-full flex items-center justify-center bg-surface-container"><span class="material-symbols-outlined text-[80px] text-on-surface-variant">account_circle</span></div>
 <?php endif; ?>
 <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-<div class="inline-block bg-primary text-on-primary text-label-sm px-3 py-1 rounded-full uppercase tracking-wider mb-2 border border-primary-container">Profil Utama</div>
+<div class="inline-block bg-primary text-on-primary text-label-sm px-3 py-1 rounded-full uppercase tracking-wider mb-2 border border-primary-container">Kepala Pekon</div>
 </div>
 </div>
 <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-primary-fixed/20 rounded-full blur-3xl -z-10"></div>
@@ -63,8 +63,8 @@ if ($kepalaFoto === '' || !file_exists($kepalaFoto)) $kepalaFoto = '';
 <div class="w-16 h-16 rounded-full bg-primary mx-auto mb-4 flex items-center justify-center text-on-primary">
 <span class="material-symbols-outlined text-3xl">star</span>
 </div>
-<h3 class="font-headline-md text-headline-md text-on-surface mb-1"><?= htmlspecialchars($perangkat[0]['nama']) ?></h3>
-<p class="text-label-sm text-primary uppercase tracking-widest"><?= htmlspecialchars($perangkat[0]['jabatan']) ?></p>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1"><?= htmlspecialchars($pekon['kepala_pekon']['nama']) ?></h3>
+<p class="text-label-sm text-primary uppercase tracking-widest"><?= htmlspecialchars($pekon['kepala_pekon']['jabatan']) ?></p>
 <div class="absolute -bottom-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2 hidden md:block"></div>
 </div>
 </div>
@@ -79,8 +79,8 @@ if ($kepalaFoto === '' || !file_exists($kepalaFoto)) $kepalaFoto = '';
 <div class="w-12 h-12 rounded-full bg-secondary-container mx-auto mb-4 flex items-center justify-center text-on-secondary-container">
 <span class="material-symbols-outlined text-2xl">edit_document</span>
 </div>
-<h3 class="font-headline-md text-headline-md text-on-surface mb-1"><?= htmlspecialchars($perangkat[1]['nama']) ?></h3>
-<p class="text-label-sm text-slate-text-muted uppercase tracking-widest"><?= htmlspecialchars($perangkat[1]['jabatan']) ?></p>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1"><?= htmlspecialchars($perangkat[0]['nama']) ?></h3>
+<p class="text-label-sm text-slate-text-muted uppercase tracking-widest"><?= htmlspecialchars($perangkat[0]['jabatan']) ?></p>
 <div class="absolute -bottom-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2 hidden md:block"></div>
 </div>
 </div>
@@ -96,7 +96,7 @@ if ($kepalaFoto === '' || !file_exists($kepalaFoto)) $kepalaFoto = '';
 </div>
 </div>
 <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">
-<?php foreach (array_slice($perangkat, 2, 6) as $p): ?>
+<?php foreach (array_slice($perangkat, 1, 6) as $p): ?>
 <div class="bg-surface-container-lowest rounded-xl p-5 text-center border border-border-neutral shadow-sm hover:-translate-y-1 transition-transform">
 <h3 class="font-bold text-on-surface mb-1"><?= htmlspecialchars($p['nama']) ?></h3>
 <p class="text-xs text-slate-text-muted uppercase tracking-wider"><?= htmlspecialchars($p['jabatan']) ?></p>
