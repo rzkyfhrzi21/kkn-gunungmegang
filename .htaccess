@@ -64,14 +64,14 @@ RewriteRule ^(.*)$ $1.php [L]
 </IfModule>
 
 # A01/A05 - Blokir akses langsung ke folder sensitif
-# (pengecualian: endpoint publik form aspirasi di functions/)
-RewriteRule ^functions/function_aspirasi\.php$ - [L]
+# (pengecualian: endpoint publik login dan form aspirasi di functions/)
+RewriteRule ^functions/(function_auth|function_aspirasi)\.php$ - [L]
 RewriteRule ^(includes|functions|db|Zzz|@agents|docs|graphify-out|\.grok|\.rtk)(/|$) - [F,L]
 
 # A01/A05 - Blokir file data/konfigurasi/sumber sensitif
 <FilesMatch "\.(json|log|bak|sql|env|ini|md|lock|pem|key|db)$">
    Require all denied
 </FilesMatch>
-<FilesMatch "^(data\.php|config\.php|security\.php|function_auth\.php)$">
+<FilesMatch "^(data\.php|config\.php|security\.php)$">
    Require all denied
 </FilesMatch>
