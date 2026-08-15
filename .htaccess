@@ -55,7 +55,7 @@ RewriteRule ^(.*)$ $1.php [L]
    Header set Referrer-Policy "strict-origin-when-cross-origin"
    Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
    Header set X-XSS-Protection "0"
-   Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+   Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self'; frame-src 'self' https://www.google.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
 </IfModule>
 
 # A05 - HSTS bila diakses via HTTPS
@@ -64,6 +64,8 @@ RewriteRule ^(.*)$ $1.php [L]
 </IfModule>
 
 # A01/A05 - Blokir akses langsung ke folder sensitif
+# (pengecualian: endpoint publik form aspirasi di functions/)
+RewriteRule ^functions/function_aspirasi\.php$ - [L]
 RewriteRule ^(includes|functions|db|Zzz|@agents|docs|graphify-out|\.grok|\.rtk)(/|$) - [F,L]
 
 # A01/A05 - Blokir file data/konfigurasi/sumber sensitif
