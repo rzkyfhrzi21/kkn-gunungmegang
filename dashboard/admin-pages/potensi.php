@@ -12,137 +12,157 @@ $iconOptions = ['eco', 'grass', 'agriculture', 'storefront', 'local_florist', 'e
 
 <section class="section">
     <div class="card">
-        <div class="card-header d-flex align-items-center gap-2">
-            <i class="bi bi-tree text-success"></i>
-            <h6 class="mb-0">Pengaturan Teks &amp; Status IDM</h6>
-        </div>
-        <div class="card-body">
-            <form id="form-potensi" class="row g-3">
-                <div class="col-12">
-                    <label class="form-label">Deskripsi Hero (Potensi &amp; Ekonomi Lokal)</label>
-                    <textarea class="form-control" name="hero_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['hero_desc'] ?? '') ?></textarea>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Deskripsi Section Komoditas Unggulan</label>
-                    <textarea class="form-control" name="komoditas_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['komoditas_desc'] ?? '') ?></textarea>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Deskripsi Mata Pencaharian Utama</label>
-                    <textarea class="form-control" name="mp_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['mp_desc'] ?? '') ?></textarea>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Status IDM</label>
-                    <select class="form-select" name="idm_status" required>
-                        <?php foreach ($idmOptions as $opt): ?>
-                        <option value="<?= $opt ?>" <?= ($potensiData['idm_status'] ?? '') === $opt ? 'selected' : '' ?>><?= $opt ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Progress IDM (%)</label>
-                    <input type="number" min="0" max="100" class="form-control" name="idm_progress" value="<?= (int)($potensiData['idm_progress'] ?? 0) ?>">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Deskripsi IDM</label>
-                    <textarea class="form-control" name="idm_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['idm_desc'] ?? '') ?></textarea>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Judul Kehidupan Sosial</label>
-                    <input type="text" class="form-control" name="sosial_judul" maxlength="200" value="<?= htmlspecialchars($potensiData['sosial_judul'] ?? '') ?>">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Paragraf Sosial 1</label>
-                    <textarea class="form-control" name="sosial_par1" rows="2" maxlength="1000"><?= htmlspecialchars($potensiData['sosial_par1'] ?? '') ?></textarea>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Paragraf Sosial 2</label>
-                    <textarea class="form-control" name="sosial_par2" rows="2" maxlength="1000"><?= htmlspecialchars($potensiData['sosial_par2'] ?? '') ?></textarea>
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary" id="btn-save-potensi">
-                        <i class="bi bi-check-lg"></i> Simpan Pengaturan
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="potensiTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-teks" data-bs-toggle="tab" data-bs-target="#pane-teks" type="button" role="tab" aria-controls="pane-teks" aria-selected="true">
+                        <i class="bi bi-pencil-square me-1"></i> Teks &amp; IDM
                     </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-box-seam text-success"></i>
-                <h6 class="mb-0">Komoditas Unggulan</h6>
-            </div>
-            <button type="button" class="btn btn-sm btn-primary" id="btn-add-komoditas">
-                <i class="bi bi-plus-lg"></i> Tambah
-            </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-komoditas" data-bs-toggle="tab" data-bs-target="#pane-komoditas" type="button" role="tab" aria-controls="pane-komoditas" aria-selected="false">
+                        <i class="bi bi-box-seam me-1"></i> Komoditas Unggulan
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-mp" data-bs-toggle="tab" data-bs-target="#pane-mp" type="button" role="tab" aria-controls="pane-mp" aria-selected="false">
+                        <i class="bi bi-briefcase me-1"></i> Mata Pencaharian
+                    </button>
+                </li>
+            </ul>
         </div>
         <div class="card-body">
-            <div class="app-table-wrap">
-                <div class="app-table-toolbar mb-3">
-                    <input type="text" id="search-komoditas" class="form-control form-control-sm" placeholder="Cari komoditas...">
-                </div>
-                <table class="table table-hover" id="tbl-komoditas">
-                    <thead>
-                        <tr>
-                            <th class="w-25">Nama Komoditas</th>
-                            <th>Luasan</th>
-                            <th class="text-end" style="width:120px">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div class="app-pagination">
-                    <div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-prev" disabled>
-                            <i class="bi bi-chevron-left"></i> Prev
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-next">
-                            Next <i class="bi bi-chevron-right"></i>
-                        </button>
-                    </div>
-                    <div class="app-pagination-info"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+            <div class="tab-content" id="potensiTabContent">
 
-    <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between">
-            <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-briefcase text-primary"></i>
-                <h6 class="mb-0">Mata Pencaharian</h6>
-            </div>
-            <button type="button" class="btn btn-sm btn-primary" id="btn-add-mp">
-                <i class="bi bi-plus-lg"></i> Tambah
-            </button>
-        </div>
-        <div class="card-body">
-            <div class="app-table-wrap">
-                <div class="app-table-toolbar mb-3">
-                    <input type="text" id="search-mp" class="form-control form-control-sm" placeholder="Cari mata pencaharian...">
+                <!-- ============ TAB: TEKS & IDM ============ -->
+                <div class="tab-pane fade show active" id="pane-teks" role="tabpanel" aria-labelledby="tab-teks">
+                    <form id="form-potensi" class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Deskripsi Hero (Potensi &amp; Ekonomi Lokal)</label>
+                            <textarea class="form-control" name="hero_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['hero_desc'] ?? '') ?></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Deskripsi Section Komoditas Unggulan</label>
+                            <textarea class="form-control" name="komoditas_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['komoditas_desc'] ?? '') ?></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Deskripsi Mata Pencaharian Utama</label>
+                            <textarea class="form-control" name="mp_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['mp_desc'] ?? '') ?></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Status IDM</label>
+                            <select class="form-select" name="idm_status" required>
+                                <?php foreach ($idmOptions as $opt): ?>
+                                <option value="<?= $opt ?>" <?= ($potensiData['idm_status'] ?? '') === $opt ? 'selected' : '' ?>><?= $opt ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Progress IDM (%)</label>
+                            <input type="number" min="0" max="100" class="form-control" name="idm_progress" value="<?= (int)($potensiData['idm_progress'] ?? 0) ?>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Deskripsi IDM</label>
+                            <textarea class="form-control" name="idm_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['idm_desc'] ?? '') ?></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Judul Kehidupan Sosial</label>
+                            <input type="text" class="form-control" name="sosial_judul" maxlength="200" value="<?= htmlspecialchars($potensiData['sosial_judul'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Paragraf Sosial 1</label>
+                            <textarea class="form-control" name="sosial_par1" rows="2" maxlength="1000"><?= htmlspecialchars($potensiData['sosial_par1'] ?? '') ?></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Paragraf Sosial 2</label>
+                            <textarea class="form-control" name="sosial_par2" rows="2" maxlength="1000"><?= htmlspecialchars($potensiData['sosial_par2'] ?? '') ?></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary" id="btn-save-potensi">
+                                <i class="bi bi-check-lg"></i> Simpan Pengaturan
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <table class="table table-hover" id="tbl-mp">
-                    <thead>
-                        <tr>
-                            <th class="w-25">Nama Mata Pencaharian</th>
-                            <th>Keterangan</th>
-                            <th class="text-end" style="width:120px">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div class="app-pagination">
-                    <div>
-                        <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-prev" disabled>
-                            <i class="bi bi-chevron-left"></i> Prev
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-next">
-                            Next <i class="bi bi-chevron-right"></i>
+
+                <!-- ============ TAB: KOMODITAS UNGGULAN ============ -->
+                <div class="tab-pane fade" id="pane-komoditas" role="tabpanel" aria-labelledby="tab-komoditas">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-box-seam text-success"></i>
+                            <h6 class="mb-0">Komoditas Unggulan</h6>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary" id="btn-add-komoditas">
+                            <i class="bi bi-plus-lg"></i> Tambah
                         </button>
                     </div>
-                    <div class="app-pagination-info"></div>
+                    <div class="app-table-wrap">
+                        <div class="app-table-toolbar mb-3">
+                            <input type="text" id="search-komoditas" class="form-control form-control-sm" placeholder="Cari komoditas...">
+                        </div>
+                        <table class="table table-hover" id="tbl-komoditas">
+                            <thead>
+                                <tr>
+                                    <th class="w-25">Nama Komoditas</th>
+                                    <th>Luasan</th>
+                                    <th class="text-end" style="width:120px">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="app-pagination">
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-prev" disabled>
+                                    <i class="bi bi-chevron-left"></i> Prev
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-next">
+                                    Next <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="app-pagination-info"></div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- ============ TAB: MATA PENCAHARIAN ============ -->
+                <div class="tab-pane fade" id="pane-mp" role="tabpanel" aria-labelledby="tab-mp">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-briefcase text-primary"></i>
+                            <h6 class="mb-0">Mata Pencaharian</h6>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary" id="btn-add-mp">
+                            <i class="bi bi-plus-lg"></i> Tambah
+                        </button>
+                    </div>
+                    <div class="app-table-wrap">
+                        <div class="app-table-toolbar mb-3">
+                            <input type="text" id="search-mp" class="form-control form-control-sm" placeholder="Cari mata pencaharian...">
+                        </div>
+                        <table class="table table-hover" id="tbl-mp">
+                            <thead>
+                                <tr>
+                                    <th class="w-25">Nama Mata Pencaharian</th>
+                                    <th>Keterangan</th>
+                                    <th class="text-end" style="width:120px">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="app-pagination">
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-prev" disabled>
+                                    <i class="bi bi-chevron-left"></i> Prev
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary app-pagination-next">
+                                    Next <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="app-pagination-info"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
