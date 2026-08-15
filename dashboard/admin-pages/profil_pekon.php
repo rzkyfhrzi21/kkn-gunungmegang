@@ -11,102 +11,121 @@ $kontak    = $pekonData['kontak'];
 
 <section class="section">
     <div class="card">
-        <div class="card-header d-flex align-items-center gap-2">
-            <i class="bi bi-globe2 text-primary"></i>
-            <h6 class="mb-0">Data Profil Pekon</h6>
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="profilPekonTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-identitas" data-bs-toggle="tab" data-bs-target="#pane-identitas" type="button" role="tab" aria-controls="pane-identitas" aria-selected="true">
+                        <i class="bi bi-globe2 me-1"></i> Identitas
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-kontak" data-bs-toggle="tab" data-bs-target="#pane-kontak" type="button" role="tab" aria-controls="pane-kontak" aria-selected="false">
+                        <i class="bi bi-telephone me-1"></i> Kontak &amp; Lokasi
+                    </button>
+                </li>
+            </ul>
         </div>
         <div class="card-body">
             <form id="form-pekon" class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label">Nama Pekon</label>
-                    <input type="text" class="form-control" name="nama" value="<?= htmlspecialchars($pekonData['nama']) ?>" required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Tahun Anggaran</label>
-                    <input type="text" class="form-control" name="tahun" value="<?= htmlspecialchars($pekonData['tahun']) ?>" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Kecamatan</label>
-                    <input type="text" class="form-control" name="kecamatan" value="<?= htmlspecialchars($pekonData['kecamatan']) ?>" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Kabupaten</label>
-                    <input type="text" class="form-control" name="kabupaten" value="<?= htmlspecialchars($pekonData['kabupaten']) ?>" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Provinsi</label>
-                    <input type="text" class="form-control" name="provinsi" value="<?= htmlspecialchars($pekonData['provinsi']) ?>" required>
-                </div>
+                <div class="tab-content" id="profilPekonTabContent">
+                    <!-- ============ TAB: IDENTITAS ============ -->
+                    <div class="tab-pane fade show active" id="pane-identitas" role="tabpanel" aria-labelledby="tab-identitas">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nama Pekon</label>
+                                <input type="text" class="form-control" name="nama" value="<?= htmlspecialchars($pekonData['nama']) ?>" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tahun Anggaran</label>
+                                <input type="text" class="form-control" name="tahun" value="<?= htmlspecialchars($pekonData['tahun']) ?>" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Kecamatan</label>
+                                <input type="text" class="form-control" name="kecamatan" value="<?= htmlspecialchars($pekonData['kecamatan']) ?>" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Kabupaten</label>
+                                <input type="text" class="form-control" name="kabupaten" value="<?= htmlspecialchars($pekonData['kabupaten']) ?>" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Provinsi</label>
+                                <input type="text" class="form-control" name="provinsi" value="<?= htmlspecialchars($pekonData['provinsi']) ?>" required>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="col-12 border-top pt-3">
-                    <h6 class="fw-bold mb-3"><i class="bi bi-telephone me-1"></i>Kontak &amp; Lokasi</h6>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Telepon / WhatsApp</label>
-                    <input type="text" class="form-control" name="kontak_telepon" value="<?= htmlspecialchars($kontak['telepon']) ?>" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Alamat</label>
-                    <textarea class="form-control" name="kontak_maps_code" rows="3" readonly required><?= htmlspecialchars($kontak['maps_code']) ?></textarea>
-                    <div class="app-upload-hint">Terisi otomatis dari link Google Maps.</div>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Link Google Maps</label>
-                    <div class="input-group">
-                        <textarea class="form-control" name="kontak_maps_link" id="kontak_maps_link" rows="3" inputmode="url"><?= htmlspecialchars($kontak['maps_link']) ?></textarea>
-                        <button type="button" class="btn btn-outline-primary" id="btn-resolve-maps" title="Isi alamat & peta otomatis dari link">
-                            <i class="bi bi-magic"></i> Isi Otomatis
-                        </button>
-                    </div>
-                    <div class="app-upload-hint">Tempel link dari menu "Bagikan" Google Maps (mis. <code>https://maps.app.goo.gl/...</code>), lalu klik <b>Isi Otomatis</b> — alamat &amp; peta terisi sendiri.</div>
-                </div>
-                <input type="hidden" name="kontak_maps_embed" id="kontak_maps_embed" value="<?= htmlspecialchars($kontak['maps_embed'] ?? '') ?>">
-                <div class="col-md-6">
-                    <label class="form-label">Deskripsi WhatsApp</label>
-                    <input type="text" class="form-control" name="kontak_wa_desc" value="<?= htmlspecialchars($kontak['wa_desc'] ?? '') ?>" maxlength="300">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Deskripsi Jam Operasional</label>
-                    <input type="text" class="form-control" name="kontak_jam_desc" value="<?= htmlspecialchars($kontak['jam_desc'] ?? '') ?>" maxlength="300">
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Jadwal Layanan</label>
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
-                            <thead class="table-light">
-                                <tr><th style="width:34%">Hari</th><th style="width:38%">Jam</th><th>Status</th></tr>
-                            </thead>
-                            <tbody>
-                            <?php $jamRows = $kontak['jam'] ?? [['hari' => 'Senin - Kamis', 'jam' => '08:00 - 15:30 WIB', 'status' => ''], ['hari' => 'Jumat', 'jam' => '08:00 - 11:30 WIB', 'status' => ''], ['hari' => 'Sabtu - Minggu', 'jam' => '', 'status' => 'Tutup']]; ?>
-                            <?php for ($i = 0; $i < 3; $i++): $jr = $jamRows[$i] ?? ['hari' => '', 'jam' => '', 'status' => '']; ?>
-                                <tr>
-                                    <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][hari]" value="<?= htmlspecialchars($jr['hari'] ?? '') ?>"></td>
-                                    <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][jam]" value="<?= htmlspecialchars($jr['jam'] ?? '') ?>"></td>
-                                    <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][status]" value="<?= htmlspecialchars($jr['status'] ?? '') ?>"></td>
-                                </tr>
-                            <?php endfor; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Deskripsi Aksesibilitas</label>
-                    <input type="text" class="form-control" name="kontak_akses" value="<?= htmlspecialchars($kontak['akses'] ?? '') ?>" maxlength="300">
-                    <div class="app-upload-hint">Ditampilkan setelah "±X km / Y menit dari pusat kecamatan."</div>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Subjudul Peta Lokasi</label>
-                    <input type="text" class="form-control" name="kontak_map_subtitle" value="<?= htmlspecialchars($kontak['map_subtitle'] ?? '') ?>" maxlength="300">
-                    <div class="app-upload-hint">Teks di dalam kartu yang menimpa peta.</div>
-                </div>
-                <div class="col-12">
-                    <label class="form-label">Deskripsi Form Pengaduan &amp; Aspirasi</label>
-                    <textarea class="form-control" name="kontak_aspirasi_desc" rows="2" maxlength="600"><?= htmlspecialchars($kontak['aspirasi_desc'] ?? '') ?></textarea>
-                </div>
-                <div class="col-12" id="maps-preview-wrap" style="display:none;">
-                    <label class="form-label">Pratinjau Peta</label>
-                    <div class="border rounded overflow-hidden">
-                        <iframe id="maps-preview" src="" style="width:100%;height:320px;border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                    <!-- ============ TAB: KONTAK & LOKASI ============ -->
+                    <div class="tab-pane fade" id="pane-kontak" role="tabpanel" aria-labelledby="tab-kontak">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Telepon / WhatsApp</label>
+                                <input type="text" class="form-control" name="kontak_telepon" value="<?= htmlspecialchars($kontak['telepon']) ?>" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Alamat</label>
+                                <textarea class="form-control" name="kontak_maps_code" rows="3" readonly required><?= htmlspecialchars($kontak['maps_code']) ?></textarea>
+                                <div class="app-upload-hint">Terisi otomatis dari link Google Maps.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Link Google Maps</label>
+                                <div class="input-group">
+                                    <textarea class="form-control" name="kontak_maps_link" id="kontak_maps_link" rows="3" inputmode="url"><?= htmlspecialchars($kontak['maps_link']) ?></textarea>
+                                    <button type="button" class="btn btn-outline-primary" id="btn-resolve-maps" title="Isi alamat & peta otomatis dari link">
+                                        <i class="bi bi-magic"></i> Isi Otomatis
+                                    </button>
+                                </div>
+                                <div class="app-upload-hint">Tempel link dari menu "Bagikan" Google Maps (mis. <code>https://maps.app.goo.gl/...</code>), lalu klik <b>Isi Otomatis</b> — alamat &amp; peta terisi sendiri.</div>
+                            </div>
+                            <input type="hidden" name="kontak_maps_embed" id="kontak_maps_embed" value="<?= htmlspecialchars($kontak['maps_embed'] ?? '') ?>">
+                            <div class="col-md-6">
+                                <label class="form-label">Deskripsi WhatsApp</label>
+                                <input type="text" class="form-control" name="kontak_wa_desc" value="<?= htmlspecialchars($kontak['wa_desc'] ?? '') ?>" maxlength="300">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Deskripsi Jam Operasional</label>
+                                <input type="text" class="form-control" name="kontak_jam_desc" value="<?= htmlspecialchars($kontak['jam_desc'] ?? '') ?>" maxlength="300">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Jadwal Layanan</label>
+                                <div class="table-responsive">
+                                    <table class="table table-sm align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr><th style="width:34%">Hari</th><th style="width:38%">Jam</th><th>Status</th></tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php $jamRows = $kontak['jam'] ?? [['hari' => 'Senin - Kamis', 'jam' => '08:00 - 15:30 WIB', 'status' => ''], ['hari' => 'Jumat', 'jam' => '08:00 - 11:30 WIB', 'status' => ''], ['hari' => 'Sabtu - Minggu', 'jam' => '', 'status' => 'Tutup']]; ?>
+                                        <?php for ($i = 0; $i < 3; $i++): $jr = $jamRows[$i] ?? ['hari' => '', 'jam' => '', 'status' => '']; ?>
+                                            <tr>
+                                                <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][hari]" value="<?= htmlspecialchars($jr['hari'] ?? '') ?>"></td>
+                                                <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][jam]" value="<?= htmlspecialchars($jr['jam'] ?? '') ?>"></td>
+                                                <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][status]" value="<?= htmlspecialchars($jr['status'] ?? '') ?>"></td>
+                                            </tr>
+                                        <?php endfor; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Deskripsi Aksesibilitas</label>
+                                <input type="text" class="form-control" name="kontak_akses" value="<?= htmlspecialchars($kontak['akses'] ?? '') ?>" maxlength="300">
+                                <div class="app-upload-hint">Ditampilkan setelah "±X km / Y menit dari pusat kecamatan."</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Subjudul Peta Lokasi</label>
+                                <input type="text" class="form-control" name="kontak_map_subtitle" value="<?= htmlspecialchars($kontak['map_subtitle'] ?? '') ?>" maxlength="300">
+                                <div class="app-upload-hint">Teks di dalam kartu yang menimpa peta.</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Deskripsi Form Pengaduan &amp; Aspirasi</label>
+                                <textarea class="form-control" name="kontak_aspirasi_desc" rows="2" maxlength="600"><?= htmlspecialchars($kontak['aspirasi_desc'] ?? '') ?></textarea>
+                            </div>
+                            <div class="col-12" id="maps-preview-wrap" style="display:none;">
+                                <label class="form-label">Pratinjau Peta</label>
+                                <div class="border rounded overflow-hidden">
+                                    <iframe id="maps-preview" src="" style="width:100%;height:320px;border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
