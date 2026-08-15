@@ -53,7 +53,7 @@ $kontak    = $pekonData['kontak'];
                 <div class="col-md-4">
                     <label class="form-label">Link Google Maps</label>
                     <div class="input-group">
-                        <input type="url" class="form-control" name="kontak_maps_link" id="kontak_maps_link" value="<?= htmlspecialchars($kontak['maps_link']) ?>">
+                        <textarea class="form-control" name="kontak_maps_link" id="kontak_maps_link" rows="3" inputmode="url"><?= htmlspecialchars($kontak['maps_link']) ?></textarea>
                         <button type="button" class="btn btn-outline-primary" id="btn-resolve-maps" title="Isi alamat & peta otomatis dari link">
                             <i class="bi bi-magic"></i> Isi Otomatis
                         </button>
