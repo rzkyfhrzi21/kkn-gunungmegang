@@ -23,7 +23,7 @@
 </div>
 <div>
 <h3 class="font-headline-md text-on-background mb-2">WhatsApp Resmi</h3>
-<p class="font-body-md text-slate-text-muted mb-6">Layanan cepat dan responsif untuk berbagai keperluan administrasi pekon.</p>
+<p class="font-body-md text-slate-text-muted mb-6"><?= htmlspecialchars($pekon['kontak']['wa_desc'] ?? '') ?></p>
 <a class="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full font-label-sm uppercase tracking-wider hover:bg-primary-container transition-colors" href="https://wa.me/<?= '62' . ltrim($pekon['kontak']['telepon'], '0') ?>" target="_blank">
 <span>Hubungi Kami</span>
 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -38,11 +38,12 @@
 </div>
 <div>
 <h3 class="font-headline-md text-on-background mb-2">Jam Operasional</h3>
-<p class="font-body-md text-slate-text-muted mb-4">Kantor Pekon buka untuk pelayanan publik pada hari kerja.</p>
+<p class="font-body-md text-slate-text-muted mb-4"><?= htmlspecialchars($pekon['kontak']['jam_desc'] ?? '') ?></p>
 <ul class="space-y-3 font-body-md text-on-surface">
-<li class="flex justify-between border-b border-border-neutral pb-2"><span class="font-semibold">Senin - Kamis</span><span>08:00 - 15:30 WIB</span></li>
-<li class="flex justify-between border-b border-border-neutral pb-2"><span class="font-semibold">Jumat</span><span>08:00 - 11:30 WIB</span></li>
-<li class="flex justify-between text-error"><span class="font-semibold">Sabtu - Minggu</span><span>Tutup</span></li>
+<?php $jamRows = $pekon['kontak']['jam'] ?? []; $jamN = count($jamRows); ?>
+<?php foreach ($jamRows as $i => $jr): ?>
+<li class="flex justify-between <?= $i < $jamN - 1 ? 'border-b border-border-neutral pb-2' : '' ?> <?= !empty($jr['status']) ? 'text-error' : '' ?>"><span class="font-semibold"><?= htmlspecialchars($jr['hari'] ?? '') ?></span><span><?= htmlspecialchars(($jr['jam'] ?? '') !== '' ? $jr['jam'] : ($jr['status'] ?? '')) ?></span></li>
+<?php endforeach; ?>
 </ul>
 </div>
 </div>
@@ -56,7 +57,7 @@
 <p class="font-body-md text-slate-text-muted mb-4 leading-relaxed"><?= htmlspecialchars($pekon['kontak']['maps_code']) ?></p>
 <div class="bg-surface-container-low p-4 rounded-xl border border-border-neutral flex items-start gap-3 mt-auto">
 <span class="material-symbols-outlined text-primary mt-0.5">info</span>
-<p class="font-body-md text-sm text-on-surface-variant"><strong>Aksesibilitas:</strong><br/>±<?= $pekon['demografi']['jarak_kecamatan_km'] ?> km / <?= $pekon['demografi']['waktu_kecamatan_menit'] ?> menit dari pusat kecamatan. Jalan sudah diaspal dan mudah dilalui kendaraan roda dua maupun empat.</p>
+<p class="font-body-md text-sm text-on-surface-variant"><strong>Aksesibilitas:</strong><br/>±<?= $pekon['demografi']['jarak_kecamatan_km'] ?> km / <?= $pekon['demografi']['waktu_kecamatan_menit'] ?> menit dari pusat kecamatan. <?= htmlspecialchars($pekon['kontak']['akses'] ?? '') ?></p>
 </div>
 </div>
 </div>
@@ -69,7 +70,7 @@
 <span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 1;">assignment</span>
 <h2 class="font-headline-lg text-on-background">Pengaduan &amp; Aspirasi</h2>
 </div>
-<p class="font-body-md text-slate-text-muted mb-8">Sampaikan saran, masukan, atau laporan pelayanan publik. Data Anda akan kami jaga kerahasiaannya.</p>
+<p class="font-body-md text-slate-text-muted mb-8"><?= htmlspecialchars($pekon['kontak']['aspirasi_desc'] ?? '') ?></p>
 <form class="space-y-6" id="aspirasiForm">
 <div class="space-y-2">
 <label class="font-label-sm text-on-surface-variant block uppercase tracking-wider" for="nama">Nama Lengkap</label>
@@ -120,8 +121,8 @@
 <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">assured_workload</span>
 </div>
 <div>
-<h4 class="font-label-sm text-on-background mb-1">Kantor Pekon Gunung Megang</h4>
-<p class="font-body-md text-sm text-slate-text-muted">Pusat pemerintahan dan pelayanan masyarakat.</p>
+<h4 class="font-label-sm text-on-background mb-1">Kantor <?= htmlspecialchars($pekon['nama'] ?? '') ?></h4>
+<p class="font-body-md text-sm text-slate-text-muted"><?= htmlspecialchars($pekon['kontak']['map_subtitle'] ?? '') ?></p>
 </div>
 </div>
 </div>

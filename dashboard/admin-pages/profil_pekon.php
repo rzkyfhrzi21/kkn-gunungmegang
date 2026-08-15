@@ -61,6 +61,48 @@ $kontak    = $pekonData['kontak'];
                     <div class="app-upload-hint">Tempel link dari menu "Bagikan" Google Maps (mis. <code>https://maps.app.goo.gl/...</code>), lalu klik <b>Isi Otomatis</b> — alamat &amp; peta terisi sendiri.</div>
                 </div>
                 <input type="hidden" name="kontak_maps_embed" id="kontak_maps_embed" value="<?= htmlspecialchars($kontak['maps_embed'] ?? '') ?>">
+                <div class="col-md-6">
+                    <label class="form-label">Deskripsi WhatsApp</label>
+                    <input type="text" class="form-control" name="kontak_wa_desc" value="<?= htmlspecialchars($kontak['wa_desc'] ?? '') ?>" maxlength="300">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Deskripsi Jam Operasional</label>
+                    <input type="text" class="form-control" name="kontak_jam_desc" value="<?= htmlspecialchars($kontak['jam_desc'] ?? '') ?>" maxlength="300">
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Jadwal Layanan</label>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr><th style="width:34%">Hari</th><th style="width:38%">Jam</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                            <?php $jamRows = $kontak['jam'] ?? [['hari' => 'Senin - Kamis', 'jam' => '08:00 - 15:30 WIB', 'status' => ''], ['hari' => 'Jumat', 'jam' => '08:00 - 11:30 WIB', 'status' => ''], ['hari' => 'Sabtu - Minggu', 'jam' => '', 'status' => 'Tutup']]; ?>
+                            <?php for ($i = 0; $i < 3; $i++): $jr = $jamRows[$i] ?? ['hari' => '', 'jam' => '', 'status' => '']; ?>
+                                <tr>
+                                    <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][hari]" value="<?= htmlspecialchars($jr['hari'] ?? '') ?>"></td>
+                                    <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][jam]" value="<?= htmlspecialchars($jr['jam'] ?? '') ?>"></td>
+                                    <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][status]" value="<?= htmlspecialchars($jr['status'] ?? '') ?>"></td>
+                                </tr>
+                            <?php endfor; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Deskripsi Aksesibilitas</label>
+                    <input type="text" class="form-control" name="kontak_akses" value="<?= htmlspecialchars($kontak['akses'] ?? '') ?>" maxlength="300">
+                    <div class="app-upload-hint">Ditampilkan setelah "±X km / Y menit dari pusat kecamatan."</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Subjudul Peta Lokasi</label>
+                    <input type="text" class="form-control" name="kontak_map_subtitle" value="<?= htmlspecialchars($kontak['map_subtitle'] ?? '') ?>" maxlength="300">
+                    <div class="app-upload-hint">Teks di dalam kartu yang menimpa peta.</div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Deskripsi Form Pengaduan &amp; Aspirasi</label>
+                    <textarea class="form-control" name="kontak_aspirasi_desc" rows="2" maxlength="600"><?= htmlspecialchars($kontak['aspirasi_desc'] ?? '') ?></textarea>
+                </div>
                 <div class="col-12" id="maps-preview-wrap" style="display:none;">
                     <label class="form-label">Pratinjau Peta</label>
                     <div class="border rounded overflow-hidden">
@@ -139,11 +181,23 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         if (!form.checkValidity()) { form.reportValidity(); return; }
         btn.disabled = true;
+        var jam = [];
+        for (var i = 0; i < 3; i++) {
+            jam.push({
+                hari: form['kontak_jam[' + i + '][hari]'].value,
+                jam: form['kontak_jam[' + i + '][jam]'].value,
+                status: form['kontak_jam[' + i + '][status]'].value
+            });
+        }
         var payload = {
             nama: form.nama.value, kecamatan: form.kecamatan.value,
             kabupaten: form.kabupaten.value, provinsi: form.provinsi.value,
             tahun: form.tahun.value,
-            kontak: { telepon: form.kontak_telepon.value, maps_code: mapsCode.value, maps_link: mapsLink.value, maps_embed: mapsEmbed.value.trim() }
+            kontak: {
+                telepon: form.kontak_telepon.value, maps_code: mapsCode.value, maps_link: mapsLink.value, maps_embed: mapsEmbed.value.trim(),
+                wa_desc: form.kontak_wa_desc.value, jam_desc: form.kontak_jam_desc.value, jam: jam,
+                akses: form.kontak_akses.value, aspirasi_desc: form.kontak_aspirasi_desc.value, map_subtitle: form.kontak_map_subtitle.value
+            }
         };
         App.postJSON('../admin/api.php', { action: 'save', module: 'pekon', data: payload })
             .then(function (res) {

@@ -84,7 +84,7 @@ t('resolve_maps link bukan http(s) -> fail', err($r), json_encode($r));
 /* ---------- 11. struktur output norm_pekon ---------- */
 $saved = require TEST_BASE . 'includes/pekon.php';
 $needKeys = ['nama', 'kecamatan', 'kabupaten', 'provinsi', 'tahun', 'kepala_pekon', 'kontak'];
-$kepalaKeys = ['nama', 'foto', 'jabatan'];
+$kepalaKeys = ['nama', 'foto', 'jabatan', 'sambutan'];
 $kontakKeys = ['telepon', 'maps_code', 'maps_link', 'maps_embed'];
 $strukturOk = true;
 foreach ($needKeys as $k) if (!array_key_exists($k, $saved)) $strukturOk = false;

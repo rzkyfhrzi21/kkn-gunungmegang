@@ -106,15 +106,28 @@ function norm_pekon($raw) {
         'provinsi'     => json_api_str($raw['provinsi'] ?? '', 100),
         'tahun'        => json_api_str($raw['tahun'] ?? '', 10),
         'kepala_pekon' => [
-            'nama'    => json_api_str($k['nama'] ?? '', 150),
-            'foto'    => json_api_str($k['foto'] ?? '', 255),
-            'jabatan' => json_api_str($k['jabatan'] ?? '', 150),
+            'nama'     => json_api_str($k['nama'] ?? '', 150),
+            'foto'     => json_api_str($k['foto'] ?? '', 255),
+            'jabatan'  => json_api_str($k['jabatan'] ?? '', 150),
+            'sambutan' => json_api_str($k['sambutan'] ?? '', 2000),
         ],
         'kontak' => [
             'telepon'   => json_api_str($c['telepon'] ?? '', 30),
             'maps_code' => json_api_str($c['maps_code'] ?? '', 255),
             'maps_link' => sanitize_url($c['maps_link'] ?? '', 500),
             'maps_embed' => json_api_embed_url($c['maps_embed'] ?? ''),
+            'wa_desc'   => json_api_str($c['wa_desc'] ?? '', 300),
+            'jam_desc'  => json_api_str($c['jam_desc'] ?? '', 300),
+            'jam'       => array_values(array_map(function ($r) {
+                return [
+                    'hari'   => json_api_str($r['hari'] ?? '', 80),
+                    'jam'    => json_api_str($r['jam'] ?? '', 80),
+                    'status' => json_api_str($r['status'] ?? '', 80),
+                ];
+            }, is_array($c['jam'] ?? null) ? $c['jam'] : [])),
+            'akses'         => json_api_str($c['akses'] ?? '', 300),
+            'aspirasi_desc' => json_api_str($c['aspirasi_desc'] ?? '', 600),
+            'map_subtitle'  => json_api_str($c['map_subtitle'] ?? '', 300),
         ],
     ];
 }
@@ -141,17 +154,42 @@ function norm_demografi($raw) {
 
 function norm_potensi($raw) {
     $mp = $raw['mata_pencaharian'] ?? [];
-    $list = [];
+    $mpList = [];
     foreach ($mp as $m) {
-        $s = json_api_str($m, 150);
-        if ($s !== '') $list[] = $s;
+        $item = is_array($m) ? $m : ['nama' => $m];
+        $nama = json_api_str($item['nama'] ?? '', 150);
+        if ($nama === '') continue;
+        $mpList[] = [
+            'nama'        => $nama,
+            'keterangan'  => json_api_str($item['keterangan'] ?? '', 150),
+        ];
+    }
+    $kom = $raw['komoditas'] ?? [];
+    $komList = [];
+    foreach ($kom as $i => $k) {
+        $item = is_array($k) ? $k : ['nama' => (string)$k];
+        $nama = json_api_str($item['nama'] ?? '', 150);
+        if ($nama === '') continue;
+        $komList[] = [
+            'nama'       => $nama,
+            'deskripsi'  => json_api_str($item['deskripsi'] ?? '', 600),
+            'nilai'      => json_api_int($item['nilai'] ?? 0),
+            'satuan'     => json_api_str($item['satuan'] ?? '', 50),
+            'ikon'       => json_api_str($item['ikon'] ?? '', 50),
+        ];
     }
     return [
-        'tumpang_sari'      => json_api_int($raw['tumpang_sari'] ?? 0),
-        'sawah'             => json_api_int($raw['sawah'] ?? 0),
-        'jagung'            => json_api_int($raw['jagung'] ?? 0),
+        'hero_desc'         => json_api_str($raw['hero_desc'] ?? '', 600),
+        'komoditas_desc'    => json_api_str($raw['komoditas_desc'] ?? '', 600),
+        'komoditas'         => $komList,
         'idm_status'        => json_api_str($raw['idm_status'] ?? '', 100),
-        'mata_pencaharian'  => $list,
+        'idm_progress'      => max(0, min(100, json_api_int($raw['idm_progress'] ?? 0))),
+        'idm_desc'          => json_api_str($raw['idm_desc'] ?? '', 600),
+        'mp_desc'           => json_api_str($raw['mp_desc'] ?? '', 600),
+        'mata_pencaharian'  => $mpList,
+        'sosial_judul'      => json_api_str($raw['sosial_judul'] ?? '', 200),
+        'sosial_par1'       => json_api_str($raw['sosial_par1'] ?? '', 1000),
+        'sosial_par2'       => json_api_str($raw['sosial_par2'] ?? '', 1000),
     ];
 }
 
@@ -282,7 +320,15 @@ function api_list($module, $page, $perPage, $search, $filters) {
         $list = $dataMod['mata_pencaharian'] ?? [];
         $rows = [];
         foreach ($list as $i => $m) {
-            $rows[] = ['index' => $i, 'nama' => $m];
+            $rows[] = ['index' => $i, 'nama' => $m['nama'] ?? '', 'keterangan' => $m['keterangan'] ?? ''];
+        }
+        $rawRows = $rows;
+    } elseif ($module === 'komoditas') {
+        $dataMod = json_api_read_module('potensi');
+        $list = $dataMod['komoditas'] ?? [];
+        $rows = [];
+        foreach ($list as $i => $k) {
+            $rows[] = ['index' => $i] + $k;
         }
         $rawRows = $rows;
     } elseif (in_array($module, ['pendapatan', 'belanja', 'pembiayaan'], true)) {
@@ -473,6 +519,7 @@ function api_save_module($module, $data) {
             $nama    = json_api_str($k['nama'] ?? '', 150);
             $jabatan = json_api_str($k['jabatan'] ?? '', 150);
             $foto    = json_api_str($k['foto'] ?? '', 500);
+            $sambutan = json_api_str($k['sambutan'] ?? ($old['kepala_pekon']['sambutan'] ?? ''), 2000);
             if ($nama === '' || $jabatan === '') json_api_fail('Nama dan jabatan kepala pekon wajib diisi.');
             if ($foto !== '') {
                 if (strpos($foto, 'assets/uploads/') !== 0) json_api_fail('Foto harus file upload, bukan URL.', $foto);
@@ -482,7 +529,7 @@ function api_save_module($module, $data) {
             if ($oldFoto !== $foto && strpos($oldFoto, 'assets/uploads/') === 0) {
                 @unlink(dirname($INCLUDES) . '/' . $oldFoto);
             }
-            $old['kepala_pekon'] = ['nama' => $nama, 'foto' => $foto, 'jabatan' => $jabatan];
+            $old['kepala_pekon'] = ['nama' => $nama, 'foto' => $foto, 'jabatan' => $jabatan, 'sambutan' => $sambutan];
             json_api_write_php($INCLUDES . '/pekon.php', $old, 'includes/pekon.php - Identitas & informasi umum Pekon Gunung Megang');
             $new = $old['kepala_pekon'];
             break;
@@ -494,9 +541,12 @@ function api_save_module($module, $data) {
 
         case 'potensi':
             $old = json_api_read_module('potensi');
-            // Form utama tidak mengirim mata_pencaharian (dikelola lewat tabel) -> pertahankan data lama
+            // Form utama tidak mengirim mata_pencaharian/komoditas (dikelola lewat tabel) -> pertahankan data lama
             if (!isset($data['mata_pencaharian'])) {
                 $data['mata_pencaharian'] = $old['mata_pencaharian'] ?? [];
+            }
+            if (!isset($data['komoditas'])) {
+                $data['komoditas'] = $old['komoditas'] ?? [];
             }
             $new = norm_potensi($data);
             json_api_write_php($INCLUDES . '/potensi.php', $new, 'includes/potensi.php - Potensi ekonomi dan sumber daya alam pekon');
@@ -549,15 +599,39 @@ function api_save_row($module, $data) {
         $list = $dataMod['mata_pencaharian'] ?? [];
         $val = json_api_str($data['nama'] ?? '', 150);
         if ($val === '') json_api_fail('Nama mata pencaharian wajib diisi.');
+        $row = ['nama' => $val, 'keterangan' => json_api_str($data['keterangan'] ?? '', 150)];
         $idx = isset($data['index']) && $data['index'] !== '' ? (int)$data['index'] : null;
         if ($idx !== null && isset($list[$idx])) {
-            $list[$idx] = $val;
+            $list[$idx] = $row;
         } else {
-            $list[] = $val;
+            $list[] = $row;
         }
         $dataMod['mata_pencaharian'] = $list;
         json_api_write_php($INCLUDES . '/potensi.php', norm_potensi($dataMod), 'includes/potensi.php - Potensi ekonomi dan sumber daya alam pekon');
-        json_api_ok(['module' => $module, 'saved' => ['nama' => $val]]);
+        json_api_ok(['module' => $module, 'saved' => $row]);
+    }
+
+    if ($module === 'komoditas') {
+        $dataMod = json_api_read_module('potensi');
+        $list = $dataMod['komoditas'] ?? [];
+        $nama = json_api_str($data['nama'] ?? '', 150);
+        if ($nama === '') json_api_fail('Nama komoditas wajib diisi.');
+        $row = [
+            'nama'      => $nama,
+            'deskripsi' => json_api_str($data['deskripsi'] ?? '', 600),
+            'nilai'     => json_api_int($data['nilai'] ?? 0),
+            'satuan'    => json_api_str($data['satuan'] ?? '', 50),
+            'ikon'      => json_api_str($data['ikon'] ?? '', 50),
+        ];
+        $idx = isset($data['index']) && $data['index'] !== '' ? (int)$data['index'] : null;
+        if ($idx !== null && isset($list[$idx])) {
+            $list[$idx] = $row;
+        } else {
+            $list[] = $row;
+        }
+        $dataMod['komoditas'] = $list;
+        json_api_write_php($INCLUDES . '/potensi.php', norm_potensi($dataMod), 'includes/potensi.php - Potensi ekonomi dan sumber daya alam pekon');
+        json_api_ok(['module' => $module, 'saved' => $row]);
     }
 
     if ($module === 'pendapatan' || $module === 'belanja' || $module === 'pembiayaan') {
@@ -595,6 +669,17 @@ function api_delete($module, $data) {
         if (!isset($list[$idx])) json_api_fail('Data tidak ditemukan.');
         array_splice($list, $idx, 1);
         $dataMod['mata_pencaharian'] = $list;
+        json_api_write_php($INCLUDES . '/potensi.php', norm_potensi($dataMod), 'includes/potensi.php - Potensi ekonomi dan sumber daya alam pekon');
+        json_api_ok(['module' => $module]);
+    }
+
+    if ($module === 'komoditas') {
+        $idx = (int)($data['index'] ?? -1);
+        $dataMod = json_api_read_module('potensi');
+        $list = $dataMod['komoditas'] ?? [];
+        if (!isset($list[$idx])) json_api_fail('Data tidak ditemukan.');
+        array_splice($list, $idx, 1);
+        $dataMod['komoditas'] = $list;
         json_api_write_php($INCLUDES . '/potensi.php', norm_potensi($dataMod), 'includes/potensi.php - Potensi ekonomi dan sumber daya alam pekon');
         json_api_ok(['module' => $module]);
     }

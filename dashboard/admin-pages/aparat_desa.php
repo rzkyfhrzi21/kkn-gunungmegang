@@ -48,6 +48,11 @@ $kpFotoShow  = $kpFotoExist && !preg_match('#^(https?:)?//#i', $kpFoto) && strpo
                     <span class="ms-2 text-muted small">Klik foto untuk preview</span>
                 </div>
                 <div class="col-12">
+                    <label class="form-label">Sambutan Kepala Pekon</label>
+                    <textarea class="form-control" name="kp_sambutan" rows="4" maxlength="2000"><?= htmlspecialchars($kepala['sambutan'] ?? '') ?></textarea>
+                    <div class="app-upload-hint">Teks sambutan/welcome yang tampil di halaman Pemerintahan.</div>
+                </div>
+                <div class="col-12">
                     <button type="submit" class="btn btn-primary" id="btn-save-kepala">
                         <i class="bi bi-check-lg"></i> Simpan Kepala Pekon
                     </button>
@@ -377,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function () {
         btnK.disabled = true;
         App.postJSON('../admin/api.php', {
             action: 'save', module: 'kepala_pekon',
-            data: { nama: formK.kp_nama.value, jabatan: formK.kp_jabatan.value, foto: hFotoK.value }
+            data: { nama: formK.kp_nama.value, jabatan: formK.kp_jabatan.value, foto: hFotoK.value, sambutan: formK.kp_sambutan.value }
         }).then(function (res) {
             btnK.disabled = false;
             if (res.ok) App.toast('Kepala pekon berhasil disimpan.', 'success', 'Berhasil');

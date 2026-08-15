@@ -10,7 +10,7 @@
 <span class="text-label-sm uppercase tracking-widest text-secondary font-bold">Profil Wilayah</span>
 </div>
 <h1 class="text-display text-on-surface">Potensi &amp; Ekonomi <span class="text-primary block">Lokal</span></h1>
-<p class="text-body-lg text-on-surface-variant max-w-xl">Menggali kekayaan alam dan kemandirian ekonomi Pekon Gunung Megang melalui sektor pertanian dan perkebunan unggulan.</p>
+<p class="text-body-lg text-on-surface-variant max-w-xl"><?= htmlspecialchars($pekon['potensi']['hero_desc'] ?? '') ?></p>
 <div class="pt-4">
 <a class="bg-primary text-on-primary px-8 py-4 rounded-full text-label-sm hover:bg-primary-container transition-all shadow-md flex items-center w-fit gap-3 group" href="#komoditas">
 Jelajahi Potensi
@@ -38,46 +38,32 @@ Jelajahi Potensi
 <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 <div>
 <h2 class="text-headline-lg text-on-surface mb-4">Komoditas Unggulan</h2>
-<p class="text-body-md text-on-surface-variant max-w-2xl">Tulang punggung perekonomian desa yang bertumpu pada kekayaan alam dan kerja keras masyarakat petani.</p>
+<p class="text-body-md text-on-surface-variant max-w-2xl"><?= htmlspecialchars($pekon['potensi']['komoditas_desc'] ?? '') ?></p>
 </div>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-card-gap">
+<?php
+$komColor = ['bg-primary text-on-primary', 'bg-secondary text-on-secondary', 'bg-tertiary text-on-tertiary'];
+$komText  = ['text-primary', 'text-secondary', 'text-tertiary'];
+$komBg    = ['bg-primary-fixed/30', 'bg-secondary-fixed/30', 'bg-tertiary-fixed/30'];
+foreach ($pekon['potensi']['komoditas'] as $ki => $kom):
+    $color = $komColor[$ki % 3] ?? $komColor[0];
+    $text  = $komText[$ki % 3] ?? $komText[0];
+    $bg    = $komBg[$ki % 3] ?? $komBg[0];
+?>
 <div class="bg-surface rounded-3xl p-8 border border-outline-variant/40 shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative overflow-hidden">
-<div class="absolute top-0 right-0 w-32 h-32 bg-primary-fixed/30 rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
-<div class="w-16 h-16 rounded-2xl bg-primary text-on-primary flex items-center justify-center mb-6 shadow-md">
-<span class="material-symbols-outlined text-[32px]">eco</span>
+<div class="absolute top-0 right-0 w-32 h-32 <?= $bg ?> rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
+<div class="w-16 h-16 rounded-2xl <?= $color ?> flex items-center justify-center mb-6 shadow-md">
+<span class="material-symbols-outlined text-[32px]"><?= htmlspecialchars($kom['ikon'] ?? 'eco') ?></span>
 </div>
-<h3 class="text-headline-md text-on-surface mb-3">Kopi, Lada &amp; Cengkeh</h3>
-<p class="text-body-md text-on-surface-variant mb-8 flex-grow">Sektor perkebunan tumpang sari yang menjadi tulang punggung ekonomi warga, dengan komoditas unggulan kopi robusta.</p>
+<h3 class="text-headline-md text-on-surface mb-3"><?= htmlspecialchars($kom['nama'] ?? '') ?></h3>
+<p class="text-body-md text-on-surface-variant mb-8 flex-grow"><?= htmlspecialchars($kom['deskripsi'] ?? '') ?></p>
 <div class="flex items-baseline gap-2 pt-6 border-t border-outline-variant/30 mt-auto">
-<span class="text-display text-primary"><?= $pekon['potensi']['tumpang_sari'] ?></span>
-<span class="text-label-sm text-on-surface-variant uppercase tracking-widest font-bold">Hektar</span>
+<span class="text-display <?= $text ?>"><?= (int)($kom['nilai'] ?? 0) ?></span>
+<span class="text-label-sm text-on-surface-variant uppercase tracking-widest font-bold"><?= htmlspecialchars($kom['satuan'] ?? '') ?></span>
 </div>
 </div>
-<div class="bg-surface rounded-3xl p-8 border border-outline-variant/40 shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative overflow-hidden">
-<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-fixed/30 rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
-<div class="w-16 h-16 rounded-2xl bg-secondary text-on-secondary flex items-center justify-center mb-6 shadow-md">
-<span class="material-symbols-outlined text-[32px]">grass</span>
-</div>
-<h3 class="text-headline-md text-on-surface mb-3">Persawahan</h3>
-<p class="text-body-md text-on-surface-variant mb-8 flex-grow">Lahan produktif untuk mendukung ketahanan pangan daerah, dikelola dengan sistem irigasi teknis mandiri.</p>
-<div class="flex items-baseline gap-2 pt-6 border-t border-outline-variant/30 mt-auto">
-<span class="text-display text-secondary"><?= $pekon['potensi']['sawah'] ?></span>
-<span class="text-label-sm text-on-surface-variant uppercase tracking-widest font-bold">Hektar</span>
-</div>
-</div>
-<div class="bg-surface rounded-3xl p-8 border border-outline-variant/40 shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative overflow-hidden">
-<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary-fixed/30 rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
-<div class="w-16 h-16 rounded-2xl bg-tertiary text-on-tertiary flex items-center justify-center mb-6 shadow-md">
-<span class="material-symbols-outlined text-[32px]">agriculture</span>
-</div>
-<h3 class="text-headline-md text-on-surface mb-3">Perkebunan Jagung</h3>
-<p class="text-body-md text-on-surface-variant mb-8 flex-grow">Komoditas palawija sebagai alternatif ekonomi kreatif masyarakat dan sumber pakan ternak.</p>
-<div class="flex items-baseline gap-2 pt-6 border-t border-outline-variant/30 mt-auto">
-<span class="text-display text-tertiary"><?= $pekon['potensi']['jagung'] ?></span>
-<span class="text-label-sm text-on-surface-variant uppercase tracking-widest font-bold">Hektar</span>
-</div>
-</div>
+<?php endforeach; ?>
 </div>
 </div>
 </section>
@@ -90,11 +76,10 @@ Jelajahi Potensi
 <h2 class="text-headline-md text-on-surface">Mata Pencaharian Utama</h2>
 <span class="material-symbols-outlined text-primary text-3xl">work</span>
 </div>
-<p class="text-body-md text-on-surface-variant mb-10">Struktur demografi pekerjaan yang menunjukkan dominasi sektor agraris sebagai pondasi ekonomi keluarga.</p>
+<p class="text-body-md text-on-surface-variant mb-10"><?= htmlspecialchars($pekon['potensi']['mp_desc'] ?? '') ?></p>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <?php
 $mpIcons = ['local_florist', 'storefront', 'engineering', 'domain'];
-$mpSubs = ['Mayoritas', 'Sektor Jasa', 'Sektor Informal', 'Formal & Jasa'];
 $mpBadges = ['bg-primary-fixed text-on-primary-fixed', 'bg-secondary-fixed text-on-secondary-fixed', 'bg-tertiary-fixed text-on-tertiary-fixed', 'bg-surface-variant text-on-surface-variant'];
 $mpHovers = ['hover:bg-primary-fixed/10 hover:border-primary-fixed/30', 'hover:bg-secondary-fixed/10 hover:border-secondary-fixed/30', 'hover:bg-tertiary-fixed/10 hover:border-tertiary-fixed/30', 'hover:bg-surface-variant/30 hover:border-outline-variant/30'];
 foreach ($pekon['potensi']['mata_pencaharian'] as $i => $m):
@@ -104,8 +89,8 @@ foreach ($pekon['potensi']['mata_pencaharian'] as $i => $m):
 <span class="material-symbols-outlined"><?= $mpIcons[$i % 4] ?></span>
 </div>
 <div class="flex flex-col">
-<span class="text-label-sm font-bold text-on-surface"><?= htmlspecialchars($m) ?></span>
-<span class="text-body-md text-on-surface-variant"><?= $mpSubs[$i % 4] ?></span>
+<span class="text-label-sm font-bold text-on-surface"><?= htmlspecialchars($m['nama'] ?? '') ?></span>
+<span class="text-body-md text-on-surface-variant"><?= htmlspecialchars($m['keterangan'] ?? '') ?></span>
 </div>
 </div>
 <?php endforeach; ?>
@@ -124,18 +109,18 @@ foreach ($pekon['potensi']['mata_pencaharian'] as $i => $m):
 </div>
 <div class="mb-auto">
 <h3 class="text-label-sm uppercase tracking-widest text-primary-fixed/80 mb-2">Status <?= $pekon['tahun'] ?></h3>
-<div class="text-display font-bold leading-none mb-6">Desa<br/><?= $pekon['potensi']['idm_status'] ?></div>
-<p class="text-body-md text-on-primary/90">Pekon Gunung Megang terus menunjukkan tren positif dalam pemenuhan indikator sosial, ekonomi, dan ekologi menuju desa mandiri.</p>
+<div class="text-display font-bold leading-none mb-6">Desa<br/><?= htmlspecialchars($pekon['potensi']['idm_status'] ?? '') ?></div>
+<p class="text-body-md text-on-primary/90"><?= htmlspecialchars($pekon['potensi']['idm_desc'] ?? '') ?></p>
 </div>
 <div class="mt-8 pt-6 border-t border-primary-container/50">
 <div class="w-full bg-primary-container h-3 rounded-full overflow-hidden mb-3">
-<div class="bg-primary-fixed h-full rounded-full w-[65%] relative">
+<div class="bg-primary-fixed h-full rounded-full relative" style="width: <?= (int)($pekon['potensi']['idm_progress'] ?? 0) ?>%">
 <div class="absolute inset-0 bg-gradient-to-r from-transparent to-white/30"></div>
 </div>
 </div>
 <div class="flex justify-between text-label-sm text-on-primary/70">
 <span>Tertinggal</span>
-<span class="text-primary-fixed font-bold"><?= $pekon['potensi']['idm_status'] ?></span>
+<span class="text-primary-fixed font-bold"><?= htmlspecialchars($pekon['potensi']['idm_status'] ?? '') ?></span>
 <span>Maju</span>
 <span>Mandiri</span>
 </div>
@@ -158,10 +143,10 @@ foreach ($pekon['potensi']['mata_pencaharian'] as $i => $m):
 <span class="material-symbols-outlined text-secondary">diversity_3</span>
 <span class="text-label-sm uppercase tracking-widest text-secondary font-bold">Kehidupan Sosial</span>
 </div>
-<h2 class="text-headline-lg text-on-surface mb-6">Harmoni dalam Masyarakat</h2>
+<h2 class="text-headline-lg text-on-surface mb-6"><?= htmlspecialchars($pekon['potensi']['sosial_judul'] ?? '') ?></h2>
 <div class="prose prose-lg text-body-lg text-on-surface-variant">
-<p class="mb-4">Masyarakat Pekon Gunung Megang <strong>mayoritas beragama Islam</strong>, tercermin dari kuatnya nilai-nilai religius dalam kehidupan sehari-hari dan keberadaan masjid serta musholla sebagai pusat kegiatan warga.</p>
-<p>Kehidupan sosial masyarakat diwarnai oleh semangat gotong royong yang kental, saling menghormati, dan menjaga kerukunan, menciptakan lingkungan desa yang aman, damai, dan kondusif untuk pembangunan berkelanjutan.</p>
+<p class="mb-4"><?= $pekon['potensi']['sosial_par1'] ?? '' ?></p>
+<p><?= $pekon['potensi']['sosial_par2'] ?? '' ?></p>
 </div>
 </div>
 </div>

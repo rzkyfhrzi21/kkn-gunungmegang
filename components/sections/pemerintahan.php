@@ -39,7 +39,7 @@ if ($kepalaFoto === '' || !file_exists($kepalaFoto)) $kepalaFoto = '';
 <p class="text-body-md text-primary font-bold uppercase tracking-widest mb-6"><?= htmlspecialchars($pekon['kepala_pekon']['jabatan']) ?></p>
 <div class="relative">
 <span class="material-symbols-outlined text-6xl text-surface-container-high absolute -top-4 -left-4 -z-10">format_quote</span>
-<p class="text-body-lg text-slate-text-muted leading-relaxed italic mb-8 relative z-10 pl-4 border-l-4 border-primary">"Assalamu'alaikum Warahmatullahi Wabarakatuh. Selamat datang di portal resmi Pemerintahan Pekon Gunung Megang. Kami hadir untuk memberikan pelayanan terbaik yang transparan, akuntabel, dan berorientasi pada kesejahteraan seluruh lapisan masyarakat. Mari bersama-sama membangun pekon kita tercinta."</p>
+<p class="text-body-lg text-slate-text-muted leading-relaxed italic mb-8 relative z-10 pl-4 border-l-4 border-primary">"<?= htmlspecialchars($pekon['kepala_pekon']['sambutan'] ?? '') ?>"</p>
 </div>
 <div class="flex gap-4">
 <a class="inline-flex items-center justify-center bg-primary text-on-primary rounded-full px-6 py-3 font-label-sm uppercase tracking-wider shadow-md hover:-translate-y-0.5 transition-transform duration-300" href="kontak">

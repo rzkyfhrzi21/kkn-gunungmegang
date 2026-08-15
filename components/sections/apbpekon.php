@@ -65,7 +65,7 @@ $pembiayaanLabels = [
       <p class="text-body-md text-slate-text-muted">Total Pendapatan <?= $apbTahun ?></p>
       <div class="mt-4 pt-4 border-t border-border-neutral space-y-2 text-body-md">
         <?php foreach ($pendapatanLabels as $key => $label): ?>
-        <div class="flex justify-between"><span class="text-slate-text-muted"><?= $label ?></span><span class="font-semibold"><?= apb_fmt($apb['pendapatan'][$key]) ?></span></div>
+        <div class="flex justify-between gap-2"><span class="text-slate-text-muted"><?= $label ?></span><span class="font-semibold whitespace-nowrap"><?= apb_fmt($apb['pendapatan'][$key]) ?></span></div>
         <?php endforeach; ?>
       </div>
     </div>
@@ -81,7 +81,7 @@ $pembiayaanLabels = [
       <p class="text-body-md text-slate-text-muted">Total Belanja <?= $apbTahun ?></p>
       <div class="mt-4 pt-4 border-t border-border-neutral space-y-2 text-body-md">
         <?php foreach ($belanjaLabels as $key => $info): ?>
-        <div class="flex justify-between"><span class="text-slate-text-muted"><?= $info[0] ?></span><span class="font-semibold"><?= apb_fmt($apb['belanja'][$key]) ?></span></div>
+        <div class="flex justify-between gap-2"><span class="text-slate-text-muted"><?= $info[0] ?></span><span class="font-semibold whitespace-nowrap"><?= apb_fmt($apb['belanja'][$key]) ?></span></div>
         <?php endforeach; ?>
       </div>
     </div>
@@ -97,7 +97,7 @@ $pembiayaanLabels = [
       <p class="text-body-md text-on-primary/80">Defisit anggaran ditutup pembiayaan netto</p>
       <div class="mt-4 pt-4 border-t border-primary-container space-y-2 text-body-md">
         <?php foreach ($pembiayaanLabels as $key => $label): ?>
-        <div class="flex justify-between"><span class="text-on-primary/80"><?= $label ?></span><span class="font-semibold text-primary-fixed"><?= apb_fmt($apb['pembiayaan'][$key]) ?></span></div>
+        <div class="flex justify-between gap-2"><span class="text-on-primary/80"><?= $label ?></span><span class="font-semibold text-primary-fixed whitespace-nowrap"><?= apb_fmt($apb['pembiayaan'][$key]) ?></span></div>
         <?php endforeach; ?>
       </div>
     </div>
