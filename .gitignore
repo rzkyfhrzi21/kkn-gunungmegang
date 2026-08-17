@@ -11,10 +11,12 @@ graphify-out/
 .vscode/
 
 # Data runtime (JSON DB) - JANGAN DI-PUSH
-# db/data.txt
-# db/json/security_log.json
+db/data.txt
+db/json/*.json
+!db/json/.gitkeep
 
 # File generated & upload user
-# dashboard/assets/generated/
-# dashboard/assets/img/foto_profil/
-# dashboard/assets/img/destinasi_wisata/
+assets/uploads/
+dashboard/assets/generated/
+dashboard/assets/img/foto_profil/
+dashboard/assets/img/destinasi_wisata/
