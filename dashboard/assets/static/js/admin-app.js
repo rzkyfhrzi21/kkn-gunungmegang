@@ -126,11 +126,28 @@
                 '<div class="modal-body app-preview-body"><div class="app-preview-loading">' +
                 '<div class="spinner-border text-primary"></div></div></div>' +
                 '</div></div>';
+            /* Tombol tutup × — posisi fixed pojok kanan atas */
+            var closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.id   = 'app-preview-close';
+            closeBtn.setAttribute('aria-label', 'Tutup preview');
+            closeBtn.innerHTML = '<i class="bi bi-x-lg"></i>';
+            closeBtn.addEventListener('click', function () { hideModal(m); });
+            m.appendChild(closeBtn);
             document.body.appendChild(m);
+            /* Tutup saat klik backdrop */
             m.addEventListener('click', function (e) { if (e.target === m) hideModal(m); });
         }
         return m;
     }
+
+    /* Tutup preview modal dengan tombol Escape */
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            var m = $('#app-preview-modal');
+            if (m && m.classList.contains('show')) hideModal(m);
+        }
+    });
 
     /** App.preview(src, type) — 'image' | 'video' */
     function preview(src, type) {
@@ -378,6 +395,10 @@
                 var tr = document.createElement('tr');
                 var html = '';
                 o.columns.forEach(function (col) {
+                    if (col.no) {
+                        html += '<td class="text-center">' + (((res.page - 1) * res.perPage) + i + 1) + '</td>';
+                        return;
+                    }
                     var v = row[col.key];
                     if (col.format) {
                         html += '<td class="' + (col.align || '') + '">' + col.format(row, v) + '</td>';
@@ -447,17 +468,82 @@
 
     /* ------------------------- HAMBURGER SIDEBAR ------------------------- */
     function initSidebar() {
-        var btn = $('#btn-hamburger');
-        var app = $('#app');
+        var btn      = $('#btn-hamburger');
+        var app      = $('#app');
+        var backdrop = document.getElementById('sidebar-backdrop');
+        var closeBtns = document.querySelectorAll('.sidebar-hide-btn, .sidebar-hide');
         if (!btn || !app) return;
 
-        var saved = null;
-        try { saved = localStorage.getItem('admin.sidebar'); } catch (e) {}
-        if (saved === 'collapsed') app.classList.add('sidebar-collapsed');
+        var mq = window.matchMedia('(max-width: 1199.98px)');
+        function isMobile() { return mq.matches; }
 
-        btn.addEventListener('click', function () {
-            var collapsed = app.classList.toggle('sidebar-collapsed');
-            try { localStorage.setItem('admin.sidebar', collapsed ? 'collapsed' : 'open'); } catch (e) {}
+        function openMobileSidebar() {
+            app.classList.add('sidebar-mobile-open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileSidebar() {
+            app.classList.remove('sidebar-mobile-open');
+            document.body.style.overflow = '';
+        }
+
+        /* Desktop: pulihkan state dari localStorage */
+        if (!isMobile()) {
+            var saved = null;
+            try { saved = localStorage.getItem('admin.sidebar'); } catch (e) {}
+            if (saved === 'collapsed') app.classList.add('sidebar-collapsed');
+        }
+
+        /* Hamburger click */
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (isMobile()) {
+                if (app.classList.contains('sidebar-mobile-open')) {
+                    closeMobileSidebar();
+                } else {
+                    openMobileSidebar();
+                }
+            } else {
+                /* Desktop: collapse/expand sidebar */
+                var collapsed = app.classList.toggle('sidebar-collapsed');
+                try { localStorage.setItem('admin.sidebar', collapsed ? 'collapsed' : 'open'); } catch (e) {}
+            }
+        });
+
+        /* Close button (X di header sidebar mobile) */
+        closeBtns.forEach(function (cb) {
+            cb.addEventListener('click', function (e) {
+                e.preventDefault();
+                closeMobileSidebar();
+            });
+        });
+
+        /* Backdrop: klik untuk tutup drawer mobile */
+        if (backdrop) {
+            backdrop.addEventListener('click', function () {
+                closeMobileSidebar();
+            });
+        }
+
+        /* Auto-close drawer saat klik link nav di mobile */
+        document.querySelectorAll('#sidebar .sidebar-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (isMobile()) closeMobileSidebar();
+            });
+        });
+
+        /* Keyboard: Escape untuk menutup sidebar mobile jika terbuka */
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && app.classList.contains('sidebar-mobile-open')) {
+                closeMobileSidebar();
+            }
+        });
+
+        /* Resize: bersihkan class mobile saat pindah ke desktop */
+        mq.addEventListener('change', function (e) {
+            if (!e.matches) {
+                closeMobileSidebar();
+            }
         });
     }
 

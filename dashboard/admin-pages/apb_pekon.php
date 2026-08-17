@@ -45,21 +45,42 @@ endif;
 <?php if (!$isDetail):
     $listYears = array_keys($allApb);
     $listYearsAsc = array_reverse($listYears);
-    $chartKompilasi = ['tahun' => [], 'pendapatan' => [], 'belanja' => [], 'pembiayaan' => []];
+    $chartKompilasi = ['tahun' => [], 'pendapatan' => [], 'belanja' => [], 'pembiayaan' => [], 'surplus' => []];
     foreach ($listYearsAsc as $yr) {
-        $chartKompilasi['tahun'][] = (int)$yr;
-        $chartKompilasi['pendapatan'][] = round((float)($allApb[$yr]['pendapatan']['total'] ?? 0));
-        $chartKompilasi['belanja'][] = round((float)($allApb[$yr]['belanja']['total'] ?? 0));
+        $pen = round((float)($allApb[$yr]['pendapatan']['total'] ?? 0));
+        $bel = round((float)($allApb[$yr]['belanja']['total'] ?? 0));
+        $chartKompilasi['tahun'][]      = (int)$yr;
+        $chartKompilasi['pendapatan'][] = $pen;
+        $chartKompilasi['belanja'][]    = $bel;
         $chartKompilasi['pembiayaan'][] = round((float)($allApb[$yr]['pembiayaan']['pembiayaan_netto'] ?? 0));
+        $chartKompilasi['surplus'][]    = $pen - $bel;
     }
 ?>
 <section class="section">
-    <div class="card mb-3">
-        <div class="card-header d-flex align-items-center gap-2">
-            <i class="bi bi-bar-chart text-primary"></i>
-            <h6 class="mb-0">Perbandingan APB per Tahun Anggaran</h6>
+    <div class="row gy-3 mb-3">
+        <div class="col-lg-7">
+            <div class="card h-100 mb-0">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i class="bi bi-bar-chart text-primary"></i>
+                    <h6 class="mb-0">Perbandingan APB per Tahun Anggaran</h6>
+                </div>
+                <div class="card-body py-2"><div id="apb-chart-kompilasi"></div></div>
+            </div>
         </div>
-        <div class="card-body"><div id="apb-chart-kompilasi" style="height:300px"></div></div>
+        <div class="col-lg-5">
+            <div class="card h-100 mb-0">
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-activity text-warning"></i>
+                        <h6 class="mb-0">Surplus / Defisit</h6>
+                    </div>
+                    <span class="badge bg-light text-muted small py-1 px-2 border" style="font-size:11px">
+                        <span class="text-success fw-bold">● Hijau</span> Surplus &nbsp;|&nbsp; <span class="text-danger fw-bold">● Merah</span> Defisit
+                    </span>
+                </div>
+                <div class="card-body py-2"><div id="apb-chart-surplus"></div></div>
+            </div>
+        </div>
     </div>
 
     <div class="card">
@@ -220,37 +241,128 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function rpCompact(v) {
         v = Number(v) || 0;
-        if (v >= 1e9) return 'Rp ' + (v / 1e9).toFixed(1).replace('.', ',') + ' M';
-        if (v >= 1e6) return 'Rp ' + (v / 1e6).toFixed(1).replace('.', ',') + ' jt';
-        if (v >= 1e3) return 'Rp ' + (v / 1e3).toFixed(0) + ' rb';
-        return 'Rp ' + Math.round(v);
+        var prefix = v < 0 ? 'Rp -' : 'Rp ';
+        var abs = Math.abs(v);
+        if (abs >= 1e9) return prefix + (abs / 1e9).toFixed(1).replace('.', ',') + ' M';
+        if (abs >= 1e6) return prefix + (abs / 1e6).toFixed(1).replace('.', ',') + ' jt';
+        if (abs >= 1e3) return prefix + (abs / 1e3).toFixed(0) + ' rb';
+        return prefix + Math.round(abs);
     }
-    function rp(v) { return 'Rp ' + Math.round(v).toLocaleString('id-ID'); }
+    function rp(v) {
+        v = Number(v) || 0;
+        var prefix = v < 0 ? '-Rp ' : 'Rp ';
+        return prefix + Math.abs(Math.round(v)).toLocaleString('id-ID');
+    }
     function noData(el) {
         el.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i>Belum ada data</div>';
     }
 
     var chartKompilasi = <?= json_encode($chartKompilasi, $jsonFlags) ?>;
     var elKompilasi = document.getElementById('apb-chart-kompilasi');
-    var hasData = (chartKompilasi.tahun || []).length > 0 &&
+    var numYears = (chartKompilasi.tahun || []).length;
+    var hasData = numYears > 0 &&
         chartKompilasi.pendapatan.some(function (v) { return v > 0; });
     if (elKompilasi && !hasData) { noData(elKompilasi); }
     else if (elKompilasi) {
         new ApexCharts(elKompilasi, {
-            chart: { type: 'bar', toolbar: { show: false }, stacked: false },
+            chart: {
+                type: 'bar',
+                height: 260,
+                toolbar: { show: false },
+                stacked: false,
+                parentHeightOffset: 0
+            },
             series: [
                 { name: 'Pendapatan', data: chartKompilasi.pendapatan },
                 { name: 'Belanja', data: chartKompilasi.belanja },
                 { name: 'Pembiayaan', data: chartKompilasi.pembiayaan }
             ],
             colors: ['#10b981', '#ef4444', '#3b82f6'],
-            plotOptions: { bar: { columnWidth: '55%', borderRadius: 3 } },
+            plotOptions: {
+                bar: {
+                    columnWidth: numYears === 1 ? '38%' : (numYears <= 2 ? '48%' : '58%'),
+                    borderRadius: 4
+                }
+            },
             xaxis: { categories: chartKompilasi.tahun },
-            legend: { position: 'top' },
+            legend: { position: 'top', horizontalAlign: 'right', offsetTop: -8 },
             dataLabels: { enabled: false },
             yaxis: { labels: { formatter: function (v) { return rpCompact(v); } } },
+            grid: { borderColor: '#f1f5f9', strokeDashArray: 3, padding: { top: 0, bottom: 0 } },
             tooltip: { y: { formatter: function (v) { return rp(v); } } }
         }).render();
+    }
+
+    var elSurplus = document.getElementById('apb-chart-surplus');
+    if (elSurplus) {
+        var surplusData = chartKompilasi.surplus || [];
+        var hasSurplus  = surplusData.some(function (v) { return v !== 0; });
+        if (!hasSurplus) { noData(elSurplus); }
+        else {
+            new ApexCharts(elSurplus, {
+                chart: {
+                    type: 'bar',
+                    height: 260,
+                    toolbar: { show: false },
+                    parentHeightOffset: 0
+                },
+                series: [{ name: 'Surplus / Defisit', data: surplusData }],
+                colors: ['#10b981'],
+                plotOptions: {
+                    bar: {
+                        columnWidth: numYears === 1 ? '22%' : (numYears <= 2 ? '36%' : '48%'),
+                        borderRadius: 5,
+                        colors: {
+                            ranges: [
+                                { from: -1e15, to: -0.01, color: '#ef4444' },
+                                { from: 0,     to:  1e15, color: '#10b981' }
+                            ]
+                        }
+                    }
+                },
+                xaxis: {
+                    categories: chartKompilasi.tahun,
+                    axisBorder: { show: true, color: '#cbd5e1' },
+                    axisTicks: { show: true }
+                },
+                legend: { show: false },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function (val) { return rpCompact(val); },
+                    style: {
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        colors: ['#334155']
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (v) { return rpCompact(v); }
+                    }
+                },
+                grid: {
+                    borderColor: '#f1f5f9',
+                    strokeDashArray: 3,
+                    padding: { top: 0, bottom: 0 }
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (v) {
+                            return (v > 0 ? '+Rp ' : (v < 0 ? '-Rp ' : 'Rp ')) + Math.abs(Math.round(v)).toLocaleString('id-ID');
+                        }
+                    }
+                },
+                annotations: {
+                    yaxis: [{
+                        y: 0,
+                        borderColor: '#64748b',
+                        strokeDashArray: 3,
+                        borderWidth: 1.5,
+                        label: { text: '', borderWidth: 0 }
+                    }]
+                }
+            }).render();
+        }
     }
 });
 </script>
@@ -355,13 +467,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (window.ApexCharts) {
         var PALETTE = ['#0ea5a4', '#3b82f6', '#f59e0b', '#ef4444', '#10b981'];
-        function rp(v) { return 'Rp ' + Math.round(v).toLocaleString('id-ID'); }
         function rpCompact(v) {
             v = Number(v) || 0;
-            if (v >= 1e9) return 'Rp ' + (v / 1e9).toFixed(1).replace('.', ',') + ' M';
-            if (v >= 1e6) return 'Rp ' + (v / 1e6).toFixed(1).replace('.', ',') + ' jt';
-            if (v >= 1e3) return 'Rp ' + (v / 1e3).toFixed(0) + ' rb';
-            return 'Rp ' + Math.round(v);
+            var prefix = v < 0 ? 'Rp -' : 'Rp ';
+            var abs = Math.abs(v);
+            if (abs >= 1e9) return prefix + (abs / 1e9).toFixed(1).replace('.', ',') + ' M';
+            if (abs >= 1e6) return prefix + (abs / 1e6).toFixed(1).replace('.', ',') + ' jt';
+            if (abs >= 1e3) return prefix + (abs / 1e3).toFixed(0) + ' rb';
+            return prefix + Math.round(abs);
+        }
+        function rp(v) {
+            v = Number(v) || 0;
+            var prefix = v < 0 ? '-Rp ' : 'Rp ';
+            return prefix + Math.abs(Math.round(v)).toLocaleString('id-ID');
         }
         function noData(el) {
             el.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i>Belum ada data</div>';

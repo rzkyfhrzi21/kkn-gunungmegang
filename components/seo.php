@@ -8,8 +8,14 @@
  */
 require_once __DIR__ . '/../includes/data.php';
 
-$seoPage = basename($_SERVER['SCRIPT_NAME'] ?? 'index', '.php');
+// Gunakan REQUEST_URI (URL publik di browser), BUKAN SCRIPT_NAME (path file fisik setelah rewrite).
+// Setelah restructuring ke views/landing/, SCRIPT_NAME berisi 'views/landing/...' bukan URL publik asli.
+$_reqPath = strtok($_SERVER['REQUEST_URI'] ?? '/', '?#'); // buang query string & fragment
+$_reqPath = rtrim($_reqPath, '/');                         // buang trailing slash
+$_slug    = basename($_reqPath);                           // 'layanan-umkm', 'index', ''
+// $seoPage ditetapkan setelah $seoMap didefinisikan di bawah
 $siteName = $pekon['nama'] ?? 'Pekon Gunung Megang';
+
 
 $seoMap = [
     'index' => [
@@ -54,12 +60,21 @@ $seoMap = [
     ],
 ];
 
+// Deteksi halaman dari slug URL publik (REQUEST_URI), setelah $seoMap tersedia
+$seoPage = (isset($seoMap[$_slug]) && $_slug !== '') ? $_slug : 'index';
+
 $seo = $seoMap[$seoPage] ?? $seoMap['index'];
 
 $scheme   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
-$baseUrl  = $scheme . '://' . $host . $basePath;
+
+// basePath = prefix subdirektori.
+// - Beranda: $_reqPath IS the basePath ('' di produksi root, '/kkn-gunungmegang' di lokal)
+// - Halaman lain: satu level naik dari slug (dirname '/kkn-gunungmegang/layanan-umkm' = '/kkn-gunungmegang')
+$_basePath = $seoPage === 'index'
+    ? $_reqPath
+    : rtrim(str_replace('\\', '/', dirname($_reqPath)), '/');
+$baseUrl   = $scheme . '://' . $host . $_basePath;
 $canonical = $baseUrl . ($seoPage === 'index' ? '/' : '/' . $seoPage);
 
 $ogImage  = $baseUrl . '/assets/images/Lambang_Kabupaten_Tanggamus.png';

@@ -4,5 +4,8 @@
 <script src="assets/static/js/pages/horizontal-layout.js"></script>
 <script src="assets/compiled/js/app.js"></script>
 
+<!-- Select2 -->
+<script src="assets/extensions/select2/select2.min.js"></script>
+
 <!-- Admin UI Kit: toast, preview, JsonTable, upload, hamburger -->
-<script src="assets/static/js/admin-app.js?v=20260815f"></script>
+<script src="assets/static/js/admin-app.js?v=20260817e"></script>

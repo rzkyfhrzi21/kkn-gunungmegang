@@ -202,8 +202,13 @@ function json_api_layanan_umkm_foto($v) {
     return '';
 }
 
-/** Link Google Maps: hanya URL http(s) yang diterima. */
+/** Link Google Maps: hanya URL http(s) yang diterima; format ?q=lat,lng diubah jadi https://maps.google.com/?q=... */
 function json_api_layanan_umkm_maps($v) {
+    $v = json_api_str($v, 1000);
+    if ($v === '') return '';
+    if (preg_match('#^\?q=#i', $v)) {
+        $v = 'https://maps.google.com/' . $v;
+    }
     return sanitize_url($v, 1000);
 }
 
@@ -415,6 +420,14 @@ function api_list($module, $page, $perPage, $search, $filters) {
                 'pembiayaan' => (float)($d['pembiayaan']['pembiayaan_netto'] ?? 0),
             ];
         }
+        $rawRows = $rows;
+    } elseif ($module === 'aspirasi') {
+        $all = db_read('aspirasi');
+        $rows = [];
+        foreach ($all as $i => $r) {
+            $rows[] = array_merge(['index' => $i], $r);
+        }
+        $rows = array_reverse($rows); // terbaru tampil di atas
         $rawRows = $rows;
     } else {
         json_api_fail('Modul tidak dikenal.', $module);
@@ -812,6 +825,15 @@ function api_delete($module, $data) {
         if (count($all) <= 1) json_api_fail('Tidak dapat menghapus tahun anggaran terakhir.');
         unset($all[$tahun]);
         apb_write_all($all);
+        json_api_ok(['module' => $module]);
+    }
+
+    if ($module === 'aspirasi') {
+        $all = db_read('aspirasi');
+        $idx = (int)($data['index'] ?? -1);
+        if (!isset($all[$idx])) json_api_fail('Data tidak ditemukan.');
+        array_splice($all, $idx, 1);
+        db_write('aspirasi', $all);
         json_api_ok(['module' => $module]);
     }
 

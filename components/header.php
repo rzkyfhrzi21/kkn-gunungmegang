@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../includes/data.php';
-$activePage = basename($_SERVER['SCRIPT_NAME'], '.php');
+// Gunakan REQUEST_URI (URL publik) agar konsisten setelah restructuring ke views/landing/
+$_hReqPath  = strtok($_SERVER['REQUEST_URI'] ?? '/', '?#');
+$activePage = basename(rtrim($_hReqPath, '/')) ?: 'index';
 ?>
 <style>
 /* ===== HEADER & FOOTER ===== */
@@ -21,13 +23,78 @@ $activePage = basename($_SERVER['SCRIPT_NAME'], '.php');
 .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;}
 .nav-toggle span{width:22px;height:2.5px;background:#0a3d2f;border-radius:2px;transition:.3s;}
 @media (max-width:1024px){
-  .site-nav{display:none;position:absolute;top:78px;left:0;right:0;background:#fff;flex-direction:column;padding:16px 24px;box-shadow:0 12px 24px rgba(0,0,0,.08);}
-  .site-nav.open{display:flex;}
-  .nav-toggle{display:flex;}
+  .site-nav{
+    display:none;
+    position:fixed;inset:0;z-index:998;
+    background:#fff;
+    flex-direction:column;
+    padding:calc(78px + 16px) 28px 48px;
+    overflow-y:auto;
+    gap:2px;
+  }
+  .site-nav.open{display:flex;animation:navOpenFade .22s ease;}
+  @keyframes navOpenFade{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+  .nav-toggle{display:flex;position:relative;z-index:1001;}
+  .site-nav .nav-link{
+    font-size:15px;padding:13px 16px;border-radius:12px;width:100%;
+    border-bottom:1px solid #f1f5f9;
+  }
+  .site-nav .nav-link:last-child{border-bottom:none;}
 }
 @media (max-width:768px){
   .btn-contact{display:none;}
   .brand-name{font-size:14px;}
+}
+/* ===== NAV DROPDOWN ===== */
+.nav-dropdown{position:relative;}
+.nav-dropdown-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:9px 14px;border-radius:10px;font-size:13px;font-weight:700;
+  color:#475569;background:none;border:none;cursor:pointer;
+  text-transform:uppercase;letter-spacing:.05em;transition:all .2s;white-space:nowrap;
+}
+.nav-dropdown-btn:hover,.nav-dropdown-btn:focus{color:#0a3d2f;background:#ecfdf5;outline:none;}
+.nav-dropdown-btn.active{color:#ffffff;background:#0a3d2f;}
+.nav-dropdown-btn.active .nav-chevron{color:#fff;}
+.nav-chevron{width:14px;height:14px;flex-shrink:0;transition:transform .2s;color:#94a3b8;}
+.nav-dropdown-menu{
+  position:absolute;top:calc(100% + 6px);left:50%;
+  transform:translateX(-50%) translateY(-6px);
+  background:#fff;border-radius:14px;
+  box-shadow:0 8px 32px rgba(6,35,27,.15),0 2px 8px rgba(0,0,0,.06);
+  padding:6px;min-width:210px;
+  opacity:0;visibility:hidden;
+  transition:opacity .18s ease,visibility .18s ease,transform .18s ease;
+  border:1px solid rgba(10,61,47,.07);
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown.open .nav-dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+.nav-dropdown:hover .nav-chevron,
+.nav-dropdown.open .nav-chevron{transform:rotate(180deg);}
+.nav-dropdown-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:9px;font-size:13px;font-weight:600;
+  color:#334155;text-decoration:none;letter-spacing:.02em;transition:all .15s;
+}
+.nav-dropdown-item:hover{background:#ecfdf5;color:#0a3d2f;}
+.nav-dropdown-item.active{background:#0a3d2f;color:#fff;}
+.nav-dropdown-item .nd-icon{width:16px;height:16px;flex-shrink:0;opacity:.7;}
+@media (max-width:1024px){
+  .nav-dropdown{width:100%;}
+  .nav-dropdown-btn{
+    width:100%;justify-content:space-between;
+    padding:13px 16px;font-size:15px;border-radius:12px;
+    border-bottom:1px solid #f1f5f9;
+  }
+  .nav-dropdown.open .nav-dropdown-btn{border-bottom-color:transparent;}
+  .nav-dropdown-menu{
+    position:static;transform:none !important;opacity:1;visibility:visible;
+    box-shadow:none;border:none;border-radius:0;padding:0;min-width:0;
+    display:none;padding-left:20px;margin-bottom:4px;
+    background:#f8fafb;border-radius:12px;
+  }
+  .nav-dropdown.open .nav-dropdown-menu{display:flex;flex-direction:column;gap:2px;padding:6px 8px;}
+  .nav-dropdown-item{padding:10px 14px;font-size:14px;border-radius:10px;}
 }
 /* ---------- Preview Media (front) ---------- */
 .front-preview-overlay{

@@ -39,15 +39,15 @@ $iconOptions = ['eco', 'grass', 'agriculture', 'storefront', 'local_florist', 'e
                     <form id="form-potensi" class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Deskripsi Hero (Potensi &amp; Ekonomi Lokal)</label>
-                            <textarea class="form-control" name="hero_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['hero_desc'] ?? '') ?></textarea>
+                            <textarea class="form-control" name="hero_desc" rows="5" maxlength="600"><?= htmlspecialchars($potensiData['hero_desc'] ?? '') ?></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Deskripsi Section Komoditas Unggulan</label>
-                            <textarea class="form-control" name="komoditas_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['komoditas_desc'] ?? '') ?></textarea>
+                            <textarea class="form-control" name="komoditas_desc" rows="5" maxlength="600"><?= htmlspecialchars($potensiData['komoditas_desc'] ?? '') ?></textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Deskripsi Mata Pencaharian Utama</label>
-                            <textarea class="form-control" name="mp_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['mp_desc'] ?? '') ?></textarea>
+                            <textarea class="form-control" name="mp_desc" rows="5" maxlength="600"><?= htmlspecialchars($potensiData['mp_desc'] ?? '') ?></textarea>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Status IDM</label>
@@ -63,7 +63,7 @@ $iconOptions = ['eco', 'grass', 'agriculture', 'storefront', 'local_florist', 'e
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Deskripsi IDM</label>
-                            <textarea class="form-control" name="idm_desc" rows="2" maxlength="600"><?= htmlspecialchars($potensiData['idm_desc'] ?? '') ?></textarea>
+                            <textarea class="form-control" name="idm_desc" rows="5" maxlength="600"><?= htmlspecialchars($potensiData['idm_desc'] ?? '') ?></textarea>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Judul Kehidupan Sosial</label>
@@ -71,11 +71,11 @@ $iconOptions = ['eco', 'grass', 'agriculture', 'storefront', 'local_florist', 'e
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Paragraf Sosial 1</label>
-                            <textarea class="form-control" name="sosial_par1" rows="2" maxlength="1000"><?= htmlspecialchars($potensiData['sosial_par1'] ?? '') ?></textarea>
+                            <textarea class="form-control" name="sosial_par1" rows="5" maxlength="1000"><?= htmlspecialchars($potensiData['sosial_par1'] ?? '') ?></textarea>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Paragraf Sosial 2</label>
-                            <textarea class="form-control" name="sosial_par2" rows="2" maxlength="1000"><?= htmlspecialchars($potensiData['sosial_par2'] ?? '') ?></textarea>
+                            <textarea class="form-control" name="sosial_par2" rows="5" maxlength="1000"><?= htmlspecialchars($potensiData['sosial_par2'] ?? '') ?></textarea>
                         </div>
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary" id="btn-save-potensi">
@@ -182,7 +182,7 @@ $iconOptions = ['eco', 'grass', 'agriculture', 'storefront', 'local_florist', 'e
                     <label class="form-label">Nama Komoditas</label>
                     <input type="text" class="form-control" name="nama" placeholder="contoh: Kopi, Lada &amp; Cengkeh" required>
                     <label class="form-label mt-3">Deskripsi</label>
-                    <textarea class="form-control" name="deskripsi" rows="3" maxlength="600"></textarea>
+                    <textarea class="form-control" name="deskripsi" rows="5" maxlength="600"></textarea>
                     <div class="row g-2 mt-2">
                         <div class="col-6">
                             <label class="form-label">Luasan (nilai)</label>

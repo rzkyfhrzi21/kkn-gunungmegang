@@ -4,12 +4,36 @@ Options -Indexes
 # Mengaktifkan modul Rewrite
 RewriteEngine On
 
-# Jika URL yang diminta bukan direktori dan bukan file yang ada di server
+# =================================================================
+# ROUTING LANDING PAGES → views/landing/
+# URL publik tetap sama (/index, /layanan-umkm, dst.)
+# =================================================================
+
+# Blokir akses URL langsung ke views/ — hanya dari browser, bukan hasil rewrite internal
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteRule ^views/ - [F,L]
+
+# Halaman beranda: / atau /index
+RewriteRule ^$ views/landing/index.php [L]
+RewriteRule ^index(\.php)?$ views/landing/index.php [L]
+
+# Redirect apbpekon-2026 → apbpekon (1 file, data tahun terbaru otomatis) — relative agar benar di subdirektori
+RewriteRule ^apbpekon-2026(\.php)?/?$ apbpekon [R=301,L]
+
+# Landing pages lainnya → views/landing/
+RewriteRule ^(layanan-umkm|kontak|pemerintahan|potensi-ekonomi|profil-desa|apbpekon)(\.php)?/?$ views/landing/$1.php [L]
+
+# =================================================================
+# ROUTING DASHBOARD → views/dashboard/
+# URL tetap /dashboard/admin
+# =================================================================
+RewriteRule ^dashboard/admin(\.php)?$ views/dashboard/admin.php [L]
+
+# =================================================================
+# FALLBACK: file PHP lain tanpa ekstensi (auth, api, dll.)
+# =================================================================
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
-
-# Cek apakah ada file .php yang sesuai dengan URL yang diminta
-# Jika ada langsung mengalihkan walaupun tanpa ekstensi file
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.*)$ $1.php [L]
 
@@ -44,6 +68,7 @@ RewriteRule ^(.*)$ $1.php [L]
    ExpiresByType image/x-icon "access plus 1 year"
    ExpiresDefault "access plus 2 days"
 </IfModule>
+
 # ============================================================
 # KEAMANAN APLIKASI (OWASP Top 10)
 # ============================================================
@@ -64,8 +89,9 @@ RewriteRule ^(.*)$ $1.php [L]
 </IfModule>
 
 # A01/A05 - Blokir akses langsung ke folder sensitif
-# (pengecualian: endpoint publik login dan form aspirasi di functions/)
+# (pengecualian: endpoint publik login, form aspirasi, dan ajax di functions/)
 RewriteRule ^functions/(function_auth|function_aspirasi)\.php$ - [L]
+RewriteRule ^functions/ajax/layanan-umkm-data\.php$ - [L]
 RewriteRule ^(includes|functions|db|Zzz|@agents|docs|graphify-out|\.grok|\.rtk)(/|$) - [F,L]
 
 # A01/A05 - Blokir file data/konfigurasi/sumber sensitif
