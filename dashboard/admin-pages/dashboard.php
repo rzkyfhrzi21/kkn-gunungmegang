@@ -68,8 +68,6 @@ $chartApb = [
     'belanja'       => array_slice($belanjaSeries, 0, 2),
     'belanjaLabels' => $belanjaLabels,
     'belanjaValues' => $belanjaValues,
-    'lainLabels'    => $lainLabels,
-    'lainValues'    => $lainValues,
 ];
 $chartLahan = ['labels' => [], 'values' => []];
 foreach (($potensiData['komoditas'] ?? []) as $kom) {
@@ -201,21 +199,6 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
             </div>
         </div>
     </div>
-
-    <!-- Pendapatan Lainnya per Pos -->
-    <div class="row mt-3 gy-3">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex align-items-center gap-2">
-                    <i class="bi bi-bar-chart text-warning"></i>
-                    <h6 class="mb-0">Pendapatan Lainnya per Pos — APB <?= htmlspecialchars($apbTahun) ?></h6>
-                </div>
-                <div class="card-body">
-                    <div id="dash-chart-lain" style="height:320px"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 </section>
 
 <script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
@@ -338,56 +321,6 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
                             return rpCompact(v);
                         }
                     }
-                },
-                tooltip: {
-                    y: {
-                        formatter: function(v) {
-                            return rp(v);
-                        }
-                    }
-                }
-            }).render();
-        }
-
-        /* Horizontal bar — Pendapatan Lainnya per pos */
-        var elLain = document.getElementById('dash-chart-lain');
-        var hasLain = (chartApb.lainValues || []).some(function(v) {
-            return v > 0;
-        });
-        if (elLain && !hasLain) {
-            noData(elLain);
-        } else if (elLain) {
-            new ApexCharts(elLain, {
-                chart: {
-                    type: 'bar',
-                    toolbar: {
-                        show: false
-                    }
-                },
-                series: [{
-                    name: 'Pendapatan',
-                    data: chartApb.lainValues
-                }],
-                colors: ['#f59e0b'],
-                plotOptions: {
-                    bar: {
-                        horizontal: true,
-                        borderRadius: 3
-                    }
-                },
-                xaxis: {
-                    categories: chartApb.lainLabels,
-                    labels: {
-                        formatter: function(v) {
-                            return rpCompact(v);
-                        }
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                legend: {
-                    show: false
                 },
                 tooltip: {
                     y: {
