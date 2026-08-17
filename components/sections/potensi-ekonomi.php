@@ -9,7 +9,7 @@
 <span class="w-8 h-1 bg-secondary rounded-full"></span>
 <span class="text-label-sm uppercase tracking-widest text-secondary font-bold">Profil Wilayah</span>
 </div>
-<h1 class="text-display text-on-surface">Potensi &amp; Ekonomi <span class="text-primary block">Lokal</span></h1>
+<h1 class="text-display text-on-surface">Potensi &amp; Ekonomi <span class="text-primary block">Desa Gunung Megang</span></h1>
 <p class="text-body-lg text-on-surface-variant max-w-xl"><?= htmlspecialchars($pekon['potensi']['hero_desc'] ?? '') ?></p>
 <div class="pt-4">
 <a class="bg-primary text-on-primary px-8 py-4 rounded-full text-label-sm hover:bg-primary-container transition-all shadow-md flex items-center w-fit gap-3 group" href="#komoditas">

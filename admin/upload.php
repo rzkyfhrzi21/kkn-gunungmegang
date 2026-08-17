@@ -13,6 +13,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 header('Content-Type: application/json; charset=utf-8');
+header("X-Robots-Tag: noindex, nofollow, noarchive", true);
 
 $sesi_id = (int) ($_SESSION['sesi_id'] ?? 0);
 $user    = db_find_one('user', 'id_user', (string)$sesi_id);

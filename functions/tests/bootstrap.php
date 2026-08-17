@@ -48,6 +48,7 @@ $GLOBALS['TEST_SNAP_FILES'] = [
     'includes/pekon.php',
     'includes/demografi.php',
     'includes/potensi.php',
+    'includes/layanan_umkm.php',
     'includes/perangkat.php',
     'includes/apbpekon.php',
     'db/json/user.json',

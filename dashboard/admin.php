@@ -1,6 +1,9 @@
 <?php
 require_once '../functions/config.php';
 
+// Halaman privat: larang pengindeksan oleh mesin pencari
+header("X-Robots-Tag: noindex, nofollow, noarchive, nosnippet", true);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -27,6 +30,7 @@ $menuPages = [
     'Profil Pekon' => 'Profil Pekon',
     'Demografi'    => 'Demografi',
     'Potensi'      => 'Potensi',
+    'Layanan UMKM' => 'Layanan & UMKM',
     'APB Pekon'    => 'APB Pekon',
     'Aparat Desa'  => 'Aparat Desa',
     'Profil'       => 'Profil Saya',
@@ -43,7 +47,8 @@ $pageTitle = isset($menuPages[$page]) ? $menuPages[$page] : 'Dashboard';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="robots" content="noindex, nofollow">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="description" content="Panel Administrasi <?php echo NAMA_WEB; ?>">
     <meta name="csrf-token" content="<?= csrf_token() ?>">
 
@@ -128,6 +133,13 @@ $pageTitle = isset($menuPages[$page]) ? $menuPages[$page] : 'Dashboard';
                             </a>
                         </li>
 
+                        <li class="sidebar-item <?= $page === 'Layanan UMKM' ? 'active' : '' ?>">
+                            <a href="?page=Layanan UMKM" class="sidebar-link">
+                                <i class="bi bi-compass"></i>
+                                <span>Layanan &amp; UMKM</span>
+                            </a>
+                        </li>
+
                         <li class="sidebar-item <?= $page === 'APB Pekon' ? 'active' : '' ?>">
                             <a href="?page=APB Pekon" class="sidebar-link">
                                 <i class="bi bi-wallet2"></i>
@@ -183,6 +195,9 @@ $pageTitle = isset($menuPages[$page]) ? $menuPages[$page] : 'Dashboard';
                     break;
                 case 'Potensi':
                     include 'admin-pages/potensi.php';
+                    break;
+                case 'Layanan UMKM':
+                    include 'admin-pages/layanan-umkm.php';
                     break;
                 case 'APB Pekon':
                     include 'admin-pages/apb_pekon.php';

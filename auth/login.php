@@ -1,6 +1,9 @@
 <?php
 require_once '../functions/config.php';
 
+// Halaman privat: larang pengindeksan oleh mesin pencari
+header("X-Robots-Tag: noindex, nofollow, noarchive, nosnippet", true);
+
 session_start();
 if (!empty($_SESSION['sesi_role'])) {
     if (strtolower($_SESSION['sesi_role']) === 'admin') {
@@ -23,10 +26,10 @@ $usernameLogin = isset($_GET['username']) ? $_GET['username'] : '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="robots" content="noindex, nofollow">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
     <link rel="shortcut icon" href="../dashboard/assets/Lambang_Kabupaten_Tanggamus.ico" type="image/x-icon">
 
-    <meta name="robots" content="noindex, nofollow">
     <meta name="description" content="Login panel administrasi <?php echo NAMA_WEB; ?>">
     <title>Login - <?php echo NAMA_WEB ?></title>
 

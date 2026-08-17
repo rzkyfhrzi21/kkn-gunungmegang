@@ -15,6 +15,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 if (!defined('ADMIN_API_TEST')) {
     header('Content-Type: application/json; charset=utf-8');
+    header("X-Robots-Tag: noindex, nofollow, noarchive", true);
 
     $sesi_id = (int) ($_SESSION['sesi_id'] ?? 0);
     $user    = db_find_one('user', 'id_user', (string)$sesi_id);
@@ -193,6 +194,56 @@ function norm_potensi($raw) {
     ];
 }
 
+/** Foto item layanan & UMKM HANYA dari upload lokal (assets/uploads/...); URL eksternal/data: ditolak. */
+function json_api_layanan_umkm_foto($v) {
+    $foto = json_api_str($v, 500);
+    if ($foto === '') return '';
+    if (strpos($foto, 'assets/uploads/') === 0) return $foto;
+    return '';
+}
+
+/** Link Google Maps: hanya URL http(s) yang diterima. */
+function json_api_layanan_umkm_maps($v) {
+    return sanitize_url($v, 1000);
+}
+
+/** Nomor WhatsApp: simpan digit saja (tanpa +/spasi/tanda). */
+function json_api_layanan_umkm_wa($v) {
+    $wa = preg_replace('/\D+/', '', json_api_str($v, 30));
+    return $wa;
+}
+
+function norm_layanan_umkm($raw) {
+    $list = [];
+    foreach ((array)($raw['daftar'] ?? []) as $item) {
+        if (!is_array($item)) continue;
+        $nama     = json_api_str($item['nama'] ?? '', 200);
+        $kategori = json_api_str($item['kategori'] ?? '', 100);
+        if ($nama === '' || $kategori === '') continue;
+        $baris = [];
+        foreach ((array)($item['baris'] ?? []) as $b) {
+            if (!is_array($b)) continue;
+            $teks = json_api_str($b['teks'] ?? '', 255);
+            if ($teks === '') continue;
+            $baris[] = [
+                'ikon' => json_api_str($b['ikon'] ?? '', 50),
+                'teks' => $teks,
+            ];
+        }
+        $list[] = [
+            'kategori' => $kategori,
+            'badge'    => json_api_str($item['badge'] ?? '', 100),
+            'nama'     => $nama,
+            'subjudul' => json_api_str($item['subjudul'] ?? '', 200),
+            'foto'     => json_api_layanan_umkm_foto($item['foto'] ?? ''),
+            'baris'    => $baris,
+            'maps'     => json_api_layanan_umkm_maps($item['maps'] ?? ''),
+            'wa'       => json_api_layanan_umkm_wa($item['wa'] ?? ''),
+        ];
+    }
+    return ['daftar' => $list];
+}
+
 function norm_apb_tahun($raw) {
     $p = $raw['pendapatan'] ?? [];
     $b = $raw['belanja'] ?? [];
@@ -331,6 +382,14 @@ function api_list($module, $page, $perPage, $search, $filters) {
             $rows[] = ['index' => $i] + $k;
         }
         $rawRows = $rows;
+    } elseif ($module === 'layanan_umkm') {
+        $dataMod = json_api_read_module('layanan_umkm');
+        $list = $dataMod['daftar'] ?? [];
+        $rows = [];
+        foreach ($list as $i => $d) {
+            $rows[] = ['index' => $i] + $d;
+        }
+        $rawRows = $rows;
     } elseif (in_array($module, ['pendapatan', 'belanja', 'pembiayaan'], true)) {
         $all = apb_read_all();
         $tahun = (int)($filters['tahun'] ?? 0);
@@ -371,6 +430,10 @@ function api_list($module, $page, $perPage, $search, $filters) {
             $jenis[strpos(strtoupper($r['jabatan']), 'BHP') !== false || strpos(strtoupper($r['jabatan']), 'LPM') !== false ? 'Lembaga' : 'Perangkat'] = true;
         }
         $filterOptions = ['jabatan' => array_keys($jabatans), 'jenis' => array_keys($jenis)];
+    } elseif ($module === 'layanan_umkm') {
+        $filterOptions = ['kategori' => array_values(array_unique(array_map(function ($r) {
+            return $r['kategori'] ?? '';
+        }, $rows)))];
     }
 
     /* filter */
@@ -390,8 +453,19 @@ function api_list($module, $page, $perPage, $search, $filters) {
 
     /* search */
     if ($search !== '') {
-        $rows = array_values(array_filter($rows, function ($r) use ($search) {
-            $hay = strtolower(implode(' ', $r));
+        $flatten = function ($v) use (&$flatten) {
+            $parts = [];
+            foreach ((array)$v as $x) {
+                if (is_array($x)) {
+                    $parts[] = $flatten($x);
+                } elseif ($x !== null && $x !== '') {
+                    $parts[] = (string)$x;
+                }
+            }
+            return implode(' ', $parts);
+        };
+        $rows = array_values(array_filter($rows, function ($r) use ($search, $flatten) {
+            $hay = strtolower($flatten($r));
             return strpos($hay, $search) !== false;
         }));
     }
@@ -634,6 +708,42 @@ function api_save_row($module, $data) {
         json_api_ok(['module' => $module, 'saved' => $row]);
     }
 
+    if ($module === 'layanan_umkm') {
+        $dataMod = json_api_read_module('layanan_umkm');
+        $list = $dataMod['daftar'] ?? [];
+        $kategori = json_api_str($data['kategori'] ?? '', 100);
+        $nama = json_api_str($data['nama'] ?? '', 200);
+        if ($kategori === '' || $nama === '') json_api_fail('Kategori dan nama wajib diisi.');
+        $baris = [];
+        foreach ([0, 1] as $b) {
+            $teks = json_api_str($data['baris' . $b . '_teks'] ?? '', 255);
+            if ($teks === '') continue;
+            $baris[] = [
+                'ikon' => json_api_str($data['baris' . $b . '_ikon'] ?? '', 50),
+                'teks' => $teks,
+            ];
+        }
+        $row = [
+            'kategori' => $kategori,
+            'badge'    => json_api_str($data['badge'] ?? '', 100),
+            'nama'     => $nama,
+            'subjudul' => json_api_str($data['subjudul'] ?? '', 200),
+            'foto'     => json_api_layanan_umkm_foto($data['foto'] ?? ''),
+            'baris'    => $baris,
+            'maps'     => json_api_layanan_umkm_maps($data['maps'] ?? ''),
+            'wa'       => json_api_layanan_umkm_wa($data['wa'] ?? ''),
+        ];
+        $idx = isset($data['index']) && $data['index'] !== '' ? (int)$data['index'] : null;
+        if ($idx !== null && isset($list[$idx])) {
+            $list[$idx] = $row;
+        } else {
+            $list[] = $row;
+        }
+        $dataMod['daftar'] = $list;
+        json_api_write_php($INCLUDES . '/layanan_umkm.php', norm_layanan_umkm($dataMod), 'includes/layanan_umkm.php - Layanan & UMKM pekon');
+        json_api_ok(['module' => $module, 'saved' => $row]);
+    }
+
     if ($module === 'pendapatan' || $module === 'belanja' || $module === 'pembiayaan') {
         $key = $data['key'] ?? '';
         $labels = json_api_sublist($module);
@@ -681,6 +791,17 @@ function api_delete($module, $data) {
         array_splice($list, $idx, 1);
         $dataMod['komoditas'] = $list;
         json_api_write_php($INCLUDES . '/potensi.php', norm_potensi($dataMod), 'includes/potensi.php - Potensi ekonomi dan sumber daya alam pekon');
+        json_api_ok(['module' => $module]);
+    }
+
+    if ($module === 'layanan_umkm') {
+        $idx = (int)($data['index'] ?? -1);
+        $dataMod = json_api_read_module('layanan_umkm');
+        $list = $dataMod['daftar'] ?? [];
+        if (!isset($list[$idx])) json_api_fail('Data tidak ditemukan.');
+        array_splice($list, $idx, 1);
+        $dataMod['daftar'] = $list;
+        json_api_write_php($INCLUDES . '/layanan_umkm.php', norm_layanan_umkm($dataMod), 'includes/layanan_umkm.php - Layanan & UMKM pekon');
         json_api_ok(['module' => $module]);
     }
 

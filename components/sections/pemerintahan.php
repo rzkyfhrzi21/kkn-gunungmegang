@@ -12,7 +12,7 @@ if ($kepalaFoto === '' || !file_exists($kepalaFoto)) $kepalaFoto = '';
 <span class="text-on-surface font-bold">Pemerintahan</span>
 </nav>
 <div class="max-w-3xl">
-<h1 class="font-display text-display text-on-surface mb-6">Struktur Organisasi &amp; Tata Kelola Pemerintahan</h1>
+<h1 class="font-display text-display text-on-surface mb-6">Struktur Organisasi &amp; Tata Kelola Pemerintahan Pekon Gunung Megang</h1>
 <p class="text-body-lg text-slate-text-muted leading-relaxed">Mengenal perangkat pekon yang bertugas melayani masyarakat Pekon Gunung Megang, berkomitmen pada transparansi dan pelayanan publik prima.</p>
 </div>
 </div>

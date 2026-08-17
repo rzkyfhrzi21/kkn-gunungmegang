@@ -2,7 +2,7 @@
     {
         "id_user": 1,
         "username": "admin81",
-        "password": "409e813000cf004d1f39088f57e15926",
+        "password": "$2y$10$ScVqygNfgOe\/6\/.vY5JV7esOhwtmWMzgSMb8RnIfWVFjKfvZtgKfS",
         "role": "admin",
         "nama_lengkap": "Administrator Pekon"
     }

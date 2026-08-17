@@ -1,9 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>http://localhost/kkn-gunungmegang/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>http://localhost/kkn-gunungmegang/profil-desa</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>http://localhost/kkn-gunungmegang/pemerintahan</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>http://localhost/kkn-gunungmegang/potensi-ekonomi</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>http://localhost/kkn-gunungmegang/apbpekon-2026</loc><changefreq>yearly</changefreq><priority>0.7</priority></url>
-  <url><loc>http://localhost/kkn-gunungmegang/kontak</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- 1. Halaman Beranda (Home) -->
+    <url>
+        <loc>https://pekon-gunung-megang.web.id/</loc>
+        <lastmod>2026-08-17</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <image:image>
+            <image:loc>https://pekon-gunung-megang.web.id/assets/uploads/kepala-pekon.jpg</image:loc>
+            <image:title>Portal Resmi Pekon Gunung Megang</image:title>
+        </image:image>
+    </url>
+
+    <!-- 2. Halaman Profil Desa -->
+    <url>
+        <loc>https://pekon-gunung-megang.web.id/profil-desa</loc>
+        <lastmod>2026-08-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- 3. Halaman Pemerintahan -->
+    <url>
+        <loc>https://pekon-gunung-megang.web.id/pemerintahan</loc>
+        <lastmod>2026-08-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- 4. Halaman Potensi &amp; Ekonomi -->
+    <url>
+        <loc>https://pekon-gunung-megang.web.id/potensi-ekonomi</loc>
+        <lastmod>2026-08-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- 5. Halaman Layanan &amp; UMKM -->
+    <url>
+        <loc>https://pekon-gunung-megang.web.id/layanan-umkm</loc>
+        <lastmod>2026-08-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- 6. Halaman Transparansi APB Pekon -->
+    <url>
+        <loc>https://pekon-gunung-megang.web.id/apbpekon</loc>
+        <lastmod>2026-08-17</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- 7. Halaman Kontak &amp; Pelayanan -->
+    <url>
+        <loc>https://pekon-gunung-megang.web.id/kontak</loc>
+        <lastmod>2026-08-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
 </urlset>

@@ -1,11 +1,41 @@
+# ==============================================================================
+# ROBOTS.TXT STANDAR PRODUKSI (SEO-OPTIMIZED & SECURE)
+# Pekon Gunung Megang - https://pekon-gunung-megang.web.id
+# ==============================================================================
+
 User-agent: *
-Allow: /
+# Izinkan perayapan aset publik untuk rendering sempurna di Googlebot
+Allow: /assets/css/
+Allow: /assets/js/
+Allow: /assets/images/
+Allow: /assets/uploads/
+Allow: /dashboard/assets/compiled/
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.webp$
+Allow: /*.svg$
+Allow: /*.ico$
+
+# Blokir seluruh rute privat, otentikasi, dan area administrasi
 Disallow: /auth/
 Disallow: /admin/
 Disallow: /dashboard/
-Disallow: /includes/
 Disallow: /functions/
+Disallow: /includes/
 Disallow: /db/
 Disallow: /Zzz/
+Disallow: /@agents/
+Disallow: /docs/
+Disallow: /graphify-out/
+Disallow: /.grok/
+Disallow: /.rtk/
+Disallow: /.git/
+Disallow: /config/
+Disallow: /logs/
+Disallow: /tmp/
 
-Sitemap: http://localhost/kkn-gunungmegang/sitemap.xml
+# Lokasi Berkas Peta Situs Resmi (XML Sitemap)
+Sitemap: https://pekon-gunung-megang.web.id/sitemap.xml

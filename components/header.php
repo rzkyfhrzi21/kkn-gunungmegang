@@ -20,29 +20,12 @@ $activePage = basename($_SERVER['SCRIPT_NAME'], '.php');
 .btn-contact:hover{background:#065f46;transform:translateY(-1px);box-shadow:0 6px 16px rgba(10,61,47,.25);}
 .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:8px;}
 .nav-toggle span{width:22px;height:2.5px;background:#0a3d2f;border-radius:2px;transition:.3s;}
-.site-footer{background:#06231b;color:#cbd5e1;}
-.footer-top{max-width:1280px;margin:0 auto;padding:64px 24px 48px;display:grid;grid-template-columns:1.6fr 1fr 1.4fr;gap:48px;}
-.fb-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
-.fb-head img{height:54px;width:auto;}
-.fb-name{color:#fff;font-weight:800;font-size:18px;line-height:1.25;}
-.fb-sub{color:#fbbf24;font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;}
-.footer-brand p{font-size:14px;line-height:1.75;color:#94a3b8;max-width:340px;}
-.footer-col h4{color:#fbbf24;font-size:12.5px;text-transform:uppercase;letter-spacing:.16em;margin:0 0 20px;font-weight:700;}
-.footer-col a{display:block;color:#cbd5e1;font-size:14px;text-decoration:none;margin-bottom:12px;transition:all .2s;}
-.footer-col a:hover{color:#fff;padding-left:6px;}
-.contact-item{display:flex;gap:12px;margin-bottom:16px;font-size:13.5px;line-height:1.65;color:#cbd5e1;}
-.contact-item .material-symbols-outlined{color:#fbbf24;font-size:20px;flex-shrink:0;}
-.footer-bottom{border-top:1px solid rgba(255,255,255,.08);}
-.footer-bottom-inner{max-width:1280px;margin:0 auto;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12.5px;color:#64748b;flex-wrap:wrap;}
-.footer-bottom-inner a{color:#94a3b8;text-decoration:none;margin-left:20px;transition:color .2s;}
-.footer-bottom-inner a:hover{color:#fff;}
 @media (max-width:1024px){
   .site-nav{display:none;position:absolute;top:78px;left:0;right:0;background:#fff;flex-direction:column;padding:16px 24px;box-shadow:0 12px 24px rgba(0,0,0,.08);}
   .site-nav.open{display:flex;}
   .nav-toggle{display:flex;}
 }
 @media (max-width:768px){
-  .footer-top{grid-template-columns:1fr;gap:36px;}
   .btn-contact{display:none;}
   .brand-name{font-size:14px;}
 }
@@ -72,20 +55,13 @@ $activePage = basename($_SERVER['SCRIPT_NAME'], '.php');
 <header class="site-header">
   <div class="header-inner">
     <a href="index" class="brand">
-      <img src="dashboard/assets/Lambang_Kabupaten_Tanggamus.png" alt="Logo Pekon Gunung Megang" class="brand-logo">
+      <img src="assets/images/Lambang_Kabupaten_Tanggamus.png" alt="Logo Pekon Gunung Megang" class="brand-logo">
       <div class="brand-text">
         <span class="brand-name">Pekon Gunung Megang</span>
         <span class="brand-sub">Kabupaten Tanggamus</span>
       </div>
     </a>
-    <nav class="site-nav" id="siteNav">
-      <a href="index" class="nav-link<?= $activePage === 'index' ? ' active' : '' ?>">Beranda</a>
-      <a href="profil-desa" class="nav-link<?= $activePage === 'profil-desa' ? ' active' : '' ?>">Profil Desa</a>
-      <a href="pemerintahan" class="nav-link<?= $activePage === 'pemerintahan' ? ' active' : '' ?>">Pemerintahan</a>
-      <a href="potensi-ekonomi" class="nav-link<?= $activePage === 'potensi-ekonomi' ? ' active' : '' ?>">Potensi &amp; Ekonomi</a>
-      <a href="apbpekon" class="nav-link<?= $activePage === 'apbpekon' || $activePage === 'apbpekon-2026' ? ' active' : '' ?>">APB Pekon</a>
-      <a href="kontak" class="nav-link<?= $activePage === 'kontak' ? ' active' : '' ?>">Kontak</a>
-    </nav>
+    <?php include __DIR__ . '/navbar.php'; ?>
     <div class="header-actions">
       <a href="kontak" class="btn-contact">Hubungi Desa</a>
       <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>

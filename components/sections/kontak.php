@@ -7,7 +7,7 @@
 </svg>
 </div>
 <div class="max-w-container-max mx-auto relative z-10 text-center">
-<h1 class="font-display text-display text-on-primary mb-6">Kontak &amp; Pelayanan</h1>
+<h1 class="font-display text-display text-on-primary mb-6">Kontak &amp; Pelayanan Pekon Gunung Megang</h1>
 <p class="font-body-lg text-on-primary/90 max-w-2xl mx-auto">Komitmen Pekon Gunung Megang dalam memberikan pelayanan publik yang cepat, transparan, dan mudah diakses oleh seluruh warga.</p>
 </div>
 </section>

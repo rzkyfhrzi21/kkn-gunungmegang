@@ -13,37 +13,42 @@ $siteName = $pekon['nama'] ?? 'Pekon Gunung Megang';
 
 $seoMap = [
     'index' => [
-        'title'    => 'Beranda | Profil Pekon Gunung Megang',
-        'desc'     => 'Portal resmi Pekon Gunung Megang, Kecamatan Pulau Panggung, Kabupaten Tanggamus, Lampung. Informasi profil desa, pemerintahan, potensi ekonomi, dan transparansi APBPekon.',
+        'title'    => 'Profil Pekon Gunung Megang, Pulau Panggung, Tanggamus',
+        'desc'     => 'Portal resmi Pekon Gunung Megang, Kec. Pulau Panggung, Kab. Tanggamus, Lampung. Profil desa, pemerintahan, potensi ekonomi, layanan & UMKM, dan APBPekon.',
         'keywords' => 'pekon gunung megang, gunung megang, tanggamus, lampung, desa, profil desa, pemerintahan desa, apb pekon, potensi desa',
     ],
     'profil-desa' => [
-        'title'    => 'Profil Desa | Pekon Gunung Megang',
-        'desc'     => 'Profil lengkap Pekon Gunung Megang: letak geografis, luas wilayah, batas desa, jumlah penduduk, dan data kependudukan Kecamatan Pulau Panggung, Kabupaten Tanggamus.',
+        'title'    => 'Profil Desa Gunung Megang - Geografis & Demografi',
+        'desc'     => 'Profil lengkap Desa Gunung Megang: letak geografis, luas wilayah, batas desa, jumlah penduduk, dan data kependudukan Kec. Pulau Panggung, Tanggamus.',
         'keywords' => 'profil desa gunung megang, geografis, demografi, jumlah penduduk, batas wilayah, tanggamus',
     ],
     'pemerintahan' => [
-        'title'    => 'Pemerintahan | Pekon Gunung Megang',
-        'desc'     => 'Struktur organisasi dan tata kelola pemerintahan Pekon Gunung Megang: kepala pekon, perangkat desa, dan lembaga kemasyarakatan desa.',
+        'title'    => 'Pemerintahan Pekon Gunung Megang - Struktur & Perangkat',
+        'desc'     => 'Struktur organisasi dan tata kelola pemerintahan Pekon Gunung Megang: kepala pekon, perangkat desa, dan lembaga kemasyarakatan desa di Tanggamus.',
         'keywords' => 'pemerintahan desa gunung megang, kepala pekon, perangkat desa, struktur organisasi, bhp, lpm',
     ],
     'potensi-ekonomi' => [
-        'title'    => 'Potensi & Ekonomi | Pekon Gunung Megang',
+        'title'    => 'Potensi & Ekonomi Desa Gunung Megang, Tanggamus Lampung',
         'desc'     => 'Potensi ekonomi dan sumber daya alam Pekon Gunung Megang: pertanian, komoditas unggulan, mata pencaharian masyarakat, dan indeks pembangunan desa.',
         'keywords' => 'potensi desa gunung megang, ekonomi desa, pertanian, komoditas, mata pencaharian, idm',
     ],
+    'layanan-umkm' => [
+        'title'    => 'Layanan & UMKM Pekon Gunung Megang - Produk Lokal',
+        'desc'     => 'Layanan & UMKM Pekon Gunung Megang: produk unggulan UMKM, fasilitas kesehatan, destinasi wisata, agrikultur, dan fasilitas publik di Tanggamus.',
+        'keywords' => 'layanan & umkm gunung megang, umkm desa, produk lokal, layanan kesehatan, pariwisata desa, fasilitas publik, tanggamus',
+    ],
     'apbpekon' => [
-        'title'    => 'Transparansi APB Pekon | Pekon Gunung Megang',
+        'title'    => 'Transparansi APB Pekon Gunung Megang - Anggaran Desa',
         'desc'     => 'Anggaran Pendapatan dan Belanja Pekon (APBPekon) Gunung Megang: rincian pendapatan, belanja, dan pembiayaan setiap tahun anggaran secara terbuka dan transparan.',
         'keywords' => 'apb pekon gunung megang, apbdes, anggaran desa, transparansi, dana desa, add',
     ],
     'apbpekon-2026' => [
-        'title'    => 'Transparansi APB Pekon | Pekon Gunung Megang',
+        'title'    => 'Transparansi APB Pekon Gunung Megang - Anggaran Desa 2026',
         'desc'     => 'Anggaran Pendapatan dan Belanja Pekon (APBPekon) Gunung Megang: rincian pendapatan, belanja, dan pembiayaan secara terbuka dan transparan.',
         'keywords' => 'apb pekon gunung megang, apbdes 2026, anggaran desa, transparansi, dana desa, add',
     ],
     'kontak' => [
-        'title'    => 'Kontak | Pekon Gunung Megang',
+        'title'    => 'Kontak Kantor Pekon Gunung Megang, Pulau Panggung Tanggamus',
         'desc'     => 'Hubungi Kantor Pekon Gunung Megang, Kecamatan Pulau Panggung, Kabupaten Tanggamus: alamat, telepon, jam layanan, dan peta lokasi.',
         'keywords' => 'kontak pekon gunung megang, alamat kantor desa, telepon desa, peta lokasi, tanggamus',
     ],
@@ -57,9 +62,20 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')
 $baseUrl  = $scheme . '://' . $host . $basePath;
 $canonical = $baseUrl . ($seoPage === 'index' ? '/' : '/' . $seoPage);
 
-$ogImage  = $baseUrl . '/dashboard/assets/Lambang_Kabupaten_Tanggamus.png';
+$ogImage  = $baseUrl . '/assets/images/Lambang_Kabupaten_Tanggamus.png';
 $telepon  = preg_replace('/[^0-9]/', '', $pekon['kontak']['telepon'] ?? '');
 $telIntl  = $telepon !== '' ? '+62' . ltrim($telepon, '0') : '';
+
+$crumbName = [
+    'index'            => 'Beranda',
+    'profil-desa'      => 'Profil Desa',
+    'pemerintahan'     => 'Pemerintahan',
+    'potensi-ekonomi'  => 'Potensi & Ekonomi',
+    'layanan-umkm'     => 'Layanan & UMKM',
+    'apbpekon'         => 'Transparansi APB Pekon',
+    'apbpekon-2026'    => 'Transparansi APB Pekon',
+    'kontak'           => 'Kontak & Pelayanan',
+];
 
 $jsonLd = [
     '@context' => 'https://schema.org',
@@ -99,6 +115,17 @@ if ($telIntl !== '') {
         'availableLanguage' => 'Indonesian',
     ];
 }
+$crumb = $crumbName[$seoPage] ?? 'Beranda';
+$jsonLd['@graph'][] = [
+    '@type'         => 'BreadcrumbList',
+    '@id'           => $canonical . '#breadcrumb',
+    'itemListElement' => $seoPage === 'index' ? [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $baseUrl . '/'],
+    ] : [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => $baseUrl . '/'],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => $crumb, 'item' => $canonical],
+    ],
+];
 ?>
 <title><?= htmlspecialchars($seo['title']) ?></title>
 <meta name="description" content="<?= htmlspecialchars($seo['desc']) ?>">
@@ -107,7 +134,8 @@ if ($telIntl !== '') {
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="theme-color" content="#004532">
 <link rel="canonical" href="<?= htmlspecialchars($canonical) ?>">
-<link rel="icon" href="dashboard/assets/Lambang_Kabupaten_Tanggamus.ico" type="image/x-icon">
+<link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/images/Lambang_Kabupaten_Tanggamus.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="<?= htmlspecialchars($siteName) ?>">
 <meta property="og:title" content="<?= htmlspecialchars($seo['title']) ?>">
@@ -115,9 +143,11 @@ if ($telIntl !== '') {
 <meta property="og:url" content="<?= htmlspecialchars($canonical) ?>">
 <meta property="og:locale" content="id_ID">
 <meta property="og:image" content="<?= htmlspecialchars($ogImage) ?>">
+<meta property="og:image:alt" content="Lambang Kabupaten Tanggamus - <?= htmlspecialchars($siteName) ?>">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="<?= htmlspecialchars($canonical) ?>">
 <meta name="twitter:title" content="<?= htmlspecialchars($seo['title']) ?>">
 <meta name="twitter:description" content="<?= htmlspecialchars($seo['desc']) ?>">
 <meta name="twitter:image" content="<?= htmlspecialchars($ogImage) ?>">
