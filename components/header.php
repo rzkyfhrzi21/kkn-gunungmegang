@@ -6,6 +6,7 @@ $activePage = basename(rtrim($_hReqPath, '/')) ?: 'index';
 ?>
 <style>
 /* ===== HEADER & FOOTER ===== */
+body, .site-header, .site-footer{font-family:'Inter',sans-serif;}
 .site-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:#ffffff;box-shadow:0 2px 14px rgba(6,35,27,.10);}
 .header-inner{max-width:1280px;margin:0 auto;padding:0 24px;height:78px;display:flex;align-items:center;justify-content:space-between;gap:20px;}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0;}
