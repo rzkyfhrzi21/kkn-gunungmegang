@@ -58,7 +58,11 @@ return     array (
           'keterangan' => 'Formal & Jasa',
         ),
       ),
-      'sosial_judul' => 'Harmoni dalam Masyarakat',
-      'sosial_par1' => 'Masyarakat Pekon Gunung Megang <strong>mayoritas beragama Islam</strong>, tercermin dari kuatnya nilai-nilai religius dalam kehidupan sehari-hari dan keberadaan masjid serta musholla sebagai pusat kegiatan warga.',
-      'sosial_par2' => 'Kehidupan sosial masyarakat diwarnai oleh semangat gotong royong yang kental, saling menghormati, dan menjaga kerukunan, menciptakan lingkungan desa yang aman, damai, dan kondusif untuk pembangunan berkelanjutan.',
+      'sosial_judul' => 'KPK Gandeng Pemprov Lampung Perkuat Pendidikan Anti Korupsi di Sekolah',
+      'sosial_par1' => 'Upaya memperkuat budaya anti korupsi di lingkungan pendidikan terus digencarkan. Komisi Pemberantasan Korupsi (KPK) bersama Pemerintah Provinsi Lampung melalui Dinas Pendidikan dan Kebudayaan menggelar Sosialisasi Pencegahan Korupsi pada Satuan Pendidikan Menengah dan Pendidikan Khusus.',
+      'sosial_par2' => 'Dalam kegiatan itu, para peserta mendapatkan penguatan terkait pengelolaan anggaran pendidikan yang transparan, akuntabel dan sesuai dengan ketentuan peraturan perundang-undangan.
+
+Selain itu, materi juga menitikberatkan pada penguatan pendidikan karakter anti korupsi di lingkungan sekolah.
+
+Melalui kegiatan ini, KPK bersama Pemerintah Provinsi Lampung berharap seluruh satuan pendidikan mampu menjadi contoh penerapan tata kelola yang bersih, transparan dan bertanggung jawab, sekaligus melahirkan generasi yang menjunjung tinggi kejujuran serta menolak segala bentuk praktik korupsi.',
     );

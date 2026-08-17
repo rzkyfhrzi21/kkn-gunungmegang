@@ -144,9 +144,9 @@ foreach ($pekon['potensi']['mata_pencaharian'] as $i => $m):
 <span class="text-label-sm uppercase tracking-widest text-secondary font-bold">Kehidupan Sosial</span>
 </div>
 <h2 class="text-headline-lg text-on-surface mb-6"><?= htmlspecialchars($pekon['potensi']['sosial_judul'] ?? '') ?></h2>
-<div class="prose prose-lg text-body-lg text-on-surface-variant">
-<p class="mb-4"><?= $pekon['potensi']['sosial_par1'] ?? '' ?></p>
-<p><?= $pekon['potensi']['sosial_par2'] ?? '' ?></p>
+<div class="prose prose-lg text-body-lg text-on-surface-variant flex flex-col gap-4">
+<p class="leading-relaxed"><?= nl2br(htmlspecialchars($pekon['potensi']['sosial_par1'] ?? '')) ?></p>
+<p class="leading-relaxed"><?= nl2br(htmlspecialchars($pekon['potensi']['sosial_par2'] ?? '')) ?></p>
 </div>
 </div>
 </div>
