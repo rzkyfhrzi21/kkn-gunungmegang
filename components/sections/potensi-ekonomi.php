@@ -134,9 +134,8 @@ foreach ($pekon['potensi']['mata_pencaharian'] as $i => $m):
 <section class="w-full px-gutter py-section-padding bg-surface-container-lowest border-t border-outline-variant/20">
 <div class="max-w-container-max mx-auto">
 <div class="flex flex-col md:flex-row items-center gap-12 bg-surface rounded-[2rem] p-8 md:p-12 border border-outline-variant/30 shadow-sm">
-<div class="w-full md:w-1/3 aspect-square max-w-[300px] rounded-3xl overflow-hidden shadow-md relative">
-<div class="w-full h-full bg-cover bg-center" style="background-image: linear-gradient(135deg, #0b3b4a 0%, #0ea5a4 60%, #0b3b4a 100%)"></div>
-<div class="absolute inset-0 bg-primary/10 mix-blend-multiply"></div>
+<div class="w-full md:w-1/3 aspect-[4/3] md:aspect-square max-w-[340px] rounded-3xl overflow-hidden shadow-md relative border border-outline-variant/40 shrink-0">
+<img src="assets/images/berita1.jpg" alt="<?= htmlspecialchars($pekon['potensi']['sosial_judul'] ?? 'Sosialisasi Pencegahan Korupsi') ?>" class="w-full h-full object-cover cursor-zoom-in hover:scale-105 transition-transform duration-500" data-preview="assets/images/berita1.jpg" loading="lazy">
 </div>
 <div class="w-full md:w-2/3 flex flex-col justify-center">
 <div class="inline-flex items-center gap-2 mb-4">
