@@ -48,3 +48,8 @@ jobs:
             **/.opencodeignore
             **/db/data.txt
             **/*.json
+            **/assets/uploads/**
+            !**/assets/uploads/.htaccess
+            **/dashboard/assets/generated/**
+            **/dashboard/assets/img/foto_profil/**
+            **/dashboard/assets/img/destinasi_wisata/**

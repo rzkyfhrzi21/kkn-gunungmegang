@@ -15,8 +15,10 @@ db/data.txt
 db/json/*.json
 !db/json/.gitkeep
 
-# File generated & upload user
-assets/uploads/
+# File generated & upload user - JANGAN DI-PUSH
+assets/uploads/*
+!assets/uploads/.htaccess
+!assets/uploads/.gitkeep
 dashboard/assets/generated/
 dashboard/assets/img/foto_profil/
 dashboard/assets/img/destinasi_wisata/
