@@ -6,8 +6,8 @@ if ($kepalaFoto === '' || !file_exists($kepalaFotoAbs)) $kepalaFoto = '';
 <div class="flex flex-col w-full">
 <!-- HERO SECTION -->
 <section class="max-w-container-max mx-auto w-full px-gutter pt-8 pb-16">
-<div class="relative w-full h-[600px] rounded-3xl overflow-hidden flex flex-col justify-end p-8 md:p-16" style="background-image: linear-gradient(135deg, #0b3b4a 0%, #0ea5a4 60%, #0b3b4a 100%); background-size: cover; background-position: center;">
-<div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
+<div class="relative w-full h-[600px] rounded-3xl overflow-hidden flex flex-col justify-end p-8 md:p-16" style="background-image: url('assets/images/hero.jpg'); background-size: cover; background-position: center;">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/60 to-black/30"></div>
 <div class="relative z-10 max-w-3xl">
 <span class="inline-block px-4 py-1.5 mb-6 bg-secondary text-on-secondary text-label-sm font-label-sm rounded-full tracking-wider uppercase">Portal Resmi Pekon <?= $pekon['tahun'] ?></span>
 <h1 class="font-display text-display text-on-primary mb-4 text-balance">Maju, Mandiri, dan Sejahtera Bersama Warga Gunung Megang</h1>

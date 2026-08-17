@@ -19,7 +19,7 @@ Jelajahi Potensi
 </div>
 </div>
 <div class="relative w-full h-[400px] lg:h-[500px] rounded-[2rem] overflow-hidden shadow-xl bg-surface-container-high border border-outline-variant/30 group">
-<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: linear-gradient(135deg, #0b3b4a 0%, #0ea5a4 60%, #0b3b4a 100%)"></div>
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image: url('assets/images/colorun.jpg')"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
 <div class="absolute bottom-6 left-6 right-6">
 <div class="bg-surface/95 rounded-2xl p-4 shadow-lg border border-outline-variant/50 backdrop-blur-md">
