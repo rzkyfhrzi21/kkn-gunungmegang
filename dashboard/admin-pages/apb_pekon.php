@@ -28,12 +28,20 @@ if ($isDetail):
         $penerimaanSeries[] = round((float)($apbPendapatan[$k] ?? 0));
         $belanjaSeries[]    = round((float)($apbBelanja[$belanjaKeys[$i]] ?? 0));
     }
+    $lainKeys   = ['bagi_hasil_pajak', 'bantuan_provinsi', 'pendapatan_lain'];
+    $lainLabels = ['Bagi Hasil Pajak', 'Bantuan Provinsi', 'Pendapatan Lain'];
+    $lainValues = [];
+    foreach ($lainKeys as $i => $k) {
+        $lainValues[] = round((float)($apbPendapatan[$k] ?? 0));
+    }
     $chartApb = [
-        'labels'        => $apbLabels['pendapatan'],
-        'penerimaan'    => $penerimaanSeries,
-        'belanja'       => $belanjaSeries,
+        'labels'        => array_slice($apbLabels['pendapatan'], 0, 2),
+        'penerimaan'    => array_slice($penerimaanSeries, 0, 2),
+        'belanja'       => array_slice($belanjaSeries, 0, 2),
         'belanjaLabels' => $belanjaLabels,
         'belanjaValues' => $belanjaValues,
+        'lainLabels'    => $lainLabels,
+        'lainValues'    => $lainValues,
     ];
 endif;
 ?>
@@ -484,25 +492,40 @@ endif;
         <a href="?page=APB Pekon" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-arrow-left"></i> Kembali ke Daftar Tahun</a>
 
         <div class="row gy-3">
-            <div class="col-lg-4">
+            <div class="col-lg-5">
                 <div class="card h-100">
                     <div class="card-header d-flex align-items-center gap-2">
                         <i class="bi bi-pie-chart text-primary"></i>
                         <h6 class="mb-0">Komposisi Belanja APB <?= $tahun ?></h6>
                     </div>
                     <div class="card-body">
-                        <div id="apb-chart-belanja" style="height:320px"></div>
+                        <div id="apb-chart-belanja" style="height:400px"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
+            <div class="col-lg-7">
                 <div class="card h-100">
                     <div class="card-header d-flex align-items-center gap-2">
                         <i class="bi bi-bar-chart text-success"></i>
                         <h6 class="mb-0">Pendapatan vs Belanja per Pos — APB <?= $tahun ?></h6>
                     </div>
                     <div class="card-body">
-                        <div id="apb-chart-apb" style="height:320px"></div>
+                        <div id="apb-chart-apb" style="height:400px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pendapatan Lainnya per Pos -->
+        <div class="row gy-3 mt-1">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center gap-2">
+                        <i class="bi bi-bar-chart text-warning"></i>
+                        <h6 class="mb-0">Pendapatan Lainnya per Pos — APB <?= $tahun ?></h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="apb-chart-lain" style="height:320px"></div>
                     </div>
                 </div>
             </div>
@@ -643,7 +666,8 @@ endif;
                             }
                         },
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                            fontSize: '12px'
                         },
                         tooltip: {
                             y: {
@@ -676,7 +700,7 @@ endif;
                         colors: ['#10b981', '#ef4444'],
                         plotOptions: {
                             bar: {
-                                columnWidth: '55%',
+                                columnWidth: '40%',
                                 borderRadius: 3
                             }
                         },
@@ -695,6 +719,56 @@ endif;
                                     return rpCompact(v);
                                 }
                             }
+                        },
+                        tooltip: {
+                            y: {
+                                formatter: function(v) {
+                                    return rp(v);
+                                }
+                            }
+                        }
+                    }).render();
+                }
+
+                /* Horizontal bar — Pendapatan Lainnya per pos */
+                var elLain = document.getElementById('apb-chart-lain');
+                var hasLain = (chartApb.lainValues || []).some(function(v) {
+                    return v > 0;
+                });
+                if (elLain && !hasLain) {
+                    noData(elLain);
+                } else if (elLain) {
+                    new ApexCharts(elLain, {
+                        chart: {
+                            type: 'bar',
+                            toolbar: {
+                                show: false
+                            }
+                        },
+                        series: [{
+                            name: 'Pendapatan',
+                            data: chartApb.lainValues
+                        }],
+                        colors: ['#f59e0b'],
+                        plotOptions: {
+                            bar: {
+                                horizontal: true,
+                                borderRadius: 3
+                            }
+                        },
+                        xaxis: {
+                            categories: chartApb.lainLabels,
+                            labels: {
+                                formatter: function(v) {
+                                    return rpCompact(v);
+                                }
+                            }
+                        },
+                        dataLabels: {
+                            enabled: false
+                        },
+                        legend: {
+                            show: false
                         },
                         tooltip: {
                             y: {
