@@ -170,18 +170,34 @@ $jsonLd['@graph'][] = [
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <style>
-*, html, body, button, input, textarea, select {
-  font-family: "Inter", sans-serif !important;
+html, body, button, input, textarea, select {
+  font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
+}
+.material-symbols-outlined,
+.material-symbols-rounded,
+.material-symbols-sharp,
+.material-icons,
+[class*="material-symbols"] {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
 }
 @layer base {
   html, body {
     margin: 0;
     padding: 0;
-    font-family: "Inter", sans-serif !important;
+    font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
   }
   body { overscroll-behavior: none; }
