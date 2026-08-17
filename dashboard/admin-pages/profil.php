@@ -55,42 +55,48 @@ $me = db_find_one('user', 'id_user', (string)($_SESSION['sesi_id'] ?? 0));
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var form = document.getElementById('form-profil');
-    var btn = document.getElementById('btn-save-profil');
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('form-profil');
+        var btn = document.getElementById('btn-save-profil');
 
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-        if (form.password.value && !form.password_lama.value) {
-            App.toast('Password lama wajib diisi untuk mengganti password.', 'error', 'Gagal');
-            return;
-        }
-        if (form.password.value !== form.password_confirm.value) {
-            App.toast('Konfirmasi password tidak cocok.', 'error', 'Gagal');
-            return;
-        }
-        btn.disabled = true;
-        App.postJSON('../admin/api.php', {
-            action: 'profile',
-            data: {
-                nama_lengkap: form.nama_lengkap.value,
-                username: form.username.value,
-                password_lama: form.password_lama.value,
-                password: form.password.value,
-                password_confirm: form.password_confirm.value
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
             }
-        }).then(function (res) {
-            btn.disabled = false;
-            if (res.ok) {
-                form.password_lama.value = '';
-                form.password.value = '';
-                form.password_confirm.value = '';
-                App.toast('Profil berhasil disimpan.', 'success', 'Berhasil');
-            } else {
-                App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+            if (form.password.value && !form.password_lama.value) {
+                App.toast('Password lama wajib diisi untuk mengganti password.', 'error', 'Gagal');
+                return;
             }
-        }).catch(function () { btn.disabled = false; App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
+            if (form.password.value !== form.password_confirm.value) {
+                App.toast('Konfirmasi password tidak cocok.', 'error', 'Gagal');
+                return;
+            }
+            btn.disabled = true;
+            App.postJSON('../admin/api.php', {
+                action: 'profile',
+                data: {
+                    nama_lengkap: form.nama_lengkap.value,
+                    username: form.username.value,
+                    password_lama: form.password_lama.value,
+                    password: form.password.value,
+                    password_confirm: form.password_confirm.value
+                }
+            }).then(function(res) {
+                btn.disabled = false;
+                if (res.ok) {
+                    form.password_lama.value = '';
+                    form.password.value = '';
+                    form.password_confirm.value = '';
+                    App.toast('Profil berhasil disimpan.', 'success', 'Berhasil');
+                } else {
+                    App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+                }
+            }).catch(function() {
+                btn.disabled = false;
+                App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+            });
+        });
     });
-});
 </script>

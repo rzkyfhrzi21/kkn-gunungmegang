@@ -90,17 +90,21 @@ $kontak    = $pekonData['kontak'];
                                 <div class="table-responsive">
                                     <table class="table table-sm align-middle mb-0">
                                         <thead class="table-light">
-                                            <tr><th style="width:34%">Hari</th><th style="width:38%">Jam</th><th>Status</th></tr>
+                                            <tr>
+                                                <th style="width:34%">Hari</th>
+                                                <th style="width:38%">Jam</th>
+                                                <th>Status</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        <?php $jamRows = $kontak['jam'] ?? [['hari' => 'Senin - Kamis', 'jam' => '08:00 - 15:30 WIB', 'status' => ''], ['hari' => 'Jumat', 'jam' => '08:00 - 11:30 WIB', 'status' => ''], ['hari' => 'Sabtu - Minggu', 'jam' => '', 'status' => 'Tutup']]; ?>
-                                        <?php for ($i = 0; $i < 3; $i++): $jr = $jamRows[$i] ?? ['hari' => '', 'jam' => '', 'status' => '']; ?>
-                                            <tr>
-                                                <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][hari]" value="<?= htmlspecialchars($jr['hari'] ?? '') ?>"></td>
-                                                <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][jam]" value="<?= htmlspecialchars($jr['jam'] ?? '') ?>"></td>
-                                                <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][status]" value="<?= htmlspecialchars($jr['status'] ?? '') ?>"></td>
-                                            </tr>
-                                        <?php endfor; ?>
+                                            <?php $jamRows = $kontak['jam'] ?? [['hari' => 'Senin - Kamis', 'jam' => '08:00 - 15:30 WIB', 'status' => ''], ['hari' => 'Jumat', 'jam' => '08:00 - 11:30 WIB', 'status' => ''], ['hari' => 'Sabtu - Minggu', 'jam' => '', 'status' => 'Tutup']]; ?>
+                                            <?php for ($i = 0; $i < 3; $i++): $jr = $jamRows[$i] ?? ['hari' => '', 'jam' => '', 'status' => '']; ?>
+                                                <tr>
+                                                    <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][hari]" value="<?= htmlspecialchars($jr['hari'] ?? '') ?>"></td>
+                                                    <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][jam]" value="<?= htmlspecialchars($jr['jam'] ?? '') ?>"></td>
+                                                    <td><input type="text" class="form-control form-control-sm" name="kontak_jam[<?= $i ?>][status]" value="<?= htmlspecialchars($jr['status'] ?? '') ?>"></td>
+                                                </tr>
+                                            <?php endfor; ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -140,91 +144,115 @@ $kontak    = $pekonData['kontak'];
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var form = document.getElementById('form-pekon');
-    var btn = document.getElementById('btn-save-pekon');
-    var mapsLink = document.getElementById('kontak_maps_link');
-    var mapsEmbed = document.getElementById('kontak_maps_embed');
-    var mapsCode = form.querySelector('[name="kontak_maps_code"]');
-    var mapsPreviewWrap = document.getElementById('maps-preview-wrap');
-    var mapsPreview = document.getElementById('maps-preview');
-    var btnResolve = document.getElementById('btn-resolve-maps');
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('form-pekon');
+        var btn = document.getElementById('btn-save-pekon');
+        var mapsLink = document.getElementById('kontak_maps_link');
+        var mapsEmbed = document.getElementById('kontak_maps_embed');
+        var mapsCode = form.querySelector('[name="kontak_maps_code"]');
+        var mapsPreviewWrap = document.getElementById('maps-preview-wrap');
+        var mapsPreview = document.getElementById('maps-preview');
+        var btnResolve = document.getElementById('btn-resolve-maps');
 
-    function updateMapPreview() {
-        var url = mapsEmbed.value.trim();
-        if (/^https?:\/\//i.test(url)) {
-            mapsPreview.src = url;
-            mapsPreviewWrap.style.display = '';
-        } else {
-            mapsPreview.removeAttribute('src');
-            mapsPreviewWrap.style.display = 'none';
-        }
-    }
-    mapsEmbed.addEventListener('input', updateMapPreview);
-    updateMapPreview();
-
-    function doResolve() {
-        var link = mapsLink.value.trim();
-        if (!/^https?:\/\//i.test(link)) {
-            App.toast('Tempel link Google Maps dulu (menu Bagikan).', 'error', 'Gagal');
-            return;
-        }
-        btnResolve.disabled = true;
-        var ic = btnResolve.querySelector('i');
-        if (ic) ic.className = 'bi bi-arrow-repeat';
-        App.postJSON('../admin/api.php', { action: 'resolve_maps', link: link })
-            .then(function (res) {
-                if (res.ok) {
-                    if (res.address) mapsCode.value = res.address;
-                    mapsEmbed.value = res.embed;
-                    updateMapPreview();
-                    App.toast('Peta & alamat terisi otomatis dari link.', 'success', 'Berhasil');
-                } else {
-                    App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal memproses link.', 'error', 'Gagal');
-                }
-            })
-            .catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); })
-            .then(function () {
-                btnResolve.disabled = false;
-                if (ic) ic.className = 'bi bi-magic';
-            });
-    }
-    btnResolve.addEventListener('click', doResolve);
-    var mapsTimer = null;
-    mapsLink.addEventListener('input', function () {
-        clearTimeout(mapsTimer);
-        mapsTimer = setTimeout(doResolve, 900);
-    });
-
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-        btn.disabled = true;
-        var jam = [];
-        for (var i = 0; i < 3; i++) {
-            jam.push({
-                hari: form['kontak_jam[' + i + '][hari]'].value,
-                jam: form['kontak_jam[' + i + '][jam]'].value,
-                status: form['kontak_jam[' + i + '][status]'].value
-            });
-        }
-        var payload = {
-            nama: form.nama.value, kecamatan: form.kecamatan.value,
-            kabupaten: form.kabupaten.value, provinsi: form.provinsi.value,
-            tahun: form.tahun.value,
-            kontak: {
-                telepon: form.kontak_telepon.value, maps_code: mapsCode.value, maps_link: mapsLink.value, maps_embed: mapsEmbed.value.trim(),
-                wa_desc: form.kontak_wa_desc.value, jam_desc: form.kontak_jam_desc.value, jam: jam,
-                akses: form.kontak_akses.value, aspirasi_desc: form.kontak_aspirasi_desc.value, map_subtitle: form.kontak_map_subtitle.value
+        function updateMapPreview() {
+            var url = mapsEmbed.value.trim();
+            if (/^https?:\/\//i.test(url)) {
+                mapsPreview.src = url;
+                mapsPreviewWrap.style.display = '';
+            } else {
+                mapsPreview.removeAttribute('src');
+                mapsPreviewWrap.style.display = 'none';
             }
-        };
-        App.postJSON('../admin/api.php', { action: 'save', module: 'pekon', data: payload })
-            .then(function (res) {
-                btn.disabled = false;
-                if (res.ok) App.toast('Profil pekon berhasil disimpan.', 'success', 'Berhasil');
-                else App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
-            })
-            .catch(function () { btn.disabled = false; App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
+        }
+        mapsEmbed.addEventListener('input', updateMapPreview);
+        updateMapPreview();
+
+        function doResolve() {
+            var link = mapsLink.value.trim();
+            if (!/^https?:\/\//i.test(link)) {
+                App.toast('Tempel link Google Maps dulu (menu Bagikan).', 'error', 'Gagal');
+                return;
+            }
+            btnResolve.disabled = true;
+            var ic = btnResolve.querySelector('i');
+            if (ic) ic.className = 'bi bi-arrow-repeat';
+            App.postJSON('../admin/api.php', {
+                    action: 'resolve_maps',
+                    link: link
+                })
+                .then(function(res) {
+                    if (res.ok) {
+                        if (res.address) mapsCode.value = res.address;
+                        mapsEmbed.value = res.embed;
+                        updateMapPreview();
+                        App.toast('Peta & alamat terisi otomatis dari link.', 'success', 'Berhasil');
+                    } else {
+                        App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal memproses link.', 'error', 'Gagal');
+                    }
+                })
+                .catch(function() {
+                    App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+                })
+                .then(function() {
+                    btnResolve.disabled = false;
+                    if (ic) ic.className = 'bi bi-magic';
+                });
+        }
+        btnResolve.addEventListener('click', doResolve);
+        var mapsTimer = null;
+        mapsLink.addEventListener('input', function() {
+            clearTimeout(mapsTimer);
+            mapsTimer = setTimeout(doResolve, 900);
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            btn.disabled = true;
+            var jam = [];
+            for (var i = 0; i < 3; i++) {
+                jam.push({
+                    hari: form['kontak_jam[' + i + '][hari]'].value,
+                    jam: form['kontak_jam[' + i + '][jam]'].value,
+                    status: form['kontak_jam[' + i + '][status]'].value
+                });
+            }
+            var payload = {
+                nama: form.nama.value,
+                kecamatan: form.kecamatan.value,
+                kabupaten: form.kabupaten.value,
+                provinsi: form.provinsi.value,
+                tahun: form.tahun.value,
+                kontak: {
+                    telepon: form.kontak_telepon.value,
+                    maps_code: mapsCode.value,
+                    maps_link: mapsLink.value,
+                    maps_embed: mapsEmbed.value.trim(),
+                    wa_desc: form.kontak_wa_desc.value,
+                    jam_desc: form.kontak_jam_desc.value,
+                    jam: jam,
+                    akses: form.kontak_akses.value,
+                    aspirasi_desc: form.kontak_aspirasi_desc.value,
+                    map_subtitle: form.kontak_map_subtitle.value
+                }
+            };
+            App.postJSON('../admin/api.php', {
+                    action: 'save',
+                    module: 'pekon',
+                    data: payload
+                })
+                .then(function(res) {
+                    btn.disabled = false;
+                    if (res.ok) App.toast('Profil pekon berhasil disimpan.', 'success', 'Berhasil');
+                    else App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+                })
+                .catch(function() {
+                    btn.disabled = false;
+                    App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+                });
+        });
     });
-});
 </script>

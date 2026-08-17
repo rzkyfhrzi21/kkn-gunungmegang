@@ -4,7 +4,6 @@ define("NAMA_WEB", "Profil Pekon Gunung Megang");
 define("NAMA_LENGKAP", "Rafif Rhamdo Buay Bulan");
 define("IG", "ubirayap");
 define("NO_WA", "085162642703");
-define("MATKUL", "Pemrograman Lanjut");
 define("URL_IG", "https://www.instagram.com/ubirayap");
 define("URL_WA", "https://api.whatsapp.com/send/?phone=6285173200421");
 define("NAMA_KAMPUS", "IIB Darmajaya");

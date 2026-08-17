@@ -10,10 +10,12 @@ $apbTahun     = (int)($apbYears ? max($apbYears) : 0);
 $apbData      = $apbAll[$apbTahun] ?? [];
 $perangkat    = include dirname(__DIR__, 2) . '/includes/perangkat.php';
 
-function dash_fmt($v, $dec = 0) {
+function dash_fmt($v, $dec = 0)
+{
     return number_format((float)$v, $dec, ',', '.');
 }
-function dash_rp($v) {
+function dash_rp($v)
+{
     return 'Rp ' . number_format((float)$v, 0, ',', '.');
 }
 
@@ -88,9 +90,9 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
                 </div>
                 <div class="card-body d-flex align-items-center gap-3">
                     <?php if ($kepalaFotoShow !== ''): ?>
-                    <img src="<?= htmlspecialchars($kepalaFotoShow) ?>" alt="Foto Kepala Pekon" class="rounded-circle" style="width:64px;height:64px;object-fit:cover" data-preview="<?= htmlspecialchars($kepalaFotoShow) ?>">
+                        <img src="<?= htmlspecialchars($kepalaFotoShow) ?>" alt="Foto Kepala Pekon" class="rounded-circle" style="width:64px;height:64px;object-fit:cover" data-preview="<?= htmlspecialchars($kepalaFotoShow) ?>">
                     <?php else: ?>
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-muted" style="width:64px;height:64px"><i class="bi bi-person fs-2"></i></div>
+                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-muted" style="width:64px;height:64px"><i class="bi bi-person fs-2"></i></div>
                     <?php endif; ?>
                     <div>
                         <h6 class="mb-1 fw-bold"><?= htmlspecialchars($kepalaNama) ?></h6>
@@ -152,7 +154,9 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
                     <i class="bi bi-pie-chart text-primary"></i>
                     <h6 class="mb-0">Komposisi Belanja APB <?= htmlspecialchars($apbTahun) ?></h6>
                 </div>
-                <div class="card-body"><div id="dash-chart-belanja" style="height:320px"></div></div>
+                <div class="card-body">
+                    <div id="dash-chart-belanja" style="height:320px"></div>
+                </div>
             </div>
         </div>
         <div class="col-lg-8">
@@ -161,7 +165,9 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
                     <i class="bi bi-bar-chart text-success"></i>
                     <h6 class="mb-0">Pendapatan vs Belanja per Pos — APB <?= htmlspecialchars($apbTahun) ?></h6>
                 </div>
-                <div class="card-body"><div id="dash-chart-apb" style="height:320px"></div></div>
+                <div class="card-body">
+                    <div id="dash-chart-apb" style="height:320px"></div>
+                </div>
             </div>
         </div>
         <div class="col-lg-6">
@@ -170,7 +176,9 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
                     <i class="bi bi-bar-chart-line text-warning"></i>
                     <h6 class="mb-0">Potensi Lahan (Hektar)</h6>
                 </div>
-                <div class="card-body"><div id="dash-chart-lahan" style="height:300px"></div></div>
+                <div class="card-body">
+                    <div id="dash-chart-lahan" style="height:300px"></div>
+                </div>
             </div>
         </div>
         <div class="col-lg-6">
@@ -179,7 +187,9 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
                     <i class="bi bi-people text-info"></i>
                     <h6 class="mb-0">Komposisi Penduduk</h6>
                 </div>
-                <div class="card-body"><div id="dash-chart-penduduk" style="height:300px"></div></div>
+                <div class="card-body">
+                    <div id="dash-chart-penduduk" style="height:300px"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -187,125 +197,220 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 
 <script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    if (!window.ApexCharts) return;
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.ApexCharts) return;
 
-    var PALETTE = ['#0ea5a4', '#3b82f6', '#f59e0b', '#ef4444', '#10b981'];
+        var PALETTE = ['#0ea5a4', '#3b82f6', '#f59e0b', '#ef4444', '#10b981'];
 
-    function rp(v) {
-        return 'Rp ' + Math.round(v).toLocaleString('id-ID');
-    }
-    function rpCompact(v) {
-        v = Number(v) || 0;
-        if (v >= 1e9) return 'Rp ' + (v / 1e9).toFixed(1).replace('.', ',') + ' M';
-        if (v >= 1e6) return 'Rp ' + (v / 1e6).toFixed(1).replace('.', ',') + ' jt';
-        if (v >= 1e3) return 'Rp ' + (v / 1e3).toFixed(0) + ' rb';
-        return 'Rp ' + Math.round(v);
-    }
-    function noData(el) {
-        el.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i>Belum ada data</div>';
-    }
+        function rp(v) {
+            return 'Rp ' + Math.round(v).toLocaleString('id-ID');
+        }
 
-    var chartApb = <?= json_encode($chartApb, $jsonFlags) ?>;
-    var chartLahan = <?= json_encode($chartLahan, $jsonFlags) ?>;
-    var chartPenduduk = <?= json_encode($chartPenduduk, $jsonFlags) ?>;
+        function rpCompact(v) {
+            v = Number(v) || 0;
+            if (v >= 1e9) return 'Rp ' + (v / 1e9).toFixed(1).replace('.', ',') + ' M';
+            if (v >= 1e6) return 'Rp ' + (v / 1e6).toFixed(1).replace('.', ',') + ' jt';
+            if (v >= 1e3) return 'Rp ' + (v / 1e3).toFixed(0) + ' rb';
+            return 'Rp ' + Math.round(v);
+        }
 
-    /* Donut — Komposisi Belanja */
-    var elBelanja = document.getElementById('dash-chart-belanja');
-    var hasBelanja = (chartApb.belanjaValues || []).some(function (v) { return v > 0; });
-    if (elBelanja && !hasBelanja) { noData(elBelanja); }
-    else if (elBelanja) {
-        new ApexCharts(elBelanja, {
-            chart: { type: 'donut' },
-            series: chartApb.belanjaValues,
-            labels: chartApb.belanjaLabels,
-            colors: PALETTE,
-            plotOptions: {
-                pie: {
-                    donut: {
-                        labels: {
-                            show: true,
-                            total: {
+        function noData(el) {
+            el.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i>Belum ada data</div>';
+        }
+
+        var chartApb = <?= json_encode($chartApb, $jsonFlags) ?>;
+        var chartLahan = <?= json_encode($chartLahan, $jsonFlags) ?>;
+        var chartPenduduk = <?= json_encode($chartPenduduk, $jsonFlags) ?>;
+
+        /* Donut — Komposisi Belanja */
+        var elBelanja = document.getElementById('dash-chart-belanja');
+        var hasBelanja = (chartApb.belanjaValues || []).some(function(v) {
+            return v > 0;
+        });
+        if (elBelanja && !hasBelanja) {
+            noData(elBelanja);
+        } else if (elBelanja) {
+            new ApexCharts(elBelanja, {
+                chart: {
+                    type: 'donut'
+                },
+                series: chartApb.belanjaValues,
+                labels: chartApb.belanjaLabels,
+                colors: PALETTE,
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
                                 show: true,
-                                label: 'Total Belanja',
-                                formatter: function (w) {
-                                    return rpCompact(w.globals.seriesTotals.reduce(function (a, b) { return a + b; }, 0));
+                                total: {
+                                    show: true,
+                                    label: 'Total Belanja',
+                                    formatter: function(w) {
+                                        return rpCompact(w.globals.seriesTotals.reduce(function(a, b) {
+                                            return a + b;
+                                        }, 0));
+                                    }
                                 }
                             }
                         }
                     }
+                },
+                dataLabels: {
+                    formatter: function(v) {
+                        return Number(v).toFixed(1) + '%';
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(v) {
+                            return rp(v);
+                        }
+                    }
                 }
-            },
-            dataLabels: { formatter: function (v) { return Number(v).toFixed(1) + '%'; } },
-            legend: { position: 'bottom' },
-            tooltip: { y: { formatter: function (v) { return rp(v); } } }
-        }).render();
-    }
+            }).render();
+        }
 
-    /* Column — Pendapatan vs Belanja per pos */
-    var elApb = document.getElementById('dash-chart-apb');
-    if (elApb) {
-        new ApexCharts(elApb, {
-            chart: { type: 'bar', toolbar: { show: false } },
-            series: [
-                { name: 'Pendapatan', data: chartApb.penerimaan },
-                { name: 'Belanja', data: chartApb.belanja }
-            ],
-            colors: ['#10b981', '#ef4444'],
-            plotOptions: { bar: { columnWidth: '55%', borderRadius: 3 } },
-            xaxis: { categories: chartApb.labels },
-            legend: { position: 'top' },
-            dataLabels: { enabled: false },
-            yaxis: { labels: { formatter: function (v) { return rpCompact(v); } } },
-            tooltip: { y: { formatter: function (v) { return rp(v); } } }
-        }).render();
-    }
+        /* Column — Pendapatan vs Belanja per pos */
+        var elApb = document.getElementById('dash-chart-apb');
+        if (elApb) {
+            new ApexCharts(elApb, {
+                chart: {
+                    type: 'bar',
+                    toolbar: {
+                        show: false
+                    }
+                },
+                series: [{
+                        name: 'Pendapatan',
+                        data: chartApb.penerimaan
+                    },
+                    {
+                        name: 'Belanja',
+                        data: chartApb.belanja
+                    }
+                ],
+                colors: ['#10b981', '#ef4444'],
+                plotOptions: {
+                    bar: {
+                        columnWidth: '55%',
+                        borderRadius: 3
+                    }
+                },
+                xaxis: {
+                    categories: chartApb.labels
+                },
+                legend: {
+                    position: 'top'
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function(v) {
+                            return rpCompact(v);
+                        }
+                    }
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(v) {
+                            return rp(v);
+                        }
+                    }
+                }
+            }).render();
+        }
 
-    /* Column — Potensi Lahan */
-    var elLahan = document.getElementById('dash-chart-lahan');
-    var hasLahan = (chartLahan.values || []).some(function (v) { return v > 0; });
-    if (elLahan && !hasLahan) { noData(elLahan); }
-    else if (elLahan) {
-        new ApexCharts(elLahan, {
-            chart: { type: 'bar', toolbar: { show: false } },
-            series: [{ name: 'Luas (Ha)', data: chartLahan.values }],
-            colors: ['#0ea5a4'],
-            plotOptions: { bar: { columnWidth: '45%', borderRadius: 3 } },
-            xaxis: { categories: chartLahan.labels },
-            dataLabels: { enabled: false },
-            yaxis: { labels: { formatter: function (v) { return v.toLocaleString('id-ID'); } } }
-        }).render();
-    }
+        /* Column — Potensi Lahan */
+        var elLahan = document.getElementById('dash-chart-lahan');
+        var hasLahan = (chartLahan.values || []).some(function(v) {
+            return v > 0;
+        });
+        if (elLahan && !hasLahan) {
+            noData(elLahan);
+        } else if (elLahan) {
+            new ApexCharts(elLahan, {
+                chart: {
+                    type: 'bar',
+                    toolbar: {
+                        show: false
+                    }
+                },
+                series: [{
+                    name: 'Luas (Ha)',
+                    data: chartLahan.values
+                }],
+                colors: ['#0ea5a4'],
+                plotOptions: {
+                    bar: {
+                        columnWidth: '45%',
+                        borderRadius: 3
+                    }
+                },
+                xaxis: {
+                    categories: chartLahan.labels
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function(v) {
+                            return v.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }).render();
+        }
 
-    /* Donut — Komposisi Penduduk */
-    var elPenduduk = document.getElementById('dash-chart-penduduk');
-    var hasPenduduk = (chartPenduduk.values || []).some(function (v) { return v > 0; });
-    if (elPenduduk && !hasPenduduk) { noData(elPenduduk); }
-    else if (elPenduduk) {
-        new ApexCharts(elPenduduk, {
-            chart: { type: 'donut' },
-            series: chartPenduduk.values,
-            labels: chartPenduduk.labels,
-            colors: ['#3b82f6', '#ec4899'],
-            plotOptions: {
-                pie: {
-                    donut: {
-                        labels: {
-                            show: true,
-                            total: {
+        /* Donut — Komposisi Penduduk */
+        var elPenduduk = document.getElementById('dash-chart-penduduk');
+        var hasPenduduk = (chartPenduduk.values || []).some(function(v) {
+            return v > 0;
+        });
+        if (elPenduduk && !hasPenduduk) {
+            noData(elPenduduk);
+        } else if (elPenduduk) {
+            new ApexCharts(elPenduduk, {
+                chart: {
+                    type: 'donut'
+                },
+                series: chartPenduduk.values,
+                labels: chartPenduduk.labels,
+                colors: ['#3b82f6', '#ec4899'],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
                                 show: true,
-                                label: 'Total Jiwa',
-                                formatter: function (w) {
-                                    return w.globals.seriesTotals.reduce(function (a, b) { return a + b; }, 0).toLocaleString('id-ID');
+                                total: {
+                                    show: true,
+                                    label: 'Total Jiwa',
+                                    formatter: function(w) {
+                                        return w.globals.seriesTotals.reduce(function(a, b) {
+                                            return a + b;
+                                        }, 0).toLocaleString('id-ID');
+                                    }
                                 }
                             }
                         }
                     }
+                },
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(v) {
+                            return v.toLocaleString('id-ID') + ' jiwa';
+                        }
+                    }
                 }
-            },
-            legend: { position: 'bottom' },
-            tooltip: { y: { formatter: function (v) { return v.toLocaleString('id-ID') + ' jiwa'; } } }
-        }).render();
-    }
-});
+            }).render();
+        }
+    });
 </script>

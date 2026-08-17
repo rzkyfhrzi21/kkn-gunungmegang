@@ -30,5 +30,11 @@ console.log("%c" + line2, "color: #ffffff; font-weight: bold;");
 console.log("%c" + line3, "color: #ffffff; font-weight: bold;");
 
 // Menampilkan teks Cyan 2 kali di bawahnya
-console.log(`%c${cyanText}`, "color: #00ffff; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 2px black;");
-console.log(`%c${cyanText}`, "color: #00ffff; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 2px black;");
+console.log(
+  `%c${cyanText}`,
+  "color: #00ffff; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 2px black;",
+);
+console.log(
+  `%c${cyanText}`,
+  "color: #00ffff; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 2px black;",
+);

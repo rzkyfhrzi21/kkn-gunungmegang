@@ -53,7 +53,7 @@ $iconOptions = ['eco', 'grass', 'agriculture', 'storefront', 'local_florist', 'e
                             <label class="form-label">Status IDM</label>
                             <select class="form-select" name="idm_status" required>
                                 <?php foreach ($idmOptions as $opt): ?>
-                                <option value="<?= $opt ?>" <?= ($potensiData['idm_status'] ?? '') === $opt ? 'selected' : '' ?>><?= $opt ?></option>
+                                    <option value="<?= $opt ?>" <?= ($potensiData['idm_status'] ?? '') === $opt ? 'selected' : '' ?>><?= $opt ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -196,7 +196,7 @@ $iconOptions = ['eco', 'grass', 'agriculture', 'storefront', 'local_florist', 'e
                     <label class="form-label mt-3">Ikon</label>
                     <select class="form-select" name="ikon">
                         <?php foreach ($iconOptions as $ic): ?>
-                        <option value="<?= $ic ?>"><?= $ic ?></option>
+                            <option value="<?= $ic ?>"><?= $ic ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -252,165 +252,211 @@ $iconOptions = ['eco', 'grass', 'agriculture', 'storefront', 'local_florist', 'e
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var formPot = document.getElementById('form-potensi');
-    var btnPot = document.getElementById('btn-save-potensi');
+    document.addEventListener('DOMContentLoaded', function() {
+        var formPot = document.getElementById('form-potensi');
+        var btnPot = document.getElementById('btn-save-potensi');
 
-    formPot.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (!formPot.checkValidity()) { formPot.reportValidity(); return; }
-        btnPot.disabled = true;
-        var payload = {
-            hero_desc: formPot.hero_desc.value,
-            komoditas_desc: formPot.komoditas_desc.value,
-            mp_desc: formPot.mp_desc.value,
-            idm_status: formPot.idm_status.value,
-            idm_progress: formPot.idm_progress.value,
-            idm_desc: formPot.idm_desc.value,
-            sosial_judul: formPot.sosial_judul.value,
-            sosial_par1: formPot.sosial_par1.value,
-            sosial_par2: formPot.sosial_par2.value
-        };
-        App.postJSON('../admin/api.php', { action: 'save', module: 'potensi', data: payload })
-            .then(function (res) {
-                btnPot.disabled = false;
-                if (res.ok) App.toast('Data potensi berhasil disimpan.', 'success', 'Berhasil');
-                else App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
-            })
-            .catch(function () { btnPot.disabled = false; App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
-    });
+        formPot.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!formPot.checkValidity()) {
+                formPot.reportValidity();
+                return;
+            }
+            btnPot.disabled = true;
+            var payload = {
+                hero_desc: formPot.hero_desc.value,
+                komoditas_desc: formPot.komoditas_desc.value,
+                mp_desc: formPot.mp_desc.value,
+                idm_status: formPot.idm_status.value,
+                idm_progress: formPot.idm_progress.value,
+                idm_desc: formPot.idm_desc.value,
+                sosial_judul: formPot.sosial_judul.value,
+                sosial_par1: formPot.sosial_par1.value,
+                sosial_par2: formPot.sosial_par2.value
+            };
+            App.postJSON('../admin/api.php', {
+                    action: 'save',
+                    module: 'potensi',
+                    data: payload
+                })
+                .then(function(res) {
+                    btnPot.disabled = false;
+                    if (res.ok) App.toast('Data potensi berhasil disimpan.', 'success', 'Berhasil');
+                    else App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+                })
+                .catch(function() {
+                    btnPot.disabled = false;
+                    App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+                });
+        });
 
-    /* ---------- Tabel komoditas ---------- */
-    var modalKom = document.getElementById('modal-komoditas');
-    var formKom = document.getElementById('form-komoditas');
-    var pendingDelete = null;
-    var pendingModule = null;
+        /* ---------- Tabel komoditas ---------- */
+        var modalKom = document.getElementById('modal-komoditas');
+        var formKom = document.getElementById('form-komoditas');
+        var pendingDelete = null;
+        var pendingModule = null;
 
-    var komTable = new App.JsonTable({
-        selector: '#tbl-komoditas',
-        module: 'komoditas',
-        perPage: 10,
-        search: '#search-komoditas',
-        columns: [
-            { key: 'nama', label: 'Nama Komoditas' },
-            { key: 'nilai', label: 'Luasan', format: function (row, v) { return v + ' ' + (row.satuan || ''); } }
-        ],
-        actions: ['edit', 'delete'],
-        onEdit: function (row, btn) {
-            document.getElementById('modal-komoditas-title').textContent = 'Edit Komoditas';
-            formKom.index.value = row.index;
-            formKom.nama.value = row.nama || '';
-            formKom.deskripsi.value = row.deskripsi || '';
-            formKom.nilai.value = row.nilai || 0;
-            formKom.satuan.value = row.satuan || '';
-            formKom.ikon.value = row.ikon || 'eco';
+        var komTable = new App.JsonTable({
+            selector: '#tbl-komoditas',
+            module: 'komoditas',
+            perPage: 10,
+            search: '#search-komoditas',
+            columns: [{
+                    key: 'nama',
+                    label: 'Nama Komoditas'
+                },
+                {
+                    key: 'nilai',
+                    label: 'Luasan',
+                    format: function(row, v) {
+                        return v + ' ' + (row.satuan || '');
+                    }
+                }
+            ],
+            actions: ['edit', 'delete'],
+            onEdit: function(row, btn) {
+                document.getElementById('modal-komoditas-title').textContent = 'Edit Komoditas';
+                formKom.index.value = row.index;
+                formKom.nama.value = row.nama || '';
+                formKom.deskripsi.value = row.deskripsi || '';
+                formKom.nilai.value = row.nilai || 0;
+                formKom.satuan.value = row.satuan || '';
+                formKom.ikon.value = row.ikon || 'eco';
+                App.showModal(modalKom);
+            },
+            onDelete: function(row, btn) {
+                pendingDelete = row.index;
+                pendingModule = 'komoditas';
+                document.getElementById('modal-delete-pot-text').textContent =
+                    'Apakah Anda yakin ingin menghapus "' + row.nama + '" dari daftar komoditas?';
+                App.showModal(document.getElementById('modal-delete-pot'));
+            }
+        });
+
+        document.getElementById('btn-add-komoditas').addEventListener('click', function() {
+            document.getElementById('modal-komoditas-title').textContent = 'Tambah Komoditas';
+            formKom.reset();
+            formKom.ikon.value = 'eco';
             App.showModal(modalKom);
-        },
-        onDelete: function (row, btn) {
-            pendingDelete = row.index;
-            pendingModule = 'komoditas';
-            document.getElementById('modal-delete-pot-text').textContent =
-                'Apakah Anda yakin ingin menghapus "' + row.nama + '" dari daftar komoditas?';
-            App.showModal(document.getElementById('modal-delete-pot'));
-        }
-    });
+        });
 
-    document.getElementById('btn-add-komoditas').addEventListener('click', function () {
-        document.getElementById('modal-komoditas-title').textContent = 'Tambah Komoditas';
-        formKom.reset();
-        formKom.ikon.value = 'eco';
-        App.showModal(modalKom);
-    });
-
-    formKom.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (!formKom.checkValidity()) { formKom.reportValidity(); return; }
-        App.postJSON('../admin/api.php', {
-            action: 'save_row', module: 'komoditas',
-            data: {
-                index: formKom.index.value,
-                nama: formKom.nama.value,
-                deskripsi: formKom.deskripsi.value,
-                nilai: formKom.nilai.value,
-                satuan: formKom.satuan.value,
-                ikon: formKom.ikon.value
+        formKom.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!formKom.checkValidity()) {
+                formKom.reportValidity();
+                return;
             }
-        }).then(function (res) {
-            if (res.ok) {
-                App.hideModal(modalKom);
-                App.toast('Komoditas berhasil disimpan.', 'success', 'Berhasil');
-                komTable.reload();
-            } else {
-                App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+            App.postJSON('../admin/api.php', {
+                action: 'save_row',
+                module: 'komoditas',
+                data: {
+                    index: formKom.index.value,
+                    nama: formKom.nama.value,
+                    deskripsi: formKom.deskripsi.value,
+                    nilai: formKom.nilai.value,
+                    satuan: formKom.satuan.value,
+                    ikon: formKom.ikon.value
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    App.hideModal(modalKom);
+                    App.toast('Komoditas berhasil disimpan.', 'success', 'Berhasil');
+                    komTable.reload();
+                } else {
+                    App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+                }
+            }).catch(function() {
+                App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+            });
+        });
+
+        /* ---------- Tabel mata pencaharian ---------- */
+        var modalMp = document.getElementById('modal-mp');
+        var formMp = document.getElementById('form-mp');
+
+        var table = new App.JsonTable({
+            selector: '#tbl-mp',
+            module: 'mata_pencaharian',
+            perPage: 10,
+            search: '#search-mp',
+            columns: [{
+                    key: 'nama',
+                    label: 'Nama Mata Pencaharian'
+                },
+                {
+                    key: 'keterangan',
+                    label: 'Keterangan'
+                }
+            ],
+            actions: ['edit', 'delete'],
+            onEdit: function(row, btn) {
+                document.getElementById('modal-mp-title').textContent = 'Edit Mata Pencaharian';
+                formMp.index.value = row.index;
+                formMp.nama.value = row.nama;
+                formMp.keterangan.value = row.keterangan || '';
+                App.showModal(modalMp);
+            },
+            onDelete: function(row, btn) {
+                pendingDelete = row.index;
+                pendingModule = 'mata_pencaharian';
+                document.getElementById('modal-delete-pot-text').textContent =
+                    'Apakah Anda yakin ingin menghapus "' + row.nama + '" dari daftar mata pencaharian?';
+                App.showModal(document.getElementById('modal-delete-pot'));
             }
-        }).catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
-    });
+        });
 
-    /* ---------- Tabel mata pencaharian ---------- */
-    var modalMp = document.getElementById('modal-mp');
-    var formMp = document.getElementById('form-mp');
-
-    var table = new App.JsonTable({
-        selector: '#tbl-mp',
-        module: 'mata_pencaharian',
-        perPage: 10,
-        search: '#search-mp',
-        columns: [
-            { key: 'nama', label: 'Nama Mata Pencaharian' },
-            { key: 'keterangan', label: 'Keterangan' }
-        ],
-        actions: ['edit', 'delete'],
-        onEdit: function (row, btn) {
-            document.getElementById('modal-mp-title').textContent = 'Edit Mata Pencaharian';
-            formMp.index.value = row.index;
-            formMp.nama.value = row.nama;
-            formMp.keterangan.value = row.keterangan || '';
+        document.getElementById('btn-add-mp').addEventListener('click', function() {
+            document.getElementById('modal-mp-title').textContent = 'Tambah Mata Pencaharian';
+            formMp.reset();
             App.showModal(modalMp);
-        },
-        onDelete: function (row, btn) {
-            pendingDelete = row.index;
-            pendingModule = 'mata_pencaharian';
-            document.getElementById('modal-delete-pot-text').textContent =
-                'Apakah Anda yakin ingin menghapus "' + row.nama + '" dari daftar mata pencaharian?';
-            App.showModal(document.getElementById('modal-delete-pot'));
-        }
-    });
+        });
 
-    document.getElementById('btn-add-mp').addEventListener('click', function () {
-        document.getElementById('modal-mp-title').textContent = 'Tambah Mata Pencaharian';
-        formMp.reset();
-        App.showModal(modalMp);
-    });
-
-    formMp.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (!formMp.checkValidity()) { formMp.reportValidity(); return; }
-        App.postJSON('../admin/api.php', {
-            action: 'save_row', module: 'mata_pencaharian',
-            data: { nama: formMp.nama.value, keterangan: formMp.keterangan.value, index: formMp.index.value }
-        }).then(function (res) {
-            if (res.ok) {
-                App.hideModal(modalMp);
-                App.toast('Mata pencaharian berhasil disimpan.', 'success', 'Berhasil');
-                table.reload();
-            } else {
-                App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+        formMp.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!formMp.checkValidity()) {
+                formMp.reportValidity();
+                return;
             }
-        }).catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
-    });
+            App.postJSON('../admin/api.php', {
+                action: 'save_row',
+                module: 'mata_pencaharian',
+                data: {
+                    nama: formMp.nama.value,
+                    keterangan: formMp.keterangan.value,
+                    index: formMp.index.value
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    App.hideModal(modalMp);
+                    App.toast('Mata pencaharian berhasil disimpan.', 'success', 'Berhasil');
+                    table.reload();
+                } else {
+                    App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+                }
+            }).catch(function() {
+                App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+            });
+        });
 
-    document.getElementById('btn-confirm-delete-pot').addEventListener('click', function () {
-        App.postJSON('../admin/api.php', {
-            action: 'delete', module: pendingModule, data: { index: pendingDelete }
-        }).then(function (res) {
-            if (res.ok) {
-                App.hideModal(document.getElementById('modal-delete-pot'));
-                App.toast('Data berhasil dihapus.', 'success', 'Berhasil');
-                if (pendingModule === 'komoditas') komTable.reload(); else table.reload();
-            } else {
-                App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menghapus.', 'error', 'Gagal');
-            }
-        }).catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
+        document.getElementById('btn-confirm-delete-pot').addEventListener('click', function() {
+            App.postJSON('../admin/api.php', {
+                action: 'delete',
+                module: pendingModule,
+                data: {
+                    index: pendingDelete
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    App.hideModal(document.getElementById('modal-delete-pot'));
+                    App.toast('Data berhasil dihapus.', 'success', 'Berhasil');
+                    if (pendingModule === 'komoditas') komTable.reload();
+                    else table.reload();
+                } else {
+                    App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menghapus.', 'error', 'Gagal');
+                }
+            }).catch(function() {
+                App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+            });
+        });
     });
-});
 </script>

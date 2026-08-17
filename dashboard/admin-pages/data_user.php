@@ -101,90 +101,116 @@ if (!isset($_SESSION['sesi_role']) || $_SESSION['sesi_role'] !== 'admin') return
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var modalUser = document.getElementById('modal-user');
-    var formUser = document.getElementById('form-user');
-    var pendingDelete = null;
+    document.addEventListener('DOMContentLoaded', function() {
+        var modalUser = document.getElementById('modal-user');
+        var formUser = document.getElementById('form-user');
+        var pendingDelete = null;
 
-    var table = new App.JsonTable({
-        selector: '#tbl-user',
-        module: 'user',
-        perPage: 10,
-        search: '#search-user',
-        filters: [
-            { key: 'role', label: 'Semua Role', select: '#filter-role' }
-        ],
-        columns: [
-            { key: 'id_user', label: '#' },
-            { key: 'username', label: 'Username' },
-            { key: 'nama_lengkap', label: 'Nama Lengkap' },
-            { key: 'role', label: 'Role', type: 'badge' }
-        ],
-        actions: ['edit', 'delete'],
-        onEdit: function (row) {
-            document.getElementById('modal-user-title').textContent = 'Edit User';
-            formUser.id_user.value = row.id_user;
-            formUser.username.value = row.username;
-            formUser.nama_lengkap.value = row.nama_lengkap;
-            formUser.role.value = row.role || 'admin';
-            formUser.password.value = '';
-            formUser.password.required = false;
-            document.getElementById('lbl-password').textContent = 'Password Baru';
-            document.getElementById('hint-password').textContent = 'Kosongkan jika tidak ingin mengganti password.';
+        var table = new App.JsonTable({
+            selector: '#tbl-user',
+            module: 'user',
+            perPage: 10,
+            search: '#search-user',
+            filters: [{
+                key: 'role',
+                label: 'Semua Role',
+                select: '#filter-role'
+            }],
+            columns: [{
+                    key: 'id_user',
+                    label: '#'
+                },
+                {
+                    key: 'username',
+                    label: 'Username'
+                },
+                {
+                    key: 'nama_lengkap',
+                    label: 'Nama Lengkap'
+                },
+                {
+                    key: 'role',
+                    label: 'Role',
+                    type: 'badge'
+                }
+            ],
+            actions: ['edit', 'delete'],
+            onEdit: function(row) {
+                document.getElementById('modal-user-title').textContent = 'Edit User';
+                formUser.id_user.value = row.id_user;
+                formUser.username.value = row.username;
+                formUser.nama_lengkap.value = row.nama_lengkap;
+                formUser.role.value = row.role || 'admin';
+                formUser.password.value = '';
+                formUser.password.required = false;
+                document.getElementById('lbl-password').textContent = 'Password Baru';
+                document.getElementById('hint-password').textContent = 'Kosongkan jika tidak ingin mengganti password.';
+                App.showModal(modalUser);
+            },
+            onDelete: function(row) {
+                pendingDelete = row.id_user;
+                document.getElementById('modal-delete-user-text').textContent =
+                    'Apakah Anda yakin ingin menghapus user "' + row.username + '"?';
+                App.showModal(document.getElementById('modal-delete-user'));
+            }
+        });
+
+        document.getElementById('btn-add-user').addEventListener('click', function() {
+            document.getElementById('modal-user-title').textContent = 'Tambah User';
+            formUser.reset();
+            formUser.password.required = true;
+            document.getElementById('lbl-password').textContent = 'Password';
+            document.getElementById('hint-password').textContent = 'Password wajib diisi untuk user baru.';
             App.showModal(modalUser);
-        },
-        onDelete: function (row) {
-            pendingDelete = row.id_user;
-            document.getElementById('modal-delete-user-text').textContent =
-                'Apakah Anda yakin ingin menghapus user "' + row.username + '"?';
-            App.showModal(document.getElementById('modal-delete-user'));
-        }
-    });
+        });
 
-    document.getElementById('btn-add-user').addEventListener('click', function () {
-        document.getElementById('modal-user-title').textContent = 'Tambah User';
-        formUser.reset();
-        formUser.password.required = true;
-        document.getElementById('lbl-password').textContent = 'Password';
-        document.getElementById('hint-password').textContent = 'Password wajib diisi untuk user baru.';
-        App.showModal(modalUser);
-    });
+        formUser.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!formUser.checkValidity()) {
+                formUser.reportValidity();
+                return;
+            }
+            App.postJSON('../admin/api.php', {
+                action: 'save_row',
+                module: 'user',
+                data: {
+                    id_user: formUser.id_user.value,
+                    username: formUser.username.value,
+                    nama_lengkap: formUser.nama_lengkap.value,
+                    role: formUser.role.value,
+                    password: formUser.password.value
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    App.hideModal(modalUser);
+                    App.toast('User berhasil disimpan.', 'success', 'Berhasil');
+                    table.reload();
+                } else {
+                    App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+                }
+            }).catch(function() {
+                App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+            });
+        });
 
-    formUser.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (!formUser.checkValidity()) { formUser.reportValidity(); return; }
-        App.postJSON('../admin/api.php', {
-            action: 'save_row', module: 'user',
-            data: {
-                id_user: formUser.id_user.value,
-                username: formUser.username.value,
-                nama_lengkap: formUser.nama_lengkap.value,
-                role: formUser.role.value,
-                password: formUser.password.value
-            }
-        }).then(function (res) {
-            if (res.ok) {
-                App.hideModal(modalUser);
-                App.toast('User berhasil disimpan.', 'success', 'Berhasil');
-                table.reload();
-            } else {
-                App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
-            }
-        }).catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
+        document.getElementById('btn-confirm-delete-user').addEventListener('click', function() {
+            App.postJSON('../admin/api.php', {
+                action: 'delete',
+                module: 'user',
+                data: {
+                    id_user: pendingDelete
+                }
+            }).then(function(res) {
+                if (res.ok) {
+                    App.hideModal(document.getElementById('modal-delete-user'));
+                    App.toast('User berhasil dihapus.', 'success', 'Berhasil');
+                    table.reload();
+                } else {
+                    App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menghapus.', 'error', 'Gagal');
+                }
+            }).catch(function() {
+                App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+            });
+        });
     });
-
-    document.getElementById('btn-confirm-delete-user').addEventListener('click', function () {
-        App.postJSON('../admin/api.php', {
-            action: 'delete', module: 'user', data: { id_user: pendingDelete }
-        }).then(function (res) {
-            if (res.ok) {
-                App.hideModal(document.getElementById('modal-delete-user'));
-                App.toast('User berhasil dihapus.', 'success', 'Berhasil');
-                table.reload();
-            } else {
-                App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menghapus.', 'error', 'Gagal');
-            }
-        }).catch(function () { App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
-    });
-});
 </script>

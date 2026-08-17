@@ -27,7 +27,9 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
                     <i class="bi bi-people text-primary"></i>
                     <h6 class="mb-0">Komposisi Penduduk</h6>
                 </div>
-                <div class="card-body"><div id="demo-chart-gender" style="height:300px"></div></div>
+                <div class="card-body">
+                    <div id="demo-chart-gender" style="height:300px"></div>
+                </div>
             </div>
         </div>
         <div class="col-lg-7">
@@ -36,7 +38,9 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
                     <i class="bi bi-bar-chart text-success"></i>
                     <h6 class="mb-0">Indikator Kependudukan &amp; Wilayah</h6>
                 </div>
-                <div class="card-body"><div id="demo-chart-summary" style="height:300px"></div></div>
+                <div class="card-body">
+                    <div id="demo-chart-summary" style="height:300px"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -119,91 +123,152 @@ $jsonFlags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var form = document.getElementById('form-demografi');
-    var btn = document.getElementById('btn-save-demografi');
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('form-demografi');
+        var btn = document.getElementById('btn-save-demografi');
 
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (!form.checkValidity()) { form.reportValidity(); return; }
-        btn.disabled = true;
-        var payload = {
-            laki_laki: form.laki_laki.value, perempuan: form.perempuan.value,
-            total_jiwa: form.total_jiwa.value, jumlah_kk: form.jumlah_kk.value,
-            luas_wilayah_km2: form.luas_wilayah_km2.value, luas_wilayah_ha: form.luas_wilayah_ha.value,
-            jarak_kecamatan_km: form.jarak_kecamatan_km.value, waktu_kecamatan_menit: form.waktu_kecamatan_menit.value,
-            batas_wilayah: {
-                utara: form.batas_utara.value, timur: form.batas_timur.value,
-                selatan: form.batas_selatan.value, barat: form.batas_barat.value
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
             }
-        };
-        App.postJSON('../admin/api.php', { action: 'save', module: 'demografi', data: payload })
-            .then(function (res) {
-                btn.disabled = false;
-                if (res.ok) App.toast('Data demografi berhasil disimpan.', 'success', 'Berhasil');
-                else App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
-            })
-            .catch(function () { btn.disabled = false; App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal'); });
+            btn.disabled = true;
+            var payload = {
+                laki_laki: form.laki_laki.value,
+                perempuan: form.perempuan.value,
+                total_jiwa: form.total_jiwa.value,
+                jumlah_kk: form.jumlah_kk.value,
+                luas_wilayah_km2: form.luas_wilayah_km2.value,
+                luas_wilayah_ha: form.luas_wilayah_ha.value,
+                jarak_kecamatan_km: form.jarak_kecamatan_km.value,
+                waktu_kecamatan_menit: form.waktu_kecamatan_menit.value,
+                batas_wilayah: {
+                    utara: form.batas_utara.value,
+                    timur: form.batas_timur.value,
+                    selatan: form.batas_selatan.value,
+                    barat: form.batas_barat.value
+                }
+            };
+            App.postJSON('../admin/api.php', {
+                    action: 'save',
+                    module: 'demografi',
+                    data: payload
+                })
+                .then(function(res) {
+                    btn.disabled = false;
+                    if (res.ok) App.toast('Data demografi berhasil disimpan.', 'success', 'Berhasil');
+                    else App.toast((res.detail ? res.error + ': ' + res.detail : res.error) || 'Gagal menyimpan.', 'error', 'Gagal');
+                })
+                .catch(function() {
+                    btn.disabled = false;
+                    App.toast('Terjadi kesalahan jaringan.', 'error', 'Gagal');
+                });
+        });
     });
-});
 </script>
 
 <script src="assets/extensions/apexcharts/apexcharts.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    if (!window.ApexCharts) return;
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.ApexCharts) return;
 
-    function noData(el) {
-        el.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i>Belum ada data</div>';
-    }
+        function noData(el) {
+            el.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-2 d-block mb-2"></i>Belum ada data</div>';
+        }
 
-    var chartGender = <?= json_encode($chartGender, $jsonFlags) ?>;
-    var chartSummary = <?= json_encode($chartDemografi, $jsonFlags) ?>;
+        var chartGender = <?= json_encode($chartGender, $jsonFlags) ?>;
+        var chartSummary = <?= json_encode($chartDemografi, $jsonFlags) ?>;
 
-    var elGender = document.getElementById('demo-chart-gender');
-    var hasGender = (chartGender.values || []).some(function (v) { return v > 0; });
-    if (elGender && !hasGender) { noData(elGender); }
-    else if (elGender) {
-        new ApexCharts(elGender, {
-            chart: { type: 'donut' },
-            series: chartGender.values,
-            labels: chartGender.labels,
-            colors: ['#3b82f6', '#ec4899'],
-            plotOptions: {
-                pie: {
-                    donut: {
-                        labels: {
-                            show: true,
-                            total: {
+        var elGender = document.getElementById('demo-chart-gender');
+        var hasGender = (chartGender.values || []).some(function(v) {
+            return v > 0;
+        });
+        if (elGender && !hasGender) {
+            noData(elGender);
+        } else if (elGender) {
+            new ApexCharts(elGender, {
+                chart: {
+                    type: 'donut'
+                },
+                series: chartGender.values,
+                labels: chartGender.labels,
+                colors: ['#3b82f6', '#ec4899'],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
                                 show: true,
-                                label: 'Total Jiwa',
-                                formatter: function (w) {
-                                    return w.globals.seriesTotals.reduce(function (a, b) { return a + b; }, 0).toLocaleString('id-ID');
+                                total: {
+                                    show: true,
+                                    label: 'Total Jiwa',
+                                    formatter: function(w) {
+                                        return w.globals.seriesTotals.reduce(function(a, b) {
+                                            return a + b;
+                                        }, 0).toLocaleString('id-ID');
+                                    }
                                 }
                             }
                         }
                     }
+                },
+                dataLabels: {
+                    formatter: function(v) {
+                        return Number(v).toFixed(1) + '%';
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(v) {
+                            return v.toLocaleString('id-ID') + ' jiwa';
+                        }
+                    }
                 }
-            },
-            dataLabels: { formatter: function (v) { return Number(v).toFixed(1) + '%'; } },
-            legend: { position: 'bottom' },
-            tooltip: { y: { formatter: function (v) { return v.toLocaleString('id-ID') + ' jiwa'; } } }
-        }).render();
-    }
+            }).render();
+        }
 
-    var elSummary = document.getElementById('demo-chart-summary');
-    var hasSummary = (chartSummary.values || []).some(function (v) { return v > 0; });
-    if (elSummary && !hasSummary) { noData(elSummary); }
-    else if (elSummary) {
-        new ApexCharts(elSummary, {
-            chart: { type: 'bar', toolbar: { show: false } },
-            series: [{ name: 'Jumlah', data: chartSummary.values }],
-            colors: ['#0ea5a4'],
-            plotOptions: { bar: { columnWidth: '45%', borderRadius: 3 } },
-            xaxis: { categories: chartSummary.labels },
-            dataLabels: { enabled: false },
-            yaxis: { labels: { formatter: function (v) { return v.toLocaleString('id-ID'); } } }
-        }).render();
-    }
-});
+        var elSummary = document.getElementById('demo-chart-summary');
+        var hasSummary = (chartSummary.values || []).some(function(v) {
+            return v > 0;
+        });
+        if (elSummary && !hasSummary) {
+            noData(elSummary);
+        } else if (elSummary) {
+            new ApexCharts(elSummary, {
+                chart: {
+                    type: 'bar',
+                    toolbar: {
+                        show: false
+                    }
+                },
+                series: [{
+                    name: 'Jumlah',
+                    data: chartSummary.values
+                }],
+                colors: ['#0ea5a4'],
+                plotOptions: {
+                    bar: {
+                        columnWidth: '45%',
+                        borderRadius: 3
+                    }
+                },
+                xaxis: {
+                    categories: chartSummary.labels
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function(v) {
+                            return v.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }).render();
+        }
+    });
 </script>
