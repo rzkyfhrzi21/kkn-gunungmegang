@@ -1,4 +1,8 @@
-<?php $kepalaFoto = $pekon['kepala_pekon']['foto']; if ($kepalaFoto === '' || !file_exists($kepalaFoto)) $kepalaFoto = ''; ?>
+<?php
+$kepalaFoto = $pekon['kepala_pekon']['foto'] ?? '';
+$kepalaFotoAbs = dirname(__DIR__, 2) . '/' . ltrim($kepalaFoto, '/');
+if ($kepalaFoto === '' || !file_exists($kepalaFotoAbs)) $kepalaFoto = '';
+?>
 <div class="flex flex-col w-full">
 <!-- HERO SECTION -->
 <section class="max-w-container-max mx-auto w-full px-gutter pt-8 pb-16">
@@ -81,9 +85,8 @@
 <span class="text-label-sm font-label-sm uppercase tracking-widest">Sambutan Kepala Pekon</span>
 </div>
 <h2 class="font-headline-lg text-headline-lg text-on-surface">Membangun Gunung Megang dengan Kolaborasi dan Transparansi</h2>
-<div class="prose max-w-none text-body-lg text-slate-text-muted font-body-lg">
-<p>Assalamu'alaikum Warahmatullahi Wabarakatuh. Selamat datang di portal resmi Pekon Gunung Megang. Website ini hadir sebagai wujud komitmen kami dalam memberikan pelayanan publik yang cepat, mudah, dan transparan.</p>
-<p class="mt-4">Melalui platform digital ini, kami mengajak seluruh elemen masyarakat untuk turut serta dalam mengawasi dan berpartisipasi aktif dalam pembangunan desa. Mari bersama-sama kita wujudkan Gunung Megang yang mandiri, sejahtera, dan berdaya saing.</p>
+<div class="prose max-w-none text-body-lg text-slate-text-muted font-body-lg leading-relaxed">
+<p><?= nl2br(htmlspecialchars($pekon['kepala_pekon']['sambutan'] ?? '')) ?></p>
 </div>
 <div class="mt-4 pt-6 border-t border-border-neutral">
 <h4 class="font-headline-md text-headline-md text-on-surface"><?= htmlspecialchars($pekon['kepala_pekon']['nama']) ?></h4>

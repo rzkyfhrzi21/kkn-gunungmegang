@@ -1,7 +1,8 @@
 <?php
 $perangkat = $pekon['perangkat'];
-$kepalaFoto = $pekon['kepala_pekon']['foto'];
-if ($kepalaFoto === '' || !file_exists($kepalaFoto)) $kepalaFoto = '';
+$kepalaFoto = $pekon['kepala_pekon']['foto'] ?? '';
+$kepalaFotoAbs = dirname(__DIR__, 2) . '/' . ltrim($kepalaFoto, '/');
+if ($kepalaFoto === '' || !file_exists($kepalaFotoAbs)) $kepalaFoto = '';
 ?>
 <div class="flex flex-col w-full">
 <div class="w-full bg-surface pb-section-padding pt-16">

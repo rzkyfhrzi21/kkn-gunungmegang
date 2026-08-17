@@ -50,6 +50,7 @@ jobs:
             **/*.json
             **/assets/uploads/**
             !**/assets/uploads/.htaccess
+            !**/assets/uploads/kepala-pekon.jpg
             **/dashboard/assets/generated/**
             **/dashboard/assets/img/foto_profil/**
             **/dashboard/assets/img/destinasi_wisata/**
