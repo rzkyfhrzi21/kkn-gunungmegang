@@ -446,8 +446,8 @@ $layHeroDesc  = 'Temukan ragam potensi lokal, produk unggulan UMKM, serta fasili
         '<div class="w-full h-full flex items-center justify-center" style="background-image:linear-gradient(135deg,#0b3b4a 0%,#0ea5a4 60%,#0b3b4a 100%)">' +
         '<span class="material-symbols-outlined text-[48px] text-white/70">storefront</span></div>';
       var btns = '';
-      if (maps) btns += '<a href="' + esc(maps) + '" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 py-3 bg-primary text-white rounded hover:bg-primary-container transition-colors font-label-sm"><span class="material-symbols-outlined text-[18px]">location_on</span>Google Maps</a>';
-      if (wa) btns += '<a href="' + esc(wa) + '" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white rounded hover:opacity-90 transition-opacity font-label-sm">' + WA_SVG + 'WhatsApp</a>';
+      if (maps) btns += '<a href="' + esc(maps) + '" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 py-3 bg-primary text-white rounded shadow-sm hover:bg-[#0a6e50] hover:shadow-md transition-all font-label-sm"><span class="material-symbols-outlined text-[18px]">location_on</span>Google Maps</a>';
+      if (wa) btns += '<a href="' + esc(wa) + '" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white rounded shadow-sm hover:bg-[#1DA851] hover:shadow-md transition-all font-label-sm">' + WA_SVG + 'WhatsApp</a>';
       return '<div class="group flex flex-col bg-surface border border-border-neutral rounded-xl overflow-hidden hover:border-primary/50 transition-all duration-300 shadow-md">' +
         '<div class="relative h-56 w-full overflow-hidden">' + fotoHtml +
         '<div class="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded border border-border-neutral text-[10px] font-bold text-primary tracking-wider uppercase">' + esc(item.badge || item.kategori) + '</div>' +
