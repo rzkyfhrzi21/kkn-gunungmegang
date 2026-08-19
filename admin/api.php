@@ -114,6 +114,13 @@ function norm_pekon($raw) {
         ],
         'kontak' => [
             'telepon'   => json_api_str($c['telepon'] ?? '', 30),
+            'instagram' => sanitize_url($c['instagram'] ?? '', 200),
+            'contact_person' => array_values(array_filter(array_map(function ($cp) {
+                $nama = json_api_str($cp['nama'] ?? '', 100);
+                $tel  = preg_replace('/\D+/', '', json_api_str($cp['telepon'] ?? '', 20));
+                if ($nama === '' || $tel === '') return null;
+                return ['nama' => $nama, 'telepon' => $tel];
+            }, is_array($c['contact_person'] ?? null) ? $c['contact_person'] : []))),
             'maps_code' => json_api_str($c['maps_code'] ?? '', 255),
             'maps_link' => sanitize_url($c['maps_link'] ?? '', 500),
             'maps_embed' => json_api_embed_url($c['maps_embed'] ?? ''),

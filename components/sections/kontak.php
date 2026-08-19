@@ -29,6 +29,37 @@
                             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                         </a>
                         <p class="mt-4 font-label-sm text-on-surface-variant font-mono"><?= trim(chunk_split($pekon['kontak']['telepon'], 4, ' ')) ?></p>
+                        <?php $cps = $pekon['kontak']['contact_person'] ?? []; ?>
+                        <?php if (!empty($cps)): ?>
+                            <div class="w-full mt-6 pt-5 border-t border-border-neutral">
+                                <p class="font-label-sm text-on-surface-variant uppercase tracking-wider mb-3">Contact Person</p>
+                                <div class="space-y-3">
+                                    <?php foreach ($cps as $cp): $cpTel = preg_replace('/\D+/', '', $cp['telepon'] ?? ''); ?>
+                                        <div class="flex items-center justify-between gap-3">
+                                            <div class="min-w-0">
+                                                <p class="font-body-md font-semibold text-on-surface truncate"><?= htmlspecialchars($cp['nama'] ?? '') ?></p>
+                                                <p class="font-label-sm text-on-surface-variant font-mono"><?= htmlspecialchars($cp['telepon'] ?? '') ?></p>
+                                            </div>
+                                            <?php if ($cpTel !== ''): ?>
+                                                <a class="inline-flex items-center gap-1.5 bg-emerald-surface text-primary px-3 py-1.5 rounded-full font-label-sm hover:bg-primary-container transition-colors flex-shrink-0" href="https://wa.me/<?= '62' . ltrim($cpTel, '0') ?>" target="_blank" rel="noopener">
+                                                    <span class="material-symbols-outlined text-[16px]">chat</span>
+                                                    <span>Chat</span>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <?php $igUrl = $pekon['kontak']['instagram'] ?? ''; ?>
+                        <?php if ($igUrl !== ''): ?>
+                            <a class="inline-flex items-center gap-2 text-primary hover:text-primary-container transition-colors font-label-sm mt-4" href="<?= htmlspecialchars($igUrl) ?>" target="_blank" rel="noopener">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.2 2.3.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1.1.4 2.3.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.9-.4 2.3-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1.1.4-2.3.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.2-2.3-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1.1-.4-2.3-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.2-1.9.4-2.3.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1.1-.4 2.3-.4 1.3-.1 1.7-.1 4.9-.1zM12 0C8.7 0 8.3 0 7 .1 5.7.2 4.8.4 4 .7c-.9.3-1.6.8-2.4 1.5C.9 3 .4 3.7.1 4.6c-.3.8-.5 1.7-.6 3C-.1 8.3-.1 8.7-.1 12s0 3.7.1 5c.1 1.3.3 2.2.6 3 .3.9.8 1.6 1.5 2.4.8.8 1.5 1.2 2.4 1.5.8.3 1.7.5 3 .6 1.3.1 1.7.1 5 .1s3.7 0 5-.1c1.3-.1 2.2-.3 3-.6.9-.3 1.6-.8 2.4-1.5.8-.8 1.2-1.5 1.5-2.4.3-.8.5-1.7.6-3 .1-1.3.1-1.7.1-5s0-3.7-.1-5c-.1-1.3-.3-2.2-.6-3-.3-.9-.8-1.6-1.5-2.4C20.1.9 19.4.4 18.5.1c-.8-.3-1.7-.5-3-.6C14.2-.1 13.8-.1 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm7.8-10.4a1.4 1.4 0 1 1-2.8 0 1.4 1.4 0 0 1 2.8 0z"/>
+                                </svg>
+                                <span><?= htmlspecialchars(preg_replace('#^https?://(www\.)?instagram\.com/([^/]+)/?$#i', '@$2', $igUrl)) ?></span>
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <!-- Jam Operasional -->

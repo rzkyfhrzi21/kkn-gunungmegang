@@ -78,6 +78,27 @@ $kontak    = $pekonData['kontak'];
                             </div>
                             <input type="hidden" name="kontak_maps_embed" id="kontak_maps_embed" value="<?= htmlspecialchars($kontak['maps_embed'] ?? '') ?>">
                             <div class="col-md-6">
+                                <label class="form-label">Instagram</label>
+                                <input type="text" class="form-control" name="kontak_instagram" value="<?= htmlspecialchars($kontak['instagram'] ?? '') ?>" inputmode="url" maxlength="200">
+                                <div class="app-upload-hint">Tempel URL lengkap akun Instagram (mis. <code>https://www.instagram.com/nama_akun</code>).</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Contact Person</label>
+                                <div class="row g-2">
+                                    <?php $cps = $kontak['contact_person'] ?? [['nama' => 'Yuni Lestari', 'telepon' => '085839063148'], ['nama' => 'Selly Herlin Mutiara', 'telepon' => '085839271673']]; ?>
+                                    <?php for ($i = 0; $i < 2; $i++): $cp = $cps[$i] ?? ['nama' => '', 'telepon' => '']; ?>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                                <input type="text" class="form-control" name="kontak_cp[<?= $i ?>][nama]" value="<?= htmlspecialchars($cp['nama'] ?? '') ?>" placeholder="Nama admin" maxlength="100">
+                                                <input type="tel" class="form-control" name="kontak_cp[<?= $i ?>][telepon]" value="<?= htmlspecialchars($cp['telepon'] ?? '') ?>" placeholder="08xxxxxxxxxx" maxlength="20">
+                                            </div>
+                                        </div>
+                                    <?php endfor; ?>
+                                </div>
+                                <div class="app-upload-hint">Nama &amp; nomor WhatsApp yang ditampilkan sebagai contact person di halaman kontak.</div>
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Deskripsi WhatsApp</label>
                                 <input type="text" class="form-control" name="kontak_wa_desc" value="<?= htmlspecialchars($kontak['wa_desc'] ?? '') ?>" maxlength="300">
                             </div>
@@ -220,6 +241,13 @@ $kontak    = $pekonData['kontak'];
                     status: form['kontak_jam[' + i + '][status]'].value
                 });
             }
+            var contactPerson = [];
+            for (var i = 0; i < 2; i++) {
+                contactPerson.push({
+                    nama: form['kontak_cp[' + i + '][nama]'].value,
+                    telepon: form['kontak_cp[' + i + '][telepon]'].value
+                });
+            }
             var payload = {
                 nama: form.nama.value,
                 kecamatan: form.kecamatan.value,
@@ -228,6 +256,8 @@ $kontak    = $pekonData['kontak'];
                 tahun: form.tahun.value,
                 kontak: {
                     telepon: form.kontak_telepon.value,
+                    instagram: form.kontak_instagram.value,
+                    contact_person: contactPerson,
                     maps_code: mapsCode.value,
                     maps_link: mapsLink.value,
                     maps_embed: mapsEmbed.value.trim(),

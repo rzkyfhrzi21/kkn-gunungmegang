@@ -81,7 +81,7 @@ if ($kepalaFoto === '' || !file_exists($kepalaFotoAbs)) $kepalaFoto = '';
                         <div class="absolute -bottom-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2 hidden lg:block"></div>
                     </div>
                 </div>
-                <div class="w-full hidden lg:block relative">
+                <div class="w-full hidden lg:block relative -mb-8">
                     <div class="absolute top-0 left-0 right-0 h-px bg-border-neutral"></div>
                     <div class="absolute -top-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2"></div>
                     <div class="grid grid-cols-6 gap-6">

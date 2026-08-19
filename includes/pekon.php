@@ -16,8 +16,22 @@ return     array (
       ),
       'kontak' => 
       array (
-        'telepon' => '081279077057',
-        'maps_code' => 'JMVH+236, Gn. Megang, Kec. Pulau Panggung, Kabupaten Tanggamus, Lampung 35679',
+        'telepon' => '085839063148',
+        'instagram' => 'https://www.instagram.com/gunungmegang_real',
+        'contact_person' => 
+        array (
+          0 => 
+          array (
+            'nama' => 'Yuni Lestari',
+            'telepon' => '085839063148',
+          ),
+          1 => 
+          array (
+            'nama' => 'Selly Herlin Mutiara',
+            'telepon' => '085839271673',
+          ),
+        ),
+        'maps_code' => 'Jl. Argomulyo, Talang Jawa, Kec. Pulau Panggung, Kabupaten Tanggamus, Lampung 35679',
         'maps_link' => 'https://maps.app.goo.gl/6ibfYfuE1A1hrXUi9',
         'maps_embed' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.389063230883!2d104.67507867543483!3d-5.357457494621283!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e473d003fa4d897%3A0x62cab024720c0edf!2sKANTOR%20PEKON%20GUUNUNG%20MEGANG!5e0!3m2!1sid!2sid!4v1786690566798!5m2!1sid!2sid',
         'wa_desc' => 'Layanan cepat dan responsif untuk berbagai keperluan administrasi pekon.',
@@ -33,7 +47,7 @@ return     array (
           1 => 
           array (
             'hari' => 'Jumat',
-            'jam' => '08:00 - 11:30 WIB',
+            'jam' => '08:00 - 15:00 WIB',
             'status' => '',
           ),
           2 => 
