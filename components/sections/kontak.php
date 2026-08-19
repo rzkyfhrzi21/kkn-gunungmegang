@@ -40,7 +40,6 @@
                                 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                             </a>
                         <?php endif; ?>
-                        <p class="mt-4 font-label-sm text-on-surface-variant font-mono"><?= trim(chunk_split($pekon['kontak']['telepon'], 4, ' ')) ?></p>
                         <?php $igUrl = $pekon['kontak']['instagram'] ?? ''; ?>
                         <?php if ($igUrl !== ''): ?>
                             <div class="w-full mt-6 pt-5 border-t border-border-neutral">

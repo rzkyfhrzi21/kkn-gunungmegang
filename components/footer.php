@@ -145,15 +145,29 @@
       <h4>Hubungi Kami</h4>
       <div class="contact-item">
         <span class="material-symbols-outlined">location_on</span>
-        <span>Kantor Pekon Gunung Megang, Kec. Pulau Panggung, Kab. Tanggamus, Lampung 35679</span>
+        <span><?= htmlspecialchars($pekon['kontak']['maps_code'] ?? '') ?></span>
       </div>
-      <div class="contact-item">
-        <span class="material-symbols-outlined">call</span>
-        <span><?= trim(chunk_split($pekon['kontak']['telepon'], 4, ' ')) ?></span>
-      </div>
+      <?php $cpsF = $pekon['kontak']['contact_person'] ?? []; ?>
+      <?php if (!empty($cpsF)): ?>
+        <?php foreach ($cpsF as $cpF): $cpFTel = preg_replace('/\D+/', '', $cpF['telepon'] ?? ''); ?>
+          <div class="contact-item">
+            <span class="material-symbols-outlined">call</span>
+            <span>
+              <?= htmlspecialchars($cpF['nama'] ?? '') ?><br>
+              <a href="https://wa.me/<?= '62' . ltrim($cpFTel, '0') ?>" target="_blank" rel="noopener"><?= trim(chunk_split($cpFTel, 4, ' ')) ?></a>
+            </span>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="contact-item">
+          <span class="material-symbols-outlined">call</span>
+          <span><?= trim(chunk_split($pekon['kontak']['telepon'], 4, ' ')) ?></span>
+        </div>
+      <?php endif; ?>
       <div class="contact-item">
         <span class="material-symbols-outlined">schedule</span>
-        <span>Senin – Kamis 08.00–15.30 WIB<br>Jumat 08.00–11.30 WIB</span>
+        <span><?php $jamRowsF = $pekon['kontak']['jam'] ?? [];
+        foreach ($jamRowsF as $iF => $jrF): ?><?= $iF > 0 ? '<br>' : '' ?><?= htmlspecialchars($jrF['hari'] ?? '') ?> <?= htmlspecialchars(($jrF['jam'] ?? '') !== '' ? $jrF['jam'] : ($jrF['status'] ?? '')) ?><?php endforeach; ?></span>
       </div>
     </div>
   </div>
