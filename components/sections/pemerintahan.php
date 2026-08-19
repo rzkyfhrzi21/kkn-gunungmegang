@@ -69,31 +69,28 @@ if ($kepalaFoto === '' || !file_exists($kepalaFotoAbs)) $kepalaFoto = '';
                         <div class="absolute -bottom-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2 hidden md:block"></div>
                     </div>
                 </div>
-                <div class="w-full max-w-md hidden md:block">
-                    <div class="h-px w-full bg-border-neutral mx-auto relative">
-                        <div class="absolute -top-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2"></div>
-                        <div class="absolute top-0 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2"></div>
-                    </div>
-                </div>
+                <div class="w-px h-10 bg-border-neutral hidden md:block"></div>
                 <div class="w-full max-w-sm">
                     <div class="bg-surface-container-lowest rounded-xl p-6 text-center border border-border-neutral shadow-sm hover:shadow-md transition-shadow relative">
+                        <div class="absolute -top-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2 hidden md:block"></div>
                         <div class="w-12 h-12 rounded-full bg-secondary-container mx-auto mb-4 flex items-center justify-center text-on-secondary-container">
                             <span class="material-symbols-outlined text-2xl">edit_document</span>
                         </div>
                         <h3 class="font-headline-md text-headline-md text-on-surface mb-1"><?= htmlspecialchars($perangkat[0]['nama']) ?></h3>
                         <p class="text-label-sm text-slate-text-muted uppercase tracking-widest"><?= htmlspecialchars($perangkat[0]['jabatan']) ?></p>
-                        <div class="absolute -bottom-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2 hidden md:block"></div>
+                        <div class="absolute -bottom-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2 hidden lg:block"></div>
                     </div>
                 </div>
-                <div class="w-full max-w-4xl hidden md:block">
-                    <div class="h-px w-full bg-border-neutral mx-auto relative">
-                        <div class="absolute -top-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2"></div>
-                        <div class="absolute top-0 left-0 w-px h-10 bg-border-neutral"></div>
-                        <div class="absolute top-0 left-1/5 w-px h-10 bg-border-neutral"></div>
-                        <div class="absolute top-0 left-2/5 w-px h-10 bg-border-neutral"></div>
-                        <div class="absolute top-0 left-3/5 w-px h-10 bg-border-neutral"></div>
-                        <div class="absolute top-0 left-4/5 w-px h-10 bg-border-neutral"></div>
-                        <div class="absolute top-0 right-0 w-px h-10 bg-border-neutral"></div>
+                <div class="w-full hidden lg:block relative">
+                    <div class="absolute top-0 left-0 right-0 h-px bg-border-neutral"></div>
+                    <div class="absolute -top-10 left-1/2 w-px h-10 bg-border-neutral -translate-x-1/2"></div>
+                    <div class="grid grid-cols-6 gap-6">
+                        <div class="w-px h-10 bg-border-neutral justify-self-center"></div>
+                        <div class="w-px h-10 bg-border-neutral justify-self-center"></div>
+                        <div class="w-px h-10 bg-border-neutral justify-self-center"></div>
+                        <div class="w-px h-10 bg-border-neutral justify-self-center"></div>
+                        <div class="w-px h-10 bg-border-neutral justify-self-center"></div>
+                        <div class="w-px h-10 bg-border-neutral justify-self-center"></div>
                     </div>
                 </div>
                 <div class="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">

@@ -18,7 +18,10 @@ if (!is_array($data)) {
 
 $daftar = $data['daftar'] ?? [];
 
-// Sanitasi output — pastikan hanya field yang diperlukan yang dikirim
+// Sanitasi output — pastikan hanya field yang diperlukan yang dikirim.
+// Data sudah disanitasi saat save (strip_tags + whitelist foto/maps/wa),
+// dan sisi frontend meng-escape saat render (esc()), jadi tidak perlu
+// htmlspecialchars di sini (menghindari double-escape: "&" jadi "&amp;").
 $result = [];
 foreach ($daftar as $item) {
     if (!is_array($item)) continue;
@@ -26,18 +29,18 @@ foreach ($daftar as $item) {
     foreach (($item['baris'] ?? []) as $b) {
         if (!is_array($b)) continue;
         $baris[] = [
-            'ikon' => htmlspecialchars($b['ikon'] ?? '', ENT_QUOTES, 'UTF-8'),
-            'teks' => htmlspecialchars($b['teks'] ?? '', ENT_QUOTES, 'UTF-8'),
+            'ikon' => $b['ikon'] ?? '',
+            'teks' => $b['teks'] ?? '',
         ];
     }
     $result[] = [
-        'kategori' => htmlspecialchars($item['kategori'] ?? '', ENT_QUOTES, 'UTF-8'),
-        'badge'    => htmlspecialchars($item['badge']    ?? '', ENT_QUOTES, 'UTF-8'),
-        'nama'     => htmlspecialchars($item['nama']     ?? '', ENT_QUOTES, 'UTF-8'),
-        'subjudul' => htmlspecialchars($item['subjudul'] ?? '', ENT_QUOTES, 'UTF-8'),
-        'foto'     => htmlspecialchars($item['foto']     ?? '', ENT_QUOTES, 'UTF-8'),
-        'maps'     => htmlspecialchars($item['maps']     ?? '', ENT_QUOTES, 'UTF-8'),
-        'wa'       => htmlspecialchars($item['wa']       ?? '', ENT_QUOTES, 'UTF-8'),
+        'kategori' => $item['kategori'] ?? '',
+        'badge'    => $item['badge']    ?? '',
+        'nama'     => $item['nama']     ?? '',
+        'subjudul' => $item['subjudul'] ?? '',
+        'foto'     => $item['foto']     ?? '',
+        'maps'     => $item['maps']     ?? '',
+        'wa'       => $item['wa']       ?? '',
         'baris'    => $baris,
     ];
 }
