@@ -47,6 +47,11 @@
     max-width: 340px;
   }
 
+  .footer-brand .contact-item {
+    margin-top: 20px;
+    max-width: 340px;
+  }
+
   .footer-col h4 {
     color: #fbbf24;
     font-size: 12.5px;
@@ -131,6 +136,11 @@
         </div>
       </div>
       <p>Pusat informasi resmi dan pelayanan publik digital terpadu untuk kemajuan masyarakat Pekon Gunung Megang, Kecamatan Pulau Panggung, Kabupaten Tanggamus.</p>
+      <div class="contact-item">
+        <span class="material-symbols-outlined">schedule</span>
+        <span><?php $jamRowsF = $pekon['kontak']['jam'] ?? [];
+        foreach ($jamRowsF as $iF => $jrF): ?><?= $iF > 0 ? '<br>' : '' ?><?= htmlspecialchars($jrF['hari'] ?? '') ?> <?= htmlspecialchars(($jrF['jam'] ?? '') !== '' ? $jrF['jam'] : ($jrF['status'] ?? '')) ?><?php endforeach; ?></span>
+      </div>
     </div>
     <div class="footer-col">
       <h4>Tautan Cepat</h4>
@@ -173,11 +183,6 @@
           <a href="<?= htmlspecialchars($igUrlF) ?>" target="_blank" rel="noopener">Instagram Resmi: <?= htmlspecialchars(preg_replace('#^https?://(www\.)?instagram\.com/([^/]+)/?$#i', '@$2', $igUrlF)) ?></a>
         </div>
       <?php endif; ?>
-      <div class="contact-item">
-        <span class="material-symbols-outlined">schedule</span>
-        <span><?php $jamRowsF = $pekon['kontak']['jam'] ?? [];
-        foreach ($jamRowsF as $iF => $jrF): ?><?= $iF > 0 ? '<br>' : '' ?><?= htmlspecialchars($jrF['hari'] ?? '') ?> <?= htmlspecialchars(($jrF['jam'] ?? '') !== '' ? $jrF['jam'] : ($jrF['status'] ?? '')) ?><?php endforeach; ?></span>
-      </div>
     </div>
   </div>
   <div class="footer-bottom">
