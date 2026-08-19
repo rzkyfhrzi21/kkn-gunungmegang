@@ -96,7 +96,7 @@ $kontak    = $pekonData['kontak'];
                                         </div>
                                     <?php endfor; ?>
                                 </div>
-                                <div class="app-upload-hint">Nama &amp; nomor WhatsApp yang ditampilkan sebagai contact person di halaman kontak.</div>
+                                <div class="app-upload-hint">Nama &amp; nomor WhatsApp yang ditampilkan sebagai contact person di halaman kontak dan footer. Tulis keterangan admin pada nama, mis. <code>Yuni Lestari (Admin 1)</code>.</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Deskripsi WhatsApp</label>
